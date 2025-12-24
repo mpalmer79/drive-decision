@@ -8,9 +8,9 @@ import { IconCheck } from "@/components/icons";
 
 export function QuirkHeader() {
   return (
-    <div className="w-full py-4 flex justify-center">
-      <a
-       href="https://www.quirkcars.com"
+    <div className="w-full pt-12 pb-4 flex justify-center">
+      
+        href="https://www.quirkcars.com"
         target="_blank"
         rel="noopener noreferrer"
         className="transition-opacity hover:opacity-80"
