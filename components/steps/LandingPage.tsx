@@ -1,10 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { Button, Card, QuirkHeader } from "@/components/ui";
 import {
-  IconCar,
   IconShield,
   IconTrendingUp,
   IconAlertTriangle,
@@ -37,8 +37,14 @@ export function LandingPage({ onStart }: LandingPageProps) {
         >
           {/* Logo */}
           <div className="flex items-center justify-center gap-3 mb-8">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg shadow-emerald-500/25">
-              <IconCar className="w-7 h-7 text-white" />
+            <div className="w-12 h-12 rounded-2xl bg-white flex items-center justify-center shadow-lg shadow-emerald-500/25 overflow-hidden">
+              <Image
+                src="/favicon.png"
+                alt="DriveDecision"
+                width={48}
+                height={48}
+                className="w-10 h-10"
+              />
             </div>
             <div className="text-left">
               <div className="text-xl font-bold text-white tracking-tight">
