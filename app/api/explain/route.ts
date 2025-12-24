@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import type { BuyScenario, DecisionResult, LeaseScenario, UserProfile } from "@/types";
+import type { BuyScenario, DecisionResult, LeaseScenario, UserProfile } from "../../../types";
 
 import {
   formatConfidence,
@@ -7,30 +7,23 @@ import {
   formatMonths,
   formatStressLabel,
   formatVerdict
-} from "@/lib/formatters";
+} from "../../../lib/formatters";
 
-import type { ExplainVerbosity } from "@/lib/ai/promptTemplates";
-import { SYSTEM_PROMPT, buildUserPrompt } from "@/lib/ai/promptTemplates";
-import { buildExplainPayload } from "@/lib/ai/explainPayload";
+import type { ExplainVerbosity } from "../../../lib/ai/promptTemplates";
+import { SYSTEM_PROMPT, buildUserPrompt } from "../../../lib/ai/promptTemplates";
+import { buildExplainPayload } from "../../../lib/ai/explainPayload";
 import {
   passesNumberAllowlist,
   validateExplainResponseShape,
   type AIExplainResponse
-} from "@/lib/ai/aiValidators";
+} from "../../../lib/ai/aiValidators";
 
 type ExplainRequest = {
   result: DecisionResult;
-
   user?: UserProfile;
   buy?: BuyScenario;
   lease?: LeaseScenario;
-
   verbosity?: ExplainVerbosity;
-
-  /**
-   * Controls whether the server attempts an AI explanation.
-   * Keep default false until you wire a provider.
-   */
   useAI?: boolean;
 };
 
@@ -68,10 +61,6 @@ function validateDecisionResult(result: unknown): result is DecisionResult {
   return true;
 }
 
-/**
- * Deterministic explanation generator. This is your always-available fallback.
- * It must never hallucinate because it only uses the DecisionResult numbers.
- */
 function buildDeterministicExplanation(args: {
   result: DecisionResult;
   buy?: BuyScenario;
@@ -122,10 +111,6 @@ function buildDeterministicExplanation(args: {
     if (lease?.termMonths && Number.isFinite(lease.termMonths)) {
       lines.push(`Lease term used: ${formatMonths(lease.termMonths)}.`);
     }
-
-    lines.push(
-      "If you want to reduce risk, lower the monthly payment, increase the down payment, shorten the term, or choose a less expensive vehicle."
-    );
   }
 
   const flags = result.riskFlags.filter((f) => f.trim().length > 0);
@@ -137,18 +122,12 @@ function buildDeterministicExplanation(args: {
   return { headline, explanation: lines.join(" ") };
 }
 
-/**
- * Placeholder AI call.
- * Replace this function with your provider integration later.
- * It MUST return either a parsed AIExplainResponse or null to trigger fallback.
- */
 async function tryGenerateAIExplanation(args: {
   result: DecisionResult;
   buy?: BuyScenario;
   lease?: LeaseScenario;
   verbosity: ExplainVerbosity;
 }): Promise<AIExplainResponse | null> {
-  // Build a tight payload (allowlisted fields only)
   const payload = buildExplainPayload({
     result: args.result,
     buy: args.buy,
@@ -156,47 +135,14 @@ async function tryGenerateAIExplanation(args: {
     riskTolerance: undefined
   });
 
-  // Build prompts (stored for when you wire a provider)
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const system = SYSTEM_PROMPT;
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const user = buildUserPrompt({ verbosity: args.verbosity, payload });
 
-  /**
-   * Provider wiring goes here.
-   *
-   * Requirements when you implement:
-   * 1) Force JSON output.
-   * 2) Parse JSON into an object.
-   * 3) Validate shape with validateExplainResponseShape.
-   * 4) Enforce number allowlist with passesNumberAllowlist using payload.context.
-   *
-   * If anything fails, return null.
-   */
-
   return null;
 }
 
-/**
- * POST /api/explain
- *
- * Input:
- *  {
- *    "result": DecisionResult,
- *    "verbosity": "short" | "detailed",
- *    "useAI": boolean,
- *    "user"?: UserProfile,
- *    "buy"?: BuyScenario,
- *    "lease"?: LeaseScenario
- *  }
- *
- * Output:
- *  {
- *    "headline": string,
- *    "explanation": string,
- *    "source": "deterministic" | "ai"
- *  }
- */
 export async function POST(req: Request) {
   let body: unknown;
 
@@ -221,15 +167,12 @@ export async function POST(req: Request) {
     );
   }
 
-  const verbosity: ExplainVerbosity =
-    verbosityRaw === "detailed" ? "detailed" : "short";
-
+  const verbosity: ExplainVerbosity = verbosityRaw === "detailed" ? "detailed" : "short";
   const useAI = useAIraw === true;
 
   const buy = (body as Record<string, unknown>)["buy"] as BuyScenario | undefined;
   const lease = (body as Record<string, unknown>)["lease"] as LeaseScenario | undefined;
 
-  // Always have a deterministic fallback explanation available.
   const deterministic = buildDeterministicExplanation({
     result: resultRaw,
     buy,
@@ -242,7 +185,6 @@ export async function POST(req: Request) {
   }
 
   try {
-    // Attempt AI generation (currently returns null until you wire a provider)
     const ai = await tryGenerateAIExplanation({
       result: resultRaw,
       buy,
@@ -254,12 +196,10 @@ export async function POST(req: Request) {
       return NextResponse.json({ ...deterministic, source: "deterministic" });
     }
 
-    // Validate shape
     if (!validateExplainResponseShape(ai)) {
       return NextResponse.json({ ...deterministic, source: "deterministic" });
     }
 
-    // Enforce allowlist numbers
     const payload = buildExplainPayload({
       result: resultRaw,
       buy,
@@ -277,7 +217,6 @@ export async function POST(req: Request) {
       return NextResponse.json({ ...deterministic, source: "deterministic" });
     }
 
-    // If AI passes validation, return it.
     return NextResponse.json({
       headline: ai.headline,
       explanation: ai.explanation,
