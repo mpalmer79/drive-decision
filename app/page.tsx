@@ -50,6 +50,10 @@ export default function Page() {
 
   const payload = useMemo(() => ({ user, buy, lease }), [user, buy, lease]);
 
+  // Compute these BEFORE rendering to avoid TS "narrowed impossible comparison" errors.
+  const isLoading = api.status === "loading";
+  const canExplain = api.status === "success";
+
   async function runDecision() {
     setApi({ status: "loading" });
 
@@ -109,7 +113,14 @@ export default function Page() {
   }
 
   return (
-    <main style={{ padding: 24, maxWidth: 980, margin: "0 auto", fontFamily: "system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif" }}>
+    <main
+      style={{
+        padding: 24,
+        maxWidth: 980,
+        margin: "0 auto",
+        fontFamily: "system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif"
+      }}
+    >
       <h1 style={{ margin: 0 }}>DriveDecision</h1>
       <p style={{ marginTop: 8 }}>
         Minimal test UI. Run <code>/api/decision</code>, then <code>/api/explain</code>.
@@ -153,7 +164,9 @@ export default function Page() {
             Credit score band
             <select
               value={user.creditScoreBand}
-              onChange={(e) => setUser({ ...user, creditScoreBand: e.target.value as UserProfile["creditScoreBand"] })}
+              onChange={(e) =>
+                setUser({ ...user, creditScoreBand: e.target.value as UserProfile["creditScoreBand"] })
+              }
               style={{ width: "100%" }}
             >
               <option value="below_620">below_620</option>
@@ -350,7 +363,9 @@ export default function Page() {
             Lease end plan
             <select
               value={lease.leaseEndPlan}
-              onChange={(e) => setLease({ ...lease, leaseEndPlan: e.target.value as LeaseScenario["leaseEndPlan"] })}
+              onChange={(e) =>
+                setLease({ ...lease, leaseEndPlan: e.target.value as LeaseScenario["leaseEndPlan"] })
+              }
               style={{ width: "100%" }}
             >
               <option value="return">return</option>
@@ -373,11 +388,19 @@ export default function Page() {
       </div>
 
       <div style={{ display: "flex", gap: 12, marginTop: 16 }}>
-        <button onClick={runDecision} disabled={api.status === "loading"} style={{ padding: "10px 14px", borderRadius: 8, border: "1px solid #333", cursor: "pointer" }}>
+        <button
+          onClick={runDecision}
+          disabled={isLoading}
+          style={{ padding: "10px 14px", borderRadius: 8, border: "1px solid #333", cursor: "pointer" }}
+        >
           Run /api/decision
         </button>
 
-        <button onClick={runExplain} disabled={api.status !== "success" || api.status === "loading"} style={{ padding: "10px 14px", borderRadius: 8, border: "1px solid #333", cursor: "pointer" }}>
+        <button
+          onClick={runExplain}
+          disabled={!canExplain || isLoading}
+          style={{ padding: "10px 14px", borderRadius: 8, border: "1px solid #333", cursor: "pointer" }}
+        >
           Run /api/explain
         </button>
       </div>
@@ -416,4 +439,3 @@ export default function Page() {
     </main>
   );
 }
-
