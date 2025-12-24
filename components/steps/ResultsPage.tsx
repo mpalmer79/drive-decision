@@ -15,6 +15,7 @@ import {
   Spinner,
 } from "@/components/icons";
 import { ProtectionPackages } from "@/components/steps/ProtectionPackages";
+import { LeadCapture } from "@/components/steps/LeadCapture";
 
 interface ResultsPageProps {
   result: DecisionResult;
@@ -280,6 +281,13 @@ export function ResultsPage({ result, buy, lease, onStartOver }: ResultsPageProp
           termMonths={buy.ownershipMonths}
           baseTotal={isBuy ? result.buyTotalCost : result.leaseTotalCost}
           baseMonthly={isBuy ? result.buyMonthlyAllIn : result.leaseMonthlyAllIn}
+        />
+
+        {/* Lead Capture */}
+        <LeadCapture
+          verdict={result.verdict}
+          vehiclePrice={buy.vehiclePrice}
+          monthlyPayment={isBuy ? result.buyMonthlyAllIn : result.leaseMonthlyAllIn}
         />
 
         {/* Detailed Explanation Section */}
