@@ -12,6 +12,7 @@ import {
   IconDollar,
   IconAlertTriangle,
   IconRefresh,
+  Spinner,
 } from "@/components/icons";
 
 interface ResultsPageProps {
@@ -21,13 +22,49 @@ interface ResultsPageProps {
   onStartOver: () => void;
 }
 
+type ExplainState =
+  | { status: "idle" }
+  | { status: "loading" }
+  | { status: "success"; headline: string; explanation: string }
+  | { status: "error"; message: string };
+
 export function ResultsPage({ result, buy, lease, onStartOver }: ResultsPageProps) {
   const [revealed, setRevealed] = useState(false);
+  const [explain, setExplain] = useState<ExplainState>({ status: "idle" });
 
   useEffect(() => {
     const timer = setTimeout(() => setRevealed(true), 300);
     return () => clearTimeout(timer);
   }, []);
+
+  const fetchExplanation = async (verbosity: "short" | "detailed") => {
+    setExplain({ status: "loading" });
+
+    try {
+      const res = await fetch("/api/explain", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ result, buy, lease, verbosity }),
+      });
+
+      const data = await res.json().catch(() => null);
+
+      if (!res.ok) {
+        const msg = data?.error ?? `Request failed (${res.status})`;
+        setExplain({ status: "error", message: msg });
+        return;
+      }
+
+      setExplain({
+        status: "success",
+        headline: data.headline,
+        explanation: data.explanation,
+      });
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "Network error";
+      setExplain({ status: "error", message: msg });
+    }
+  };
 
   const isBuy = result.verdict === "buy";
   const verdictColor = isBuy
@@ -235,6 +272,76 @@ export function ResultsPage({ result, buy, lease, onStartOver }: ResultsPageProp
             </ul>
           </Card>
         )}
+
+        {/* Detailed Explanation Section */}
+        <Card className="mb-8">
+          <h3 className="font-semibold text-white mb-4 flex items-center gap-2">
+            <IconFileText className="w-5 h-5 text-teal-400" />
+            Detailed Explanation
+          </h3>
+
+          {explain.status === "idle" && (
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => fetchExplanation("short")}
+              >
+                Quick Summary
+              </Button>
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => fetchExplanation("detailed")}
+              >
+                Full Breakdown
+              </Button>
+            </div>
+          )}
+
+          {explain.status === "loading" && (
+            <div className="flex items-center gap-3 text-slate-400">
+              <Spinner className="w-5 h-5" />
+              <span>Generating explanation...</span>
+            </div>
+          )}
+
+          {explain.status === "error" && (
+            <div className="space-y-3">
+              <div className="flex items-center gap-2 text-red-400 text-sm">
+                <IconAlertTriangle className="w-4 h-4" />
+                {explain.message}
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setExplain({ status: "idle" })}
+              >
+                Try Again
+              </Button>
+            </div>
+          )}
+
+          {explain.status === "success" && (
+            <div className="space-y-4">
+              <div>
+                <h4 className="text-lg font-semibold text-white mb-2">
+                  {explain.headline}
+                </h4>
+                <p className="text-slate-400 leading-relaxed">
+                  {explain.explanation}
+                </p>
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setExplain({ status: "idle" })}
+              >
+                Get Another Explanation
+              </Button>
+            </div>
+          )}
+        </Card>
 
         {/* Actions */}
         <div className="flex flex-col sm:flex-row justify-center gap-4">
