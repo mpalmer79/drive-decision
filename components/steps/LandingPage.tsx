@@ -107,8 +107,10 @@ export function LandingPage({ onStart }: LandingPageProps) {
               desc: "Know which option is safer if your income drops 10%.",
             },
           ].map((feature) => (
-            <Card key={feature.title} className="text-left">
-              <feature.icon className="w-8 h-8 text-emerald-400 mb-3" />
+            <Card key={feature.title} className="text-center">
+              <div className="flex justify-center mb-3">
+                <feature.icon className="w-8 h-8 text-emerald-400" />
+              </div>
               <h3 className="font-semibold text-white mb-1">{feature.title}</h3>
               <p className="text-sm text-white">{feature.desc}</p>
             </Card>
