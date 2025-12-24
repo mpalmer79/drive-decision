@@ -58,7 +58,7 @@ It explains verified calculations.
 - **Framework**: Next.js (App Router)
 - **Language**: TypeScript
 - **Backend**: Next.js API routes
-- **AI**: LLM API for explanations only
+- **Quirk AI**: LLM API for explanations only
 - **Payments**: Stripe (planned)
 - **Hosting**: Vercel
 
@@ -76,7 +76,7 @@ math.ts
 
 
 - `decisionEngine.ts` contains all deterministic decision logic
-- AI layers never modify core calculations
+- Quirk AI layers never modify core calculations
 
 ---
 
