@@ -1,6 +1,6 @@
 # Quirk AI - DriveDecision
 
-**DriveDecision** is a decision engine created by Quirk AI that helps consumers determine whether buying or leasing a vehicle is the financially safer option based on their personal situation.
+**DriveDecision** is a decision engine powered by Quirk AI that helps consumers determine whether buying or leasing a vehicle is the financially safer option based on their personal situation.
 
 Unlike generic calculators, DriveDecision focuses on **risk, cash-flow stress, and long-term impact**, not just monthly payments.
 
