@@ -1,73 +1,46 @@
-export type RiskTolerance = "low" | "medium" | "high";
-
-export type UserProfile = {
-  monthlyNetIncome: number; // after tax
-  monthlyFixedExpenses: number;
-  currentSavings: number;
-  creditScoreBand: "below_620" | "620_679" | "680_739" | "740_plus";
-  riskTolerance: RiskTolerance;
-};
-
-export type BuyScenario = {
-  vehiclePrice: number;
-  downPayment: number;
-  aprPercent: number;
-  termMonths: number;
-  estMonthlyInsurance: number;
-  estMonthlyMaintenance: number;
-  ownershipMonths: number; // how long you plan to keep it
-};
-
-export type LeaseScenario = {
-  msrp: number;
-  monthlyPayment: number;
-  dueAtSigning: number;
-  termMonths: number;
-  mileageAllowancePerYear: number;
-  estMilesPerYear: number;
-  estExcessMileFee: number; // dollars per mile
-  estMonthlyInsurance: number;
-  estMonthlyMaintenance: number;
-  leaseEndPlan: "return" | "buyout";
-  estBuyoutPrice?: number; // required if leaseEndPlan === "buyout"
-};
-
-export type DecisionVerdict = "buy" | "lease";
-
-export type DecisionResult = {
-  verdict: DecisionVerdict;
-  confidence: "low" | "medium" | "high";
-  summary: string;
-
-  // core numbers
-  buyTotalCost: number;
-  leaseTotalCost: number;
-  buyMonthlyAllIn: number;
-  leaseMonthlyAllIn: number;
-
-  // risk scoring
-  buyStressScore: number;  // 0-100 higher = worse
-  leaseStressScore: number; // 0-100 higher = worse
-  riskFlags: string[];
-};
+import type {
+  BuyScenario,
+  DecisionResult,
+  LeaseScenario,
+  UserProfile
+} from "../types";
 
 export function decideBuyVsLease(
   user: UserProfile,
   buy: BuyScenario,
   lease: LeaseScenario
 ): DecisionResult {
-  // TODO: implement deterministic math, no AI here.
+  // Guardrails that prevent obviously invalid inputs from silently producing nonsense.
+  // Keep these lightweight. Deeper validation can be added later.
+  if (user.monthlyNetIncome <= 0) {
+    throw new Error("monthlyNetIncome must be > 0");
+  }
+
+  if (buy.termMonths <= 0 || lease.termMonths <= 0) {
+    throw new Error("termMonths must be > 0");
+  }
+
+  if (lease.leaseEndPlan === "buyout" && (lease.estBuyoutPrice == null || lease.estBuyoutPrice <= 0)) {
+    throw new Error("estBuyoutPrice is required and must be > 0 when leaseEndPlan is 'buyout'");
+  }
+
+  // TODO: implement deterministic math (total cost, stress scoring, downside risk) here.
+  // IMPORTANT: keep AI out of this function. AI only explains results, it never calculates them.
+
   return {
     verdict: "lease",
     confidence: "low",
     summary: "Placeholder result. Decision engine not implemented yet.",
+
     buyTotalCost: 0,
     leaseTotalCost: 0,
+
     buyMonthlyAllIn: 0,
     leaseMonthlyAllIn: 0,
+
     buyStressScore: 0,
     leaseStressScore: 0,
+
     riskFlags: ["Decision engine not implemented"]
   };
 }
-
