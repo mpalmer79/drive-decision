@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import type { DecisionResult } from "@/types";
 import { cn, formatCurrency } from "@/lib/utils";
 import { Button, Card } from "@/components/ui";
 import {
@@ -17,11 +16,9 @@ import {
   IconInfo,
 } from "@/components/icons";
 import {
-  PROTECTION_PACKAGES,
   getRecommendedPackages,
   calculatePackageTotal,
   calculateMonthlyImpact,
-  type ProtectionPackage,
 } from "@/lib/protectionPackages";
 
 interface ProtectionPackagesProps {
