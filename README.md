@@ -66,3 +66,52 @@ It explains verified calculations.
 
 ## 📁 Project Structure
 
+app/
+page.tsx
+api/
+decision/
+lib/
+decisionEngine.ts
+math.ts
+
+
+- `decisionEngine.ts` contains all deterministic decision logic
+- AI layers never modify core calculations
+
+---
+
+## 🚧 Project Status
+
+This project is in **active development**.
+
+Current focus:
+- Implementing buy vs lease decision formulas
+- Stress and risk scoring
+- Validating outputs against real-world scenarios
+
+UI and monetization come **after correctness**.
+
+---
+
+## ⚠️ Disclaimer
+
+DriveDecision provides educational decision support only.
+It is **not financial, legal, or tax advice**.
+
+---
+
+## 📌 Roadmap (High Level)
+
+- [ ] Complete deterministic buy vs lease engine
+- [ ] Add AI explanation layer
+- [ ] Add pricing and paywall
+- [ ] Launch web MVP
+- [ ] Expand to additional decision types
+
+---
+
+## 📄 License
+
+Private. All rights reserved.
+
+
