@@ -9,7 +9,7 @@ import { IconCheck } from "@/components/icons";
 export function QuirkHeader() {
   return (
     <div className="w-full pt-12 pb-4 flex justify-center">
-      <a
+      
         href="https://www.quirkcars.com"
         target="_blank"
         rel="noopener noreferrer"
@@ -93,19 +93,19 @@ export function Input({
     <div className="space-y-1.5">
       {label && (
         <div className="flex items-baseline justify-between gap-2">
-          <label className="text-sm font-medium text-slate-300">{label}</label>
-          {hint && <span className="text-xs text-slate-500">{hint}</span>}
+          <label className="text-sm font-medium text-white">{label}</label>
+          {hint && <span className="text-xs text-white/70">{hint}</span>}
         </div>
       )}
       <div className="relative">
         {prefix && (
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-sm">
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-white/70 text-sm">
             {prefix}
           </span>
         )}
         <input
           className={cn(
-            "w-full bg-slate-800/50 border border-slate-700 rounded-xl px-4 py-3 text-slate-100 text-sm",
+            "w-full bg-slate-800/50 border border-slate-700 rounded-xl px-4 py-3 text-white text-sm",
             "placeholder:text-slate-500",
             "focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500",
             "transition-all duration-200",
@@ -117,7 +117,7 @@ export function Input({
           {...props}
         />
         {suffix && (
-          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 text-sm">
+          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-white/70 text-sm">
             {suffix}
           </span>
         )}
@@ -145,13 +145,13 @@ export function Select({
     <div className="space-y-1.5">
       {label && (
         <div className="flex items-baseline justify-between gap-2">
-          <label className="text-sm font-medium text-slate-300">{label}</label>
-          {hint && <span className="text-xs text-slate-500">{hint}</span>}
+          <label className="text-sm font-medium text-white">{label}</label>
+          {hint && <span className="text-xs text-white/70">{hint}</span>}
         </div>
       )}
       <select
         className={cn(
-          "w-full bg-slate-800/50 border border-slate-700 rounded-xl px-4 py-3 text-slate-100 text-sm",
+          "w-full bg-slate-800/50 border border-slate-700 rounded-xl px-4 py-3 text-white text-sm",
           "focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500",
           "transition-all duration-200 cursor-pointer",
           className
@@ -217,7 +217,7 @@ export function ProgressSteps({
           <span
             className={cn(
               "text-sm font-medium hidden sm:block transition-colors duration-300",
-              i <= currentStep ? "text-slate-200" : "text-slate-500"
+              i <= currentStep ? "text-white" : "text-slate-500"
             )}
           >
             {step}
@@ -265,7 +265,7 @@ export function StressMeter({
   return (
     <div className="space-y-2">
       <div className="flex items-baseline justify-between gap-2">
-        <span className={cn("font-medium text-slate-300", sizes[size].text)}>
+        <span className={cn("font-medium text-white", sizes[size].text)}>
           {label}
         </span>
         <span className={cn("font-semibold", color.text, sizes[size].text)}>
@@ -286,7 +286,7 @@ export function StressMeter({
           style={{ width: `${Math.min(100, score)}%` }}
         />
       </div>
-      <div className="flex justify-between text-xs text-slate-500">
+      <div className="flex justify-between text-xs text-white/70">
         <span>Lower stress</span>
         <span>Higher stress</span>
       </div>
