@@ -14,6 +14,7 @@ import {
   IconRefresh,
   Spinner,
 } from "@/components/icons";
+import { ProtectionPackages } from "@/components/steps/ProtectionPackages";
 
 interface ResultsPageProps {
   result: DecisionResult;
@@ -272,6 +273,14 @@ export function ResultsPage({ result, buy, lease, onStartOver }: ResultsPageProp
             </ul>
           </Card>
         )}
+
+        {/* Protection Packages */}
+        <ProtectionPackages
+          verdict={result.verdict}
+          termMonths={buy.ownershipMonths}
+          baseTotal={isBuy ? result.buyTotalCost : result.leaseTotalCost}
+          baseMonthly={isBuy ? result.buyMonthlyAllIn : result.leaseMonthlyAllIn}
+        />
 
         {/* Detailed Explanation Section */}
         <Card className="mb-8">
