@@ -1,8 +1,7 @@
-import type { ConfidenceLevel, DecisionVerdict } from "@/types";
+import type { ConfidenceLevel, DecisionVerdict } from "../types";
 
 /**
- * Formats a number as USD currency.
- * Assumes input is a finite number.
+ * Formats a number as USD currency (no cents).
  */
 export function formatCurrency(amount: number): string {
   return new Intl.NumberFormat("en-US", {
@@ -14,7 +13,6 @@ export function formatCurrency(amount: number): string {
 
 /**
  * Formats a number as USD currency with cents.
- * Use only when precision actually matters.
  */
 export function formatCurrencyWithCents(amount: number): string {
   return new Intl.NumberFormat("en-US", {
@@ -34,7 +32,6 @@ export function formatPercent(ratio: number): string {
 
 /**
  * Formats a stress score (0–100) into a readable label.
- * This is UI-facing, not decision logic.
  */
 export function formatStressLabel(score: number): string {
   if (score >= 70) return "High financial stress";
@@ -69,10 +66,10 @@ export function formatVerdict(verdict: DecisionVerdict): string {
  */
 export function formatMonths(months: number): string {
   if (months < 12) return `${months} months`;
+
   const years = Math.floor(months / 12);
   const remainingMonths = months % 12;
 
   if (remainingMonths === 0) return `${years} year${years > 1 ? "s" : ""}`;
   return `${years}y ${remainingMonths}m`;
 }
-
