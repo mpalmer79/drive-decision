@@ -50,7 +50,7 @@ export function LandingPage({ onStart }: LandingPageProps) {
               <div className="text-xl font-bold text-white tracking-tight">
                 DriveDecision
               </div>
-              <div className="text-xs text-slate-400 tracking-widest uppercase">
+              <div className="text-xs text-white tracking-widest uppercase">
                 by Quirk AI
               </div>
             </div>
@@ -69,7 +69,7 @@ export function LandingPage({ onStart }: LandingPageProps) {
             ?
           </h1>
 
-          <p className="text-lg sm:text-xl text-slate-400 max-w-2xl mx-auto mb-10 leading-relaxed">
+          <p className="text-lg sm:text-xl text-white max-w-2xl mx-auto mb-10 leading-relaxed">
             Get a clear, personalized answer in under 2 minutes. We analyze your
             financial situation—not just the monthly payment.
           </p>
@@ -80,7 +80,7 @@ export function LandingPage({ onStart }: LandingPageProps) {
             <IconArrowRight className="w-5 h-5" />
           </Button>
 
-          <p className="text-sm text-slate-500 mt-4">Free • No account needed</p>
+          <p className="text-sm text-white mt-4">Free • No account needed</p>
         </div>
 
         {/* Feature Cards */}
@@ -110,7 +110,7 @@ export function LandingPage({ onStart }: LandingPageProps) {
             <Card key={feature.title} className="text-left">
               <feature.icon className="w-8 h-8 text-emerald-400 mb-3" />
               <h3 className="font-semibold text-white mb-1">{feature.title}</h3>
-              <p className="text-sm text-slate-400">{feature.desc}</p>
+              <p className="text-sm text-white">{feature.desc}</p>
             </Card>
           ))}
         </div>
@@ -118,7 +118,7 @@ export function LandingPage({ onStart }: LandingPageProps) {
 
       {/* Footer */}
       <footer className="py-6 px-4 text-center border-t border-slate-800">
-        <p className="text-xs text-slate-500">
+        <p className="text-xs text-white">
           Educational decision support only. Not financial, legal, or tax
           advice.
         </p>
