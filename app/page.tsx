@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useMemo } from "react";
+import Image from "next/image";
 import type {
   BuyScenario,
   LeaseScenario,
@@ -268,6 +269,28 @@ function Spinner({ className }: { className?: string }) {
 // UI COMPONENTS
 // ============================================================================
 
+function QuirkHeader() {
+  return (
+    <div className="w-full py-4 flex justify-center">
+      
+        href="https://www.quirkcars.com"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="transition-opacity hover:opacity-80"
+      >
+        <Image
+          src="/quirk-logo.png"
+          alt="Quirk Auto Dealers"
+          width={180}
+          height={50}
+          priority
+          className="h-10 sm:h-12 w-auto"
+        />
+      </a>
+    </div>
+  );
+}
+
 function Button({
   variant = "secondary",
   size = "md",
@@ -523,8 +546,11 @@ function LandingPage({ onStart }: { onStart: () => void }) {
 
   return (
     <div className="min-h-screen flex flex-col">
+      {/* Quirk Logo Header */}
+      <QuirkHeader />
+
       {/* Hero */}
-      <div className="flex-1 flex flex-col items-center justify-center px-4 py-16 text-center">
+      <div className="flex-1 flex flex-col items-center justify-center px-4 py-12 text-center">
         <div
           className={cn(
             "transition-all duration-1000 ease-out",
@@ -1486,7 +1512,10 @@ export default function Page() {
           <LandingPage onStart={() => setStep("profile")} />
         ) : (
           <div className="px-4 py-8 sm:py-12">
-            {/* Header */}
+            {/* Quirk Logo Header */}
+            <QuirkHeader />
+
+            {/* App Header */}
             <header className="max-w-4xl mx-auto mb-8">
               <div className="flex items-center justify-center gap-2 mb-6">
                 <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center">
