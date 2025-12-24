@@ -9,7 +9,7 @@ import { IconCheck } from "@/components/icons";
 export function QuirkHeader() {
   return (
     <div className="w-full pt-12 pb-4 flex justify-center">
-      
+      <a
         href="https://www.quirkcars.com"
         target="_blank"
         rel="noopener noreferrer"
