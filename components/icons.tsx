@@ -339,6 +339,7 @@ export function IconInfo({ className }: { className?: string }) {
     </svg>
   );
 }
+
 export function IconPhone({ className }: { className?: string }) {
   return (
     <svg
