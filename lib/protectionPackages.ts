@@ -4,11 +4,11 @@ export type ProtectionPackage = {
   shortName: string;
   description: string;
   price: number;
-  monthlyEquivalent: number; // Based on 60-month average
+  monthlyEquivalent: number;
   buyBenefit: string;
   leaseBenefit: string;
   recommended: "buy" | "lease" | "both";
-  priority: number; // Lower = more important
+  priority: number;
   coverage: string[];
 };
 
@@ -163,11 +163,9 @@ export function getRecommendedPackages(
   termMonths: number
 ): ProtectionPackage[] {
   return PROTECTION_PACKAGES.filter((pkg) => {
-    // Extended warranty not recommended for short leases
     if (pkg.id === "extended-warranty" && verdict === "lease" && termMonths <= 36) {
       return false;
     }
-    // Prepaid maintenance less valuable for short terms
     if (pkg.id === "maintenance" && termMonths < 24) {
       return false;
     }
