@@ -12,7 +12,7 @@ Car buying decisions are emotionally charged, expensive, and easy to get wrong.
 
 Most tools:
 - Show numbers without context
-- Focus only on monthly payments
+- Focus only on monthly payment
 - Avoid making a clear recommendation
 
 DriveDecision by Quirk AI provides a **clear verdict** with an explanation that answers:
