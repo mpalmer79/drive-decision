@@ -14,14 +14,33 @@ export type ProtectionPackage = {
 
 export const PROTECTION_PACKAGES: ProtectionPackage[] = [
   {
+    id: "extended-service",
+    name: "Extended Service Contract",
+    shortName: "ESC",
+    description: "Extended mechanical protection beyond your factory warranty for long-term peace of mind.",
+    price: 2495,
+    monthlyEquivalent: 42,
+    buyBenefit: "Covers costly repairs after your factory warranty expires.",
+    leaseBenefit: "Added protection for mechanical failures during your lease term.",
+    recommended: "buy",
+    priority: 0,
+    coverage: [
+      "Engine and transmission coverage",
+      "Electrical system repairs",
+      "Air conditioning and heating",
+      "Roadside assistance included",
+      "Transferable to new owner",
+    ],
+  },
+  {
     id: "gap",
-    name: "GAP Insurance",
+    name: "Balance Deficiency Protection",
     shortName: "GAP",
     description: "Covers the difference between what you owe and the vehicle's value if totaled or stolen.",
-    price: 495,
-    monthlyEquivalent: 8,
-    buyBenefit: "Protects you if you're upside-down on your loan after an accident.",
-    leaseBenefit: "Often required by the lessor — avoid surprises at lease-end.",
+    price: 795,
+    monthlyEquivalent: 13,
+    buyBenefit: "Highly recommended if not applying 25% initial investment.",
+    leaseBenefit: "Highly recommended if not applying 25% initial investment.",
     recommended: "both",
     priority: 1,
     coverage: [
@@ -35,8 +54,8 @@ export const PROTECTION_PACKAGES: ProtectionPackage[] = [
     name: "Tire & Wheel Protection",
     shortName: "Tire & Wheel",
     description: "Covers repair or replacement of tires and wheels damaged by road hazards.",
-    price: 599,
-    monthlyEquivalent: 10,
+    price: 849,
+    monthlyEquivalent: 14,
     buyBenefit: "New England roads are tough — potholes and debris are everywhere.",
     leaseBenefit: "Avoid paying for wheel damage at lease return (often $200-400/wheel).",
     recommended: "both",
@@ -52,11 +71,11 @@ export const PROTECTION_PACKAGES: ProtectionPackage[] = [
     id: "key-replacement",
     name: "Key Replacement",
     shortName: "Key Fob",
-    description: "Covers replacement of lost, stolen, or damaged key fobs.",
-    price: 299,
-    monthlyEquivalent: 5,
-    buyBenefit: "Modern key fobs cost $300-$600 to replace at the dealer.",
-    leaseBenefit: "Lost keys at lease-end can cost $400+ — this covers you.",
+    description: "Lost keys can cost up to $400 per occurrence. Stay protected!",
+    price: 575,
+    monthlyEquivalent: 10,
+    buyBenefit: "Lost keys can cost up to $400 per occurrence. Stay protected!",
+    leaseBenefit: "Lost keys can cost up to $400 per occurrence. Stay protected!",
     recommended: "both",
     priority: 3,
     coverage: [
@@ -103,42 +122,6 @@ export const PROTECTION_PACKAGES: ProtectionPackage[] = [
     ],
   },
   {
-    id: "interior",
-    name: "Interior Protection",
-    shortName: "Interior",
-    description: "Covers tears, burns, and stains on seats, carpet, and headliner.",
-    price: 449,
-    monthlyEquivalent: 7,
-    buyBenefit: "Keep your interior looking new for higher resale value.",
-    leaseBenefit: "Avoid interior wear charges at lease return.",
-    recommended: "lease",
-    priority: 6,
-    coverage: [
-      "Seat tears and burns",
-      "Carpet stains",
-      "Headliner repair",
-      "Leather conditioning",
-    ],
-  },
-  {
-    id: "extended-warranty",
-    name: "Extended Warranty",
-    shortName: "Warranty",
-    description: "Extends factory powertrain and comprehensive coverage beyond the original term.",
-    price: 1299,
-    monthlyEquivalent: 22,
-    buyBenefit: "Peace of mind for years after factory warranty expires.",
-    leaseBenefit: "Usually not needed for short-term leases under factory coverage.",
-    recommended: "buy",
-    priority: 7,
-    coverage: [
-      "Powertrain coverage",
-      "Electrical systems",
-      "A/C and heating",
-      "Roadside assistance",
-    ],
-  },
-  {
     id: "maintenance",
     name: "Prepaid Maintenance",
     shortName: "Maintenance",
@@ -148,7 +131,7 @@ export const PROTECTION_PACKAGES: ProtectionPackage[] = [
     buyBenefit: "Lock in today's prices — maintenance costs always go up.",
     leaseBenefit: "Many leases require dealer maintenance records.",
     recommended: "buy",
-    priority: 8,
+    priority: 6,
     coverage: [
       "Oil changes",
       "Tire rotations",
@@ -163,7 +146,7 @@ export function getRecommendedPackages(
   termMonths: number
 ): ProtectionPackage[] {
   return PROTECTION_PACKAGES.filter((pkg) => {
-    if (pkg.id === "extended-warranty" && verdict === "lease" && termMonths <= 36) {
+    if (pkg.id === "extended-service" && verdict === "lease" && termMonths <= 36) {
       return false;
     }
     if (pkg.id === "maintenance" && termMonths < 24) {
