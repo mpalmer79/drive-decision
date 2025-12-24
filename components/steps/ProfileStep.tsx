@@ -35,7 +35,7 @@ export function ProfileStep({ user, setUser, onNext, onBack }: ProfileStepProps)
         <h2 className="text-2xl sm:text-3xl font-bold text-white mb-2">
           Your Financial Profile
         </h2>
-        <p className="text-slate-400">
+        <p className="text-white">
           Help us understand your current situation
         </p>
       </div>
