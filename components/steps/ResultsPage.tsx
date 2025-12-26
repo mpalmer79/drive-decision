@@ -8,12 +8,12 @@ import {
   IconShield,
   IconCheck,
   IconKey,
-  IconDollar,
   IconAlertTriangle,
   IconRefresh,
   IconSparkles,
   IconTrendingUp,
   IconArrowRight,
+  IconArrowLeft,
 } from "@/components/icons";
 import { Confetti, ConfettiBurst } from "@/components/Confetti";
 import { AnimatedCounter, PercentageRing } from "@/components/AnimatedCounter";
@@ -25,9 +25,10 @@ import { LeadCapture } from "@/components/steps/LeadCapture";
 interface ResultsPageProps {
   result: DecisionResult;
   onStartOver: () => void;
+  onBack: () => void;
 }
 
-export function ResultsPage({ result, onStartOver }: ResultsPageProps) {
+export function ResultsPage({ result, onStartOver, onBack }: ResultsPageProps) {
   const [revealStage, setRevealStage] = useState(0);
   const [showConfetti, setShowConfetti] = useState(false);
 
@@ -205,14 +206,20 @@ export function ResultsPage({ result, onStartOver }: ResultsPageProps) {
         revealStage >= 4 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
       )}>
         <Card>
-          <div className="flex items-center gap-3 mb-5">
-            <div className={cn(
-              "w-10 h-10 rounded-xl flex items-center justify-center",
-              isBuyRecommended ? "bg-emerald-500/10" : "bg-amber-500/10"
-            )}>
-              <IconCheck className={cn("w-5 h-5", isBuyRecommended ? "text-emerald-400" : "text-amber-400")} />
+          <div className="flex items-center justify-between mb-5">
+            <div className="flex items-center gap-3">
+              <div className={cn(
+                "w-10 h-10 rounded-xl flex items-center justify-center",
+                isBuyRecommended ? "bg-emerald-500/10" : "bg-amber-500/10"
+              )}>
+                <IconCheck className={cn("w-5 h-5", isBuyRecommended ? "text-emerald-400" : "text-amber-400")} />
+              </div>
+              <h3 className="font-bold text-white text-lg">Why This Recommendation</h3>
             </div>
-            <h3 className="font-bold text-white text-lg">Why This Recommendation</h3>
+            <Button variant="ghost" size="sm" onClick={onBack} className="group">
+              <IconArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
+              <span>Back</span>
+            </Button>
           </div>
           <ul className="space-y-3">
             {recommendation.primaryReasons.map((reason, i) => (
