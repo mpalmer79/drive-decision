@@ -271,35 +271,35 @@ export function EquityChart({
             opacity={selectedLine ? 0.3 : 0.5}
           />
 
-          {/* Lease spending line */}
-          {(!selectedLine || selectedLine === "lease") && (
-            <path
-              d={leasePath}
-              fill="none"
-              stroke="rgb(245, 158, 11)"
-              strokeWidth="3"
-              strokeLinecap="round"
-              className={cn(
-                "transition-opacity duration-300",
-                selectedLine === "equity" && "opacity-30"
-              )}
-            />
-          )}
+   {/* Lease spending line */}
+          <path
+            d={leasePath}
+            fill="none"
+            stroke="rgb(245, 158, 11)"
+            strokeWidth="3"
+            strokeLinecap="round"
+            className={cn(
+              "transition-opacity duration-300",
+              selectedLine === null && "opacity-100",
+              selectedLine === "lease" && "opacity-100",
+              selectedLine === "equity" && "opacity-30"
+            )}
+          />
 
           {/* Equity line */}
-          {(!selectedLine || selectedLine === "equity") && (
-            <path
-              d={equityPath}
-              fill="none"
-              stroke="rgb(16, 185, 129)"
-              strokeWidth="3"
-              strokeLinecap="round"
-              className={cn(
-                "transition-opacity duration-300",
-                selectedLine === "lease" && "opacity-30"
-              )}
-            />
-          )}
+          <path
+            d={equityPath}
+            fill="none"
+            stroke="rgb(16, 185, 129)"
+            strokeWidth="3"
+            strokeLinecap="round"
+            className={cn(
+              "transition-opacity duration-300",
+              selectedLine === null && "opacity-100",
+              selectedLine === "equity" && "opacity-100",
+              selectedLine === "lease" && "opacity-30"
+            )}
+          />
 
           {/* Interactive areas */}
           {data.map((d, i) => (
