@@ -186,7 +186,7 @@ export function LeadCapture({ verdict, vehiclePrice, monthlyPayment }: LeadCaptu
           <textarea
             value={formData.notes}
             onChange={(e) => updateField("notes", e.target.value)}
-            placeholder="I'm interested in the 2024 Equinox..."
+            placeholder="I'm interested in the 2026 Equinox..."
             rows={3}
             className="w-full bg-slate-800/50 border border-slate-700 rounded-xl px-4 py-3 text-slate-100 text-sm placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-teal-500/50 focus:border-teal-500 transition-all resize-none"
           />
