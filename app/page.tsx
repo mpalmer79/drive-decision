@@ -8,8 +8,8 @@ import type {
   DecisionResult,
 } from "@/types";
 
-import { QuirkHeader, ProgressSteps } from "@/components/ui";
-import { IconCar, IconAlertTriangle } from "@/components/icons";
+import { QuirkHeader, ProgressSteps, Card } from "@/components/ui";
+import { IconCar, IconAlertTriangle, IconSparkles } from "@/components/icons";
 import { LandingPage } from "@/components/steps/LandingPage";
 import { ProfileStep } from "@/components/steps/ProfileStep";
 import { ScenariosStep } from "@/components/steps/ScenariosStep";
@@ -101,12 +101,19 @@ export default function Page() {
   const currentStepIndex = { landing: -1, profile: 0, scenarios: 1, results: 2 }[step];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
-      {/* Ambient Background */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-teal-500/10 rounded-full blur-3xl" />
-      </div>
+    <div className="min-h-screen bg-[#030712] relative overflow-hidden">
+      {/* Animated Mesh Gradient Background */}
+      <div className="mesh-gradient" />
+      <div className="grain-overlay" />
+      
+      {/* Floating Orbs - Different positions for inner pages */}
+      {step !== "landing" && (
+        <>
+          <div className="absolute top-10 left-[5%] w-64 h-64 bg-emerald-500/15 rounded-full blur-[100px] floating-orb" />
+          <div className="absolute bottom-20 right-[10%] w-80 h-80 bg-teal-500/10 rounded-full blur-[120px] floating-orb" style={{ animationDelay: '-3s' }} />
+          <div className="absolute top-1/3 right-[5%] w-48 h-48 bg-cyan-500/10 rounded-full blur-[80px] floating-orb" style={{ animationDelay: '-5s' }} />
+        </>
+      )}
 
       {/* Content */}
       <div className="relative z-10">
@@ -118,14 +125,19 @@ export default function Page() {
             <QuirkHeader />
 
             {/* App Header */}
-            <header className="max-w-4xl mx-auto mb-8">
-              <div className="flex items-center justify-center gap-2 mb-6">
-                <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center">
-                  <IconCar className="w-5 h-5 text-white" />
+            <header className="max-w-4xl mx-auto mb-10">
+              {/* Brand */}
+              <div className="flex items-center justify-center gap-3 mb-8">
+                <div className="relative">
+                  <div className="absolute inset-0 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl blur-md opacity-50" />
+                  <div className="relative w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg">
+                    <IconCar className="w-5 h-5 text-white" />
+                  </div>
                 </div>
-                <span className="text-lg font-bold text-white">DriveDecision</span>
+                <span className="text-xl font-bold text-white tracking-tight">DriveDecision</span>
               </div>
 
+              {/* Progress Steps */}
               {step !== "results" && (
                 <ProgressSteps
                   currentStep={currentStepIndex}
@@ -136,44 +148,53 @@ export default function Page() {
 
             {/* Error Banner */}
             {api.status === "error" && (
-              <div className="max-w-xl mx-auto mb-6">
-                <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
-                  <IconAlertTriangle className="w-5 h-5 flex-shrink-0" />
-                  <span>{api.message}</span>
-                </div>
+              <div className="max-w-xl mx-auto mb-8 animate-fade-in-up">
+                <Card className="!p-4 border-red-500/30 bg-red-500/5">
+                  <div className="flex items-center gap-3 text-red-400">
+                    <div className="w-10 h-10 rounded-xl bg-red-500/10 flex items-center justify-center flex-shrink-0">
+                      <IconAlertTriangle className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <p className="font-medium">Something went wrong</p>
+                      <p className="text-sm text-red-400/70">{api.message}</p>
+                    </div>
+                  </div>
+                </Card>
               </div>
             )}
 
             {/* Step Content */}
-            {step === "profile" && (
-              <ProfileStep
-                user={user}
-                setUser={setUser}
-                onNext={() => setStep("scenarios")}
-                onBack={() => setStep("landing")}
-              />
-            )}
+            <div className="animate-fade-in-up">
+              {step === "profile" && (
+                <ProfileStep
+                  user={user}
+                  setUser={setUser}
+                  onNext={() => setStep("scenarios")}
+                  onBack={() => setStep("landing")}
+                />
+              )}
 
-            {step === "scenarios" && (
-              <ScenariosStep
-                buy={buy}
-                setBuy={setBuy}
-                lease={lease}
-                setLease={setLease}
-                onSubmit={runDecision}
-                onBack={() => setStep("profile")}
-                isLoading={api.status === "loading"}
-              />
-            )}
+              {step === "scenarios" && (
+                <ScenariosStep
+                  buy={buy}
+                  setBuy={setBuy}
+                  lease={lease}
+                  setLease={setLease}
+                  onSubmit={runDecision}
+                  onBack={() => setStep("profile")}
+                  isLoading={api.status === "loading"}
+                />
+              )}
 
-            {step === "results" && api.status === "success" && (
-              <ResultsPage
-                result={api.result}
-                buy={buy}
-                lease={lease}
-                onStartOver={handleStartOver}
-              />
-            )}
+              {step === "results" && api.status === "success" && (
+                <ResultsPage
+                  result={api.result}
+                  buy={buy}
+                  lease={lease}
+                  onStartOver={handleStartOver}
+                />
+              )}
+            </div>
           </div>
         )}
       </div>
