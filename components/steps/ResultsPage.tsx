@@ -16,6 +16,8 @@ import {
   IconTrophy,
   IconSparkles,
 } from "@/components/icons";
+import { Confetti, ConfettiBurst } from "@/components/Confetti";
+import { AnimatedCounter, PercentageRing } from "@/components/AnimatedCounter";
 import { ProtectionPackages } from "@/components/steps/ProtectionPackages";
 import { LeadCapture } from "@/components/steps/LeadCapture";
 
@@ -33,12 +35,27 @@ type ExplainState =
   | { status: "error"; message: string };
 
 export function ResultsPage({ result, buy, lease, onStartOver }: ResultsPageProps) {
-  const [revealed, setRevealed] = useState(false);
+  const [revealStage, setRevealStage] = useState(0);
+  const [showConfetti, setShowConfetti] = useState(false);
   const [explain, setExplain] = useState<ExplainState>({ status: "idle" });
 
+  // Staged reveal animation
   useEffect(() => {
-    const timer = setTimeout(() => setRevealed(true), 300);
-    return () => clearTimeout(timer);
+    const stages = [
+      { delay: 100, stage: 1 },   // Show trophy
+      { delay: 600, stage: 2 },   // Show verdict text
+      { delay: 1000, stage: 3 },  // Trigger confetti
+      { delay: 1200, stage: 4 },  // Show comparison cards
+      { delay: 1800, stage: 5 },  // Show numbers (animated)
+      { delay: 2500, stage: 6 },  // Show details
+    ];
+
+    stages.forEach(({ delay, stage }) => {
+      setTimeout(() => {
+        setRevealStage(stage);
+        if (stage === 3) setShowConfetti(true);
+      }, delay);
+    });
   }, []);
 
   const fetchExplanation = async (verbosity: "short" | "detailed") => {
@@ -74,75 +91,126 @@ export function ResultsPage({ result, buy, lease, onStartOver }: ResultsPageProp
   const verdictGradient = isBuy
     ? "from-emerald-500 via-emerald-400 to-teal-400"
     : "from-amber-500 via-amber-400 to-orange-400";
-  const verdictBgGlow = isBuy ? "bg-emerald-500/20" : "bg-amber-500/20";
+  const verdictBgGlow = isBuy ? "bg-emerald-500" : "bg-amber-500";
   const verdictText = isBuy ? "text-emerald-400" : "text-amber-400";
-  const verdictBorder = isBuy ? "border-emerald-500/30" : "border-amber-500/30";
 
   const monthlyDiff = Math.abs(result.buyMonthlyAllIn - result.leaseMonthlyAllIn);
   const totalDiff = Math.abs(result.buyTotalCost - result.leaseTotalCost);
   const buyIsCheaper = result.buyTotalCost <= result.leaseTotalCost;
 
   const confidenceConfig = {
-    high: { text: "High Confidence", color: "text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/20" },
-    medium: { text: "Moderate Confidence", color: "text-amber-400", bg: "bg-amber-500/10", border: "border-amber-500/20" },
-    low: { text: "Low Confidence", color: "text-slate-400", bg: "bg-slate-500/10", border: "border-slate-500/20" },
+    high: { text: "High Confidence", color: "text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/20", value: 95 },
+    medium: { text: "Moderate Confidence", color: "text-amber-400", bg: "bg-amber-500/10", border: "border-amber-500/20", value: 70 },
+    low: { text: "Low Confidence", color: "text-slate-400", bg: "bg-slate-500/10", border: "border-slate-500/20", value: 45 },
   }[result.confidence];
 
   return (
     <div className="max-w-3xl mx-auto">
+      {/* Confetti */}
+      <Confetti active={showConfetti} pieceCount={150} duration={5000} />
+
       {/* Verdict Hero */}
-      <div
-        className={cn(
-          "text-center mb-12 transition-all duration-700 ease-out",
-          revealed ? "opacity-100 scale-100" : "opacity-0 scale-90"
-        )}
-      >
+      <div className="text-center mb-12 relative">
+        {/* Burst effect behind trophy */}
+        <div className={cn(
+          "transition-all duration-700",
+          revealStage >= 3 ? "opacity-100" : "opacity-0"
+        )}>
+          <ConfettiBurst active={revealStage >= 3} />
+        </div>
+
         {/* Trophy Icon */}
-        <div className="flex justify-center mb-6">
-          <div className={cn(
-            "relative w-20 h-20 rounded-3xl flex items-center justify-center",
-            verdictBgGlow,
-            "animate-celebrate"
-          )}>
-            <div className={cn("absolute inset-0 rounded-3xl blur-xl", verdictBgGlow)} />
-            <IconTrophy className={cn("relative w-10 h-10", verdictText)} />
+        <div className={cn(
+          "flex justify-center mb-6 transition-all duration-700",
+          revealStage >= 1 
+            ? "opacity-100 scale-100" 
+            : "opacity-0 scale-50"
+        )}>
+          <div className="relative">
+            {/* Animated rings */}
+            <div className={cn(
+              "absolute inset-0 rounded-3xl transition-all duration-1000",
+              revealStage >= 2 ? "animate-ping opacity-20" : "opacity-0",
+              verdictBgGlow
+            )} />
+            <div className={cn(
+              "absolute -inset-4 rounded-[2rem] blur-xl transition-all duration-700",
+              revealStage >= 2 ? "opacity-40" : "opacity-0",
+              verdictBgGlow
+            )} />
+            <div className={cn(
+              "relative w-24 h-24 rounded-3xl flex items-center justify-center",
+              "bg-gradient-to-br",
+              isBuy ? "from-emerald-500/20 to-teal-500/20" : "from-amber-500/20 to-orange-500/20",
+              "border-2",
+              isBuy ? "border-emerald-500/50" : "border-amber-500/50"
+            )}>
+              <IconTrophy className={cn(
+                "w-12 h-12 transition-all duration-500",
+                revealStage >= 2 ? "scale-100" : "scale-0",
+                verdictText
+              )} />
+            </div>
           </div>
         </div>
 
+        {/* Confidence Ring */}
+        <div className={cn(
+          "flex justify-center mb-6 transition-all duration-700 delay-300",
+          revealStage >= 2 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+        )}>
+          <PercentageRing
+            value={confidenceConfig.value}
+            size={80}
+            strokeWidth={6}
+            duration={1500}
+            delay={revealStage >= 2 ? 500 : 10000}
+            color={isBuy ? "rgb(16, 185, 129)" : "rgb(245, 158, 11)"}
+          />
+        </div>
+
         {/* Confidence Badge */}
-        <div
-          className={cn(
-            "inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium mb-6",
-            confidenceConfig.bg,
-            confidenceConfig.border,
-            "border backdrop-blur-sm"
-          )}
-        >
-          <IconShield className={cn("w-4 h-4", confidenceConfig.color)} />
-          <span className={confidenceConfig.color}>{confidenceConfig.text}</span>
+        <div className={cn(
+          "transition-all duration-500 delay-500",
+          revealStage >= 2 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+        )}>
+          <div
+            className={cn(
+              "inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium mb-6",
+              confidenceConfig.bg,
+              confidenceConfig.border,
+              "border backdrop-blur-sm"
+            )}
+          >
+            <IconShield className={cn("w-4 h-4", confidenceConfig.color)} />
+            <span className={confidenceConfig.color}>{confidenceConfig.text}</span>
+          </div>
         </div>
 
         {/* Main Verdict */}
-        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white mb-4 tracking-tight">
+        <h1 className={cn(
+          "text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white mb-4 tracking-tight transition-all duration-700",
+          revealStage >= 2 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+        )}>
           <span className={cn("bg-gradient-to-r bg-clip-text text-transparent", verdictGradient)}>
             {isBuy ? "Buying" : "Leasing"}
           </span>{" "}
           is safer for you
         </h1>
 
-        <p className="text-lg text-slate-400 max-w-xl mx-auto leading-relaxed">
+        <p className={cn(
+          "text-lg text-slate-400 max-w-xl mx-auto leading-relaxed transition-all duration-700 delay-200",
+          revealStage >= 2 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+        )}>
           {result.summary}
         </p>
       </div>
 
       {/* Comparison Cards */}
-      <div
-        className={cn(
-          "grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-10",
-          "transition-all duration-700 delay-200 ease-out",
-          revealed ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-        )}
-      >
+      <div className={cn(
+        "grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-10 transition-all duration-700",
+        revealStage >= 4 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
+      )}>
         {/* Buy Card */}
         <div className={cn(
           "relative group",
@@ -156,7 +224,10 @@ export function ResultsPage({ result, buy, lease, onStartOver }: ResultsPageProp
           >
             {/* Recommended Badge */}
             {isBuy && (
-              <div className="absolute top-4 right-4">
+              <div className={cn(
+                "absolute top-4 right-4 transition-all duration-500",
+                revealStage >= 5 ? "opacity-100 scale-100" : "opacity-0 scale-0"
+              )}>
                 <Badge variant="success" size="sm" icon={<IconCheck className="w-3 h-3" />}>
                   Recommended
                 </Badge>
@@ -181,21 +252,46 @@ export function ResultsPage({ result, buy, lease, onStartOver }: ResultsPageProp
                   Monthly all-in
                 </div>
                 <div className="text-3xl font-bold text-white">
-                  {formatCurrency(result.buyMonthlyAllIn)}
+                  {revealStage >= 5 ? (
+                    <AnimatedCounter
+                      value={result.buyMonthlyAllIn}
+                      prefix="$"
+                      duration={1500}
+                      delay={0}
+                    />
+                  ) : (
+                    <span className="opacity-0">$0</span>
+                  )}
                 </div>
               </div>
               
               <div className="flex justify-between items-center py-3 border-b border-slate-700/30">
                 <span className="text-sm text-slate-400">Total cost ({buy.ownershipMonths}mo)</span>
                 <span className="text-lg font-semibold text-slate-200">
-                  {formatCurrency(result.buyTotalCost)}
+                  {revealStage >= 5 ? (
+                    <AnimatedCounter
+                      value={result.buyTotalCost}
+                      prefix="$"
+                      duration={1800}
+                      delay={300}
+                    />
+                  ) : (
+                    <span className="opacity-0">$0</span>
+                  )}
                 </span>
               </div>
             </div>
 
             {/* Stress Meter */}
-            <div className="mt-5 pt-5 border-t border-slate-700/30">
-              <StressMeter score={result.buyStressScore} label="Financial Stress" size="sm" />
+            <div className={cn(
+              "mt-5 pt-5 border-t border-slate-700/30 transition-all duration-700",
+              revealStage >= 5 ? "opacity-100" : "opacity-0"
+            )}>
+              <StressMeter 
+                score={revealStage >= 5 ? result.buyStressScore : 0} 
+                label="Financial Stress" 
+                size="sm" 
+              />
             </div>
           </Card>
         </div>
@@ -213,7 +309,10 @@ export function ResultsPage({ result, buy, lease, onStartOver }: ResultsPageProp
           >
             {/* Recommended Badge */}
             {!isBuy && (
-              <div className="absolute top-4 right-4">
+              <div className={cn(
+                "absolute top-4 right-4 transition-all duration-500",
+                revealStage >= 5 ? "opacity-100 scale-100" : "opacity-0 scale-0"
+              )}>
                 <Badge variant="warning" size="sm" icon={<IconCheck className="w-3 h-3" />}>
                   Recommended
                 </Badge>
@@ -238,33 +337,117 @@ export function ResultsPage({ result, buy, lease, onStartOver }: ResultsPageProp
                   Monthly all-in
                 </div>
                 <div className="text-3xl font-bold text-white">
-                  {formatCurrency(result.leaseMonthlyAllIn)}
+                  {revealStage >= 5 ? (
+                    <AnimatedCounter
+                      value={result.leaseMonthlyAllIn}
+                      prefix="$"
+                      duration={1500}
+                      delay={200}
+                    />
+                  ) : (
+                    <span className="opacity-0">$0</span>
+                  )}
                 </div>
               </div>
               
               <div className="flex justify-between items-center py-3 border-b border-slate-700/30">
                 <span className="text-sm text-slate-400">Total cost ({buy.ownershipMonths}mo)</span>
                 <span className="text-lg font-semibold text-slate-200">
-                  {formatCurrency(result.leaseTotalCost)}
+                  {revealStage >= 5 ? (
+                    <AnimatedCounter
+                      value={result.leaseTotalCost}
+                      prefix="$"
+                      duration={1800}
+                      delay={500}
+                    />
+                  ) : (
+                    <span className="opacity-0">$0</span>
+                  )}
                 </span>
               </div>
             </div>
 
             {/* Stress Meter */}
-            <div className="mt-5 pt-5 border-t border-slate-700/30">
-              <StressMeter score={result.leaseStressScore} label="Financial Stress" size="sm" />
+            <div className={cn(
+              "mt-5 pt-5 border-t border-slate-700/30 transition-all duration-700",
+              revealStage >= 5 ? "opacity-100" : "opacity-0"
+            )}>
+              <StressMeter 
+                score={revealStage >= 5 ? result.leaseStressScore : 0} 
+                label="Financial Stress" 
+                size="sm" 
+              />
             </div>
           </Card>
         </div>
       </div>
 
+      {/* Savings Highlight */}
+      <div className={cn(
+        "mb-10 transition-all duration-700",
+        revealStage >= 6 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+      )}>
+        <div className={cn(
+          "relative p-6 rounded-2xl overflow-hidden",
+          "bg-gradient-to-r",
+          isBuy 
+            ? "from-emerald-500/10 via-emerald-500/5 to-transparent border border-emerald-500/20" 
+            : "from-amber-500/10 via-amber-500/5 to-transparent border border-amber-500/20"
+        )}>
+          {/* Animated background */}
+          <div className={cn(
+            "absolute inset-0 opacity-30",
+            "bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))]",
+            isBuy ? "from-emerald-500/20 via-transparent to-transparent" : "from-amber-500/20 via-transparent to-transparent"
+          )} />
+          
+          <div className="relative flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <div className={cn(
+                "w-16 h-16 rounded-2xl flex items-center justify-center",
+                isBuy ? "bg-emerald-500/20" : "bg-amber-500/20"
+              )}>
+                <IconDollar className={cn("w-8 h-8", verdictText)} />
+              </div>
+              <div>
+                <p className="text-sm text-slate-400 mb-1">
+                  {isBuy ? "By buying" : "By leasing"}, you could save
+                </p>
+                <p className={cn("text-3xl sm:text-4xl font-bold", verdictText)}>
+                  {revealStage >= 6 ? (
+                    <AnimatedCounter
+                      value={totalDiff}
+                      prefix="$"
+                      duration={2000}
+                      delay={200}
+                    />
+                  ) : (
+                    "$0"
+                  )}
+                </p>
+              </div>
+            </div>
+            <div className="text-center sm:text-right">
+              <p className="text-sm text-slate-500">Over {buy.ownershipMonths} months</p>
+              <p className="text-lg font-semibold text-slate-300">
+                <AnimatedCounter
+                  value={monthlyDiff}
+                  prefix="$"
+                  suffix="/mo less"
+                  duration={1500}
+                  delay={500}
+                />
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Key Insights */}
-      <div
-        className={cn(
-          "space-y-6 transition-all duration-700 delay-400 ease-out",
-          revealed ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-        )}
-      >
+      <div className={cn(
+        "space-y-6 transition-all duration-700",
+        revealStage >= 6 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+      )}>
         {/* Cost Breakdown */}
         <Card>
           <div className="flex items-center gap-3 mb-6">
@@ -278,7 +461,9 @@ export function ResultsPage({ result, buy, lease, onStartOver }: ResultsPageProp
             <div className="flex items-center justify-between py-4 border-b border-slate-700/30">
               <span className="text-slate-400">Monthly difference</span>
               <div className="text-right">
-                <span className="font-bold text-white text-lg">{formatCurrency(monthlyDiff)}</span>
+                <span className="font-bold text-white text-lg">
+                  <AnimatedCounter value={monthlyDiff} prefix="$" duration={1200} delay={800} />
+                </span>
                 <span className="text-slate-500 text-sm ml-2">
                   more to {result.buyMonthlyAllIn > result.leaseMonthlyAllIn ? "buy" : "lease"}
                 </span>
@@ -288,7 +473,9 @@ export function ResultsPage({ result, buy, lease, onStartOver }: ResultsPageProp
             <div className="flex items-center justify-between py-4 border-b border-slate-700/30">
               <span className="text-slate-400">Total over {buy.ownershipMonths} months</span>
               <div className="text-right">
-                <span className="font-bold text-white text-lg">{formatCurrency(totalDiff)}</span>
+                <span className="font-bold text-white text-lg">
+                  <AnimatedCounter value={totalDiff} prefix="$" duration={1500} delay={1000} />
+                </span>
                 <span className="text-slate-500 text-sm ml-2">
                   {buyIsCheaper ? "savings to buy" : "savings to lease"}
                 </span>
@@ -299,7 +486,11 @@ export function ResultsPage({ result, buy, lease, onStartOver }: ResultsPageProp
               <span className="text-slate-400">Stress score difference</span>
               <div className="text-right">
                 <span className="font-bold text-white text-lg">
-                  {Math.abs(result.buyStressScore - result.leaseStressScore).toFixed(0)} points
+                  <AnimatedCounter 
+                    value={Math.abs(result.buyStressScore - result.leaseStressScore)} 
+                    duration={1000} 
+                    delay={1200} 
+                  /> points
                 </span>
                 <span className="text-slate-500 text-sm ml-2">
                   lower for {result.buyStressScore < result.leaseStressScore ? "buying" : "leasing"}
@@ -320,7 +511,13 @@ export function ResultsPage({ result, buy, lease, onStartOver }: ResultsPageProp
             </div>
             <ul className="space-y-3">
               {result.riskFlags.map((flag, i) => (
-                <li key={i} className="flex items-start gap-3 text-sm text-slate-300">
+                <li 
+                  key={i} 
+                  className={cn(
+                    "flex items-start gap-3 text-sm text-slate-300 transition-all duration-500",
+                  )}
+                  style={{ transitionDelay: `${i * 100 + 1500}ms` }}
+                >
                   <span className="w-2 h-2 rounded-full bg-amber-500 mt-1.5 flex-shrink-0" />
                   <span>{flag}</span>
                 </li>
