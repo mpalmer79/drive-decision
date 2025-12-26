@@ -234,25 +234,25 @@ export function LandingPage({ onStart }: LandingPageProps) {
         {/* Trust Indicators */}
         <div
           className={cn(
-            "mt-16 sm:mt-24 flex flex-wrap items-center justify-center gap-8 sm:gap-12",
+            "mt-16 sm:mt-24 flex flex-col sm:flex-row flex-wrap items-center justify-center gap-6 sm:gap-12",
             "transition-all duration-1000 delay-[1100ms]",
             mounted ? "opacity-100" : "opacity-0"
           )}
         >
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-xl bg-slate-800/50 border border-slate-700/50 flex items-center justify-center">
+          <div className="flex items-center gap-3 w-48 sm:w-auto">
+            <div className="w-12 h-12 rounded-xl bg-slate-800/50 border border-slate-700/50 flex items-center justify-center flex-shrink-0">
               <IconCar className="w-6 h-6 text-slate-400" />
             </div>
             <div className="text-left">
-              <div className="text-2xl font-bold text-white">17+</div>
+              <div className="text-2xl font-bold text-white">18</div>
               <div className="text-xs text-slate-500 uppercase tracking-wider">Dealerships</div>
             </div>
           </div>
           
           <div className="h-12 w-px bg-slate-700/50 hidden sm:block" />
           
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-xl bg-slate-800/50 border border-slate-700/50 flex items-center justify-center">
+          <div className="flex items-center gap-3 w-48 sm:w-auto">
+            <div className="w-12 h-12 rounded-xl bg-slate-800/50 border border-slate-700/50 flex items-center justify-center flex-shrink-0">
               <IconCheck className="w-6 h-6 text-emerald-400" />
             </div>
             <div className="text-left">
@@ -263,8 +263,8 @@ export function LandingPage({ onStart }: LandingPageProps) {
           
           <div className="h-12 w-px bg-slate-700/50 hidden sm:block" />
           
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-xl bg-slate-800/50 border border-slate-700/50 flex items-center justify-center">
+          <div className="flex items-center gap-3 w-48 sm:w-auto">
+            <div className="w-12 h-12 rounded-xl bg-slate-800/50 border border-slate-700/50 flex items-center justify-center flex-shrink-0">
               <IconSparkles className="w-6 h-6 text-amber-400" />
             </div>
             <div className="text-left">
