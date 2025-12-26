@@ -1,15 +1,15 @@
 "use client";
 
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback } from "react";
 import type {
-  BuyScenario,
-  LeaseScenario,
   UserProfile,
+  VehiclePreferences,
   DecisionResult,
 } from "@/types";
 
+import { generateDecision } from "@/lib/decisionEngine";
 import { QuirkHeader, ProgressSteps, Card } from "@/components/ui";
-import { IconCar, IconAlertTriangle, IconSparkles } from "@/components/icons";
+import { IconCar, IconAlertTriangle } from "@/components/icons";
 import { LandingPage } from "@/components/steps/LandingPage";
 import { ProfileStep } from "@/components/steps/ProfileStep";
 import { ScenariosStep } from "@/components/steps/ScenariosStep";
@@ -17,85 +17,55 @@ import { ResultsPage } from "@/components/steps/ResultsPage";
 
 type Step = "landing" | "profile" | "scenarios" | "results";
 
-type ApiState =
+type AppState =
   | { status: "idle" }
   | { status: "loading" }
   | { status: "success"; result: DecisionResult }
   | { status: "error"; message: string };
 
 const DEFAULT_USER: UserProfile = {
-  monthlyNetIncome: 0,
-  monthlyFixedExpenses: 0,
+  monthlyIncome: 0,
+  monthlyExpenses: 0,
   currentSavings: 0,
-  creditScoreBand: "680_739",
-  riskTolerance: "medium",
+  savingsGoalMonths: 6,
 };
 
-const DEFAULT_BUY: BuyScenario = {
+const DEFAULT_PREFERENCES: VehiclePreferences = {
   vehiclePrice: 0,
   downPayment: 0,
-  aprPercent: 0,
-  termMonths: 72,
-  estMonthlyInsurance: 0,
-  estMonthlyMaintenance: 0,
-  ownershipMonths: 48,
-};
-
-const DEFAULT_LEASE: LeaseScenario = {
-  msrp: 0,
-  monthlyPayment: 0,
-  dueAtSigning: 0,
-  termMonths: 36,
-  mileageAllowancePerYear: 12000,
-  estMilesPerYear: 12000,
-  estExcessMileFee: 0.25,
-  estMonthlyInsurance: 0,
-  estMonthlyMaintenance: 0,
-  leaseEndPlan: "return",
+  annualMiles: 12000,
+  ownershipStyle: "undecided",
+  priorities: [],
+  financeTerm: 72,
 };
 
 export default function Page() {
   const [step, setStep] = useState<Step>("landing");
-  const [api, setApi] = useState<ApiState>({ status: "idle" });
+  const [appState, setAppState] = useState<AppState>({ status: "idle" });
 
-  const [user, setUser] = useState<UserProfile>(DEFAULT_USER);
-  const [buy, setBuy] = useState<BuyScenario>(DEFAULT_BUY);
-  const [lease, setLease] = useState<LeaseScenario>(DEFAULT_LEASE);
+  const [profile, setProfile] = useState<UserProfile>(DEFAULT_USER);
+  const [preferences, setPreferences] = useState<VehiclePreferences>(DEFAULT_PREFERENCES);
 
-  const payload = useMemo(() => ({ user, buy, lease }), [user, buy, lease]);
-
-  const runDecision = useCallback(async () => {
-    setApi({ status: "loading" });
+  const runDecision = useCallback(() => {
+    setAppState({ status: "loading" });
 
     try {
-      const res = await fetch("/api/decision", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      const data = await res.json().catch(() => null);
-
-      if (!res.ok) {
-        const msg = data?.error ?? `Request failed (${res.status})`;
-        setApi({ status: "error", message: msg });
-        return;
-      }
-
-      setApi({ status: "success", result: data as DecisionResult });
+      // Use the local decision engine (no API call needed)
+      const result = generateDecision(profile, preferences);
+      
+      setAppState({ status: "success", result });
       setStep("results");
     } catch (e) {
-      const msg = e instanceof Error ? e.message : "Network error";
-      setApi({ status: "error", message: msg });
+      const msg = e instanceof Error ? e.message : "Something went wrong";
+      setAppState({ status: "error", message: msg });
     }
-  }, [payload]);
+  }, [profile, preferences]);
 
   const handleStartOver = useCallback(() => {
     setStep("landing");
-    setApi({ status: "idle" });
-    setUser(DEFAULT_USER);
-    setBuy(DEFAULT_BUY);
-    setLease(DEFAULT_LEASE);
+    setAppState({ status: "idle" });
+    setProfile(DEFAULT_USER);
+    setPreferences(DEFAULT_PREFERENCES);
   }, []);
 
   const currentStepIndex = { landing: -1, profile: 0, scenarios: 1, results: 2 }[step];
@@ -141,13 +111,13 @@ export default function Page() {
               {step !== "results" && (
                 <ProgressSteps
                   currentStep={currentStepIndex}
-                  steps={["Your Profile", "Compare Options", "Your Decision"]}
+                  steps={["Your Profile", "Your Preferences", "Your Decision"]}
                 />
               )}
             </header>
 
             {/* Error Banner */}
-            {api.status === "error" && (
+            {appState.status === "error" && (
               <div className="max-w-xl mx-auto mb-8 animate-fade-in-up">
                 <Card className="!p-4 border-red-500/30 bg-red-500/5">
                   <div className="flex items-center gap-3 text-red-400">
@@ -156,7 +126,7 @@ export default function Page() {
                     </div>
                     <div>
                       <p className="font-medium">Something went wrong</p>
-                      <p className="text-sm text-red-400/70">{api.message}</p>
+                      <p className="text-sm text-red-400/70">{appState.message}</p>
                     </div>
                   </div>
                 </Card>
@@ -167,8 +137,8 @@ export default function Page() {
             <div className="animate-fade-in-up">
               {step === "profile" && (
                 <ProfileStep
-                  user={user}
-                  setUser={setUser}
+                  profile={profile}
+                  setProfile={setProfile}
                   onNext={() => setStep("scenarios")}
                   onBack={() => setStep("landing")}
                 />
@@ -176,21 +146,17 @@ export default function Page() {
 
               {step === "scenarios" && (
                 <ScenariosStep
-                  buy={buy}
-                  setBuy={setBuy}
-                  lease={lease}
-                  setLease={setLease}
+                  preferences={preferences}
+                  setPreferences={setPreferences}
                   onSubmit={runDecision}
                   onBack={() => setStep("profile")}
-                  isLoading={api.status === "loading"}
+                  isLoading={appState.status === "loading"}
                 />
               )}
 
-              {step === "results" && api.status === "success" && (
+              {step === "results" && appState.status === "success" && (
                 <ResultsPage
-                  result={api.result}
-                  buy={buy}
-                  lease={lease}
+                  result={appState.result}
                   onStartOver={handleStartOver}
                 />
               )}
