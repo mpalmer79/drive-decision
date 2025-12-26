@@ -137,7 +137,6 @@ export function Input({
             {suffix}
           </span>
         )}
-        {/* Focus glow effect */}
         <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-emerald-500/10 to-teal-500/10 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none" />
       </div>
       {error && <p className="text-xs text-red-400 flex items-center gap-1">{error}</p>}
@@ -181,7 +180,6 @@ export function Select({
         >
           {children}
         </select>
-        {/* Focus glow effect */}
         <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-emerald-500/10 to-teal-500/10 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none" />
       </div>
     </div>
@@ -251,9 +249,7 @@ export function ProgressSteps({
     <div className="flex items-center justify-center gap-1 sm:gap-2">
       {steps.map((step, i) => (
         <div key={step} className="flex items-center gap-1 sm:gap-2">
-          {/* Step Circle */}
           <div className="relative">
-            {/* Glow effect for current step */}
             {i === currentStep && (
               <div className="absolute inset-0 bg-emerald-500 rounded-full blur-md opacity-40 animate-pulse" />
             )}
@@ -275,7 +271,6 @@ export function ProgressSteps({
             </div>
           </div>
           
-          {/* Step Label */}
           <span
             className={cn(
               "text-sm font-medium hidden sm:block transition-all duration-300",
@@ -289,7 +284,6 @@ export function ProgressSteps({
             {step}
           </span>
           
-          {/* Connector Line */}
           {i < steps.length - 1 && (
             <div className="relative w-8 sm:w-16 h-0.5 mx-1 sm:mx-2">
               <div className="absolute inset-0 bg-slate-700/50 rounded-full" />
@@ -308,7 +302,7 @@ export function ProgressSteps({
 }
 
 // ============================================================================
-// STRESS METER (Enhanced)
+// STRESS METER
 // ============================================================================
 
 export function StressMeter({
@@ -367,14 +361,12 @@ export function StressMeter({
       </div>
       
       <div className="relative">
-        {/* Track */}
         <div
           className={cn(
             "w-full bg-slate-800/50 rounded-full overflow-hidden",
             sizes[size].bar
           )}
         >
-          {/* Fill */}
           <div
             className={cn(
               "h-full rounded-full bg-gradient-to-r",
@@ -385,7 +377,6 @@ export function StressMeter({
           />
         </div>
         
-        {/* Glow effect */}
         <div
           className={cn(
             "absolute top-0 h-full rounded-full bg-gradient-to-r opacity-50 blur-sm",
@@ -537,7 +528,7 @@ export function Divider({
 }
 
 // ============================================================================
-// TOOLTIP (Simple)
+// TOOLTIP
 // ============================================================================
 
 export function Tooltip({
