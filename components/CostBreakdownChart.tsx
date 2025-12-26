@@ -299,7 +299,7 @@ export function CostBreakdownChart({
                 className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
                 style={{ backgroundColor: `${segment.color}20` }}
               >
-                <segment.icon className="w-4 h-4" style={{ color: segment.color }} />
+                <segment.icon className="w-4 h-4" />
               </div>
 
               {/* Label & Amount */}
