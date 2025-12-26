@@ -469,7 +469,7 @@ export function ScenariosStep({
                     { value: 72 as const, label: "72 Months", sublabel: "6 years • Standard payments" },
 { value: 78 as const, label: "78 Months", sublabel: "6.5 years • Balanced" },
 { value: 84 as const, label: "84 Months", sublabel: "7 years • Lower payments" },
-                    { value: "explore" as const, label: "Show Me All Options", sublabel: "Compare all terms" },
+                    { value: "explore" as const, label: "Show Me Some Options", sublabel: "Compare all terms" },
                   ].map((option) => (
                     <button
                       key={option.value}
