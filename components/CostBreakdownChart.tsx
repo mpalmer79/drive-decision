@@ -242,7 +242,7 @@ export function CostBreakdownChart({
                 className={cn(
                   "transition-all duration-300 cursor-pointer",
                   hoveredSegment === segment.id && "opacity-100",
-                  hoveredSegment && hoveredSegment !== segment.id && "opacity-40"
+                hoveredSegment !== null && hoveredSegment !== segment.id && "opacity-40"  
                 )}
                 style={{
                   filter: hoveredSegment === segment.id ? `drop-shadow(0 0 8px ${segment.color})` : undefined,
