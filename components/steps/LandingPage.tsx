@@ -49,20 +49,7 @@ export function LandingPage({ onStart }: LandingPageProps) {
             mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
           )}
         >
-          {/* Premium Badge */}
-          <div
-            className={cn(
-              "inline-flex items-center gap-2 px-4 py-2 rounded-full mb-8",
-              "bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-cyan-500/10",
-              "border border-emerald-500/20 backdrop-blur-sm",
-              "transition-all duration-700 delay-100",
-              mounted ? "opacity-100 scale-100" : "opacity-0 scale-90"
-            )}
-          >
-            <IconSparkles className="w-4 h-4 text-emerald-400" />
-            <span className="text-sm font-medium text-emerald-300">AI-Powered Decision Engine</span>
-          </div>
-
+          
           {/* Logo */}
           <div 
             className={cn(
