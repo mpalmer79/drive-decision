@@ -1,192 +1,178 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import type { UserProfile } from "@/types";
 import { cn, formatNumber, toNumber } from "@/lib/utils";
-import { Button, Card, Input, Select, Divider } from "@/components/ui";
-import { IconArrowLeft, IconArrowRight, IconUser, IconShield, IconDollar } from "@/components/icons";
+import { Button, Card, Input, Divider } from "@/components/ui";
+import {
+  IconArrowLeft,
+  IconArrowRight,
+  IconDollar,
+  IconShield,
+  IconTrendingUp,
+} from "@/components/icons";
 
 interface ProfileStepProps {
-  user: UserProfile;
-  setUser: React.Dispatch<React.SetStateAction<UserProfile>>;
+  profile: UserProfile;
+  setProfile: React.Dispatch<React.SetStateAction<UserProfile>>;
   onNext: () => void;
   onBack: () => void;
 }
 
-export function ProfileStep({ user, setUser, onNext, onBack }: ProfileStepProps) {
+export function ProfileStep({ profile, setProfile, onNext, onBack }: ProfileStepProps) {
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const validate = useCallback(() => {
-    const e: Record<string, string> = {};
-    if (user.monthlyNetIncome <= 0) e.income = "Please enter your monthly income";
-    if (user.monthlyFixedExpenses < 0) e.expenses = "Invalid amount";
-    if (user.currentSavings < 0) e.savings = "Invalid amount";
-    setErrors(e);
-    return Object.keys(e).length === 0;
-  }, [user]);
+  const discretionaryIncome = profile.monthlyIncome - profile.monthlyExpenses;
+  const savingsMonths = profile.monthlyExpenses > 0 
+    ? (profile.currentSavings / profile.monthlyExpenses).toFixed(1) 
+    : "0";
+
+  const validate = () => {
+    const newErrors: Record<string, string> = {};
+
+    if (profile.monthlyIncome <= 0) {
+      newErrors.monthlyIncome = "Please enter your monthly income";
+    }
+    if (profile.monthlyExpenses <= 0) {
+      newErrors.monthlyExpenses = "Please enter your monthly expenses";
+    }
+    if (profile.monthlyExpenses >= profile.monthlyIncome) {
+      newErrors.monthlyExpenses = "Expenses should be less than income";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleNext = () => {
-    if (validate()) onNext();
+    if (validate()) {
+      onNext();
+    }
+  };
+
+  const updateField = (field: keyof UserProfile, value: number) => {
+    setProfile((prev) => ({ ...prev, [field]: value }));
+    // Clear error when user starts typing
+    if (errors[field]) {
+      setErrors((prev) => ({ ...prev, [field]: "" }));
+    }
   };
 
   return (
     <div className="max-w-xl mx-auto">
-      {/* Header */}
-      <div className="text-center mb-10">
-        <div className="flex justify-center mb-5">
-          <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-2xl blur-xl opacity-30" />
-            <div className="relative w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-teal-500/20 flex items-center justify-center border border-emerald-500/20">
-              <IconUser className="w-8 h-8 text-emerald-400" />
+      <Card>
+        {/* Income Section */}
+        <div className="mb-8">
+          <div className="flex items-center gap-3 mb-5">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500/20 to-teal-500/20 flex items-center justify-center">
+              <IconDollar className="w-5 h-5 text-emerald-400" />
+            </div>
+            <div>
+              <h3 className="font-bold text-white">Monthly Finances</h3>
+              <p className="text-xs text-slate-500">Your take-home income and regular expenses</p>
             </div>
           </div>
-        </div>
-        <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-3 tracking-tight">
-          Your Financial Profile
-        </h2>
-        <p className="text-slate-400 text-lg">
-          Help us understand your current situation for a personalized analysis
-        </p>
-      </div>
 
-      <Card className="space-y-6">
-        {/* Income Section */}
-        <div>
-          <div className="flex items-center gap-2 mb-4">
-            <IconDollar className="w-5 h-5 text-emerald-400" />
-            <span className="text-sm font-semibold text-slate-300 uppercase tracking-wider">Income & Expenses</span>
-          </div>
-          
           <div className="space-y-4">
             <Input
-              label="Monthly take-home pay"
-              hint="After taxes"
+              label="Monthly Take-Home Income"
               prefix="$"
               type="text"
               inputMode="numeric"
-              value={user.monthlyNetIncome === 0 ? "" : formatNumber(user.monthlyNetIncome)}
-              onChange={(e) =>
-                setUser({ ...user, monthlyNetIncome: toNumber(e.target.value) })
-              }
-              error={errors.income}
-              placeholder="6,500"
+              placeholder="5,000"
+              value={profile.monthlyIncome === 0 ? "" : formatNumber(profile.monthlyIncome)}
+              onChange={(e) => updateField("monthlyIncome", toNumber(e.target.value))}
+              error={errors.monthlyIncome}
             />
 
             <Input
-              label="Monthly fixed expenses"
-              hint="Rent, utilities, subscriptions, etc."
+              label="Monthly Fixed Expenses"
               prefix="$"
               type="text"
               inputMode="numeric"
-              value={user.monthlyFixedExpenses === 0 ? "" : formatNumber(user.monthlyFixedExpenses)}
-              onChange={(e) =>
-                setUser({ ...user, monthlyFixedExpenses: toNumber(e.target.value) })
-              }
-              error={errors.expenses}
-              placeholder="3,800"
-            />
-
-            <Input
-              label="Current savings"
-              hint="Emergency fund / liquid assets"
-              prefix="$"
-              type="text"
-              inputMode="numeric"
-              value={user.currentSavings === 0 ? "" : formatNumber(user.currentSavings)}
-              onChange={(e) =>
-                setUser({ ...user, currentSavings: toNumber(e.target.value) })
-              }
-              error={errors.savings}
-              placeholder="12,000"
+              placeholder="3,000"
+              value={profile.monthlyExpenses === 0 ? "" : formatNumber(profile.monthlyExpenses)}
+              onChange={(e) => updateField("monthlyExpenses", toNumber(e.target.value))}
+              error={errors.monthlyExpenses}
+              hint="Rent, utilities, food, insurance, subscriptions, etc."
             />
           </div>
         </div>
 
         <Divider />
 
-        {/* Risk Profile Section */}
-        <div>
-          <div className="flex items-center gap-2 mb-4">
-            <IconShield className="w-5 h-5 text-teal-400" />
-            <span className="text-sm font-semibold text-slate-300 uppercase tracking-wider">Risk Profile</span>
+        {/* Savings Section */}
+        <div className="my-8">
+          <div className="flex items-center gap-3 mb-5">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500/20 to-blue-500/20 flex items-center justify-center">
+              <IconShield className="w-5 h-5 text-cyan-400" />
+            </div>
+            <div>
+              <h3 className="font-bold text-white">Emergency Fund</h3>
+              <p className="text-xs text-slate-500">Your financial safety net</p>
+            </div>
           </div>
 
-          <div className="space-y-4">
-            <Select
-              label="Credit score range"
-              value={user.creditScoreBand}
-              onChange={(e) =>
-                setUser({
-                  ...user,
-                  creditScoreBand: e.target.value as UserProfile["creditScoreBand"],
-                })
-              }
-            >
-              <option value="below_620">Below 620 (Rebuilding)</option>
-              <option value="620_679">620–679 (Fair)</option>
-              <option value="680_739">680–739 (Good)</option>
-              <option value="740_plus">740+ (Excellent)</option>
-            </Select>
-
-            <Select
-              label="Risk tolerance"
-              hint="How much financial uncertainty can you handle?"
-              value={user.riskTolerance}
-              onChange={(e) =>
-                setUser({
-                  ...user,
-                  riskTolerance: e.target.value as UserProfile["riskTolerance"],
-                })
-              }
-            >
-              <option value="low">Low — I prefer maximum safety</option>
-              <option value="medium">Medium — Balanced approach</option>
-              <option value="high">High — I can handle some risk</option>
-            </Select>
-          </div>
+          <Input
+            label="Current Savings"
+            prefix="$"
+            type="text"
+            inputMode="numeric"
+            placeholder="10,000"
+            value={profile.currentSavings === 0 ? "" : formatNumber(profile.currentSavings)}
+            onChange={(e) => updateField("currentSavings", toNumber(e.target.value))}
+            hint="Liquid savings you could access in an emergency"
+          />
         </div>
 
-        {/* Quick Stats Preview */}
-        {user.monthlyNetIncome > 0 && (
+        {/* Quick Preview */}
+        {profile.monthlyIncome > 0 && profile.monthlyExpenses > 0 && (
           <>
             <Divider />
-            <div className="p-4 rounded-xl bg-slate-800/30 border border-slate-700/30">
-              <div className="text-xs text-slate-500 uppercase tracking-wider mb-3">Quick Preview</div>
+            <div className="mt-8 p-4 rounded-xl bg-slate-800/30 border border-slate-700/30">
+              <div className="flex items-center gap-2 mb-3">
+                <IconTrendingUp className="w-4 h-4 text-emerald-400" />
+                <span className="text-sm font-medium text-slate-300">Your Snapshot</span>
+              </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <div className="text-xs text-slate-500 mb-1">Monthly Discretionary</div>
                   <div className={cn(
-                    "text-lg font-bold",
-                    (user.monthlyNetIncome - user.monthlyFixedExpenses) > 0 
-                      ? "text-emerald-400" 
-                      : "text-red-400"
+                    "text-xl font-bold",
+                    discretionaryIncome > 0 ? "text-emerald-400" : "text-red-400"
                   )}>
-                    ${formatNumber(Math.max(0, user.monthlyNetIncome - user.monthlyFixedExpenses))}
+                    ${formatNumber(Math.max(0, discretionaryIncome))}
                   </div>
                 </div>
                 <div>
-                  <div className="text-xs text-slate-500 mb-1">Savings Months</div>
-                  <div className="text-lg font-bold text-teal-400">
-                    {user.monthlyFixedExpenses > 0 
-                      ? (user.currentSavings / user.monthlyFixedExpenses).toFixed(1)
-                      : "—"
-                    } mo
+                  <div className="text-xs text-slate-500 mb-1">Savings Buffer</div>
+                  <div className={cn(
+                    "text-xl font-bold",
+                    parseFloat(savingsMonths) >= 3 ? "text-cyan-400" : "text-amber-400"
+                  )}>
+                    {savingsMonths} months
                   </div>
                 </div>
               </div>
+              {parseFloat(savingsMonths) < 3 && (
+                <p className="text-xs text-amber-400/80 mt-3">
+                  💡 Financial experts recommend 3-6 months of expenses in savings.
+                </p>
+              )}
             </div>
           </>
         )}
       </Card>
 
-      {/* Actions */}
-      <div className="flex justify-between items-center mt-10">
+      {/* Navigation */}
+      <div className="flex justify-between items-center mt-8">
         <Button variant="ghost" onClick={onBack}>
           <IconArrowLeft className="w-4 h-4" />
-          <span className="hidden sm:inline">Back</span>
+          <span>Back</span>
         </Button>
+
         <Button variant="primary" onClick={handleNext} className="group">
-          Continue
+          <span>Continue</span>
           <IconArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
         </Button>
       </div>
