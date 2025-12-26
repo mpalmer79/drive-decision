@@ -11,9 +11,7 @@ import {
   IconDollar,
   IconAlertTriangle,
   IconRefresh,
-  IconTrophy,
   IconSparkles,
-  IconCalendar,
   IconTrendingUp,
   IconArrowRight,
 } from "@/components/icons";
@@ -24,12 +22,12 @@ import { PaymentTimeline } from "@/components/PaymentTimeline";
 import { ProtectionPackages } from "@/components/steps/ProtectionPackages";
 import { LeadCapture } from "@/components/steps/LeadCapture";
 
-interface ResultsPageNewProps {
+interface ResultsPageProps {
   result: DecisionResult;
   onStartOver: () => void;
 }
 
-export function ResultsPageNew({ result, onStartOver }: ResultsPageNewProps) {
+export function ResultsPage({ result, onStartOver }: ResultsPageProps) {
   const [revealStage, setRevealStage] = useState(0);
   const [showConfetti, setShowConfetti] = useState(false);
 
