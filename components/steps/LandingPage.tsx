@@ -256,7 +256,7 @@ export function LandingPage({ onStart }: LandingPageProps) {
               <IconCheck className="w-6 h-6 text-emerald-400" />
             </div>
             <div className="text-left">
-              <div className="text-2xl font-bold text-white">50+</div>
+              <div className="text-2xl font-bold text-white">40+</div>
               <div className="text-xs text-slate-500 uppercase tracking-wider">Years Experience</div>
             </div>
           </div>
