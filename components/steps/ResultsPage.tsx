@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import type { BuyScenario, LeaseScenario, DecisionResult } from "@/types";
 import { cn, formatCurrency } from "@/lib/utils";
-import { Button, Card, StressMeter } from "@/components/ui";
+import { Button, Card, StressMeter, Badge, Divider } from "@/components/ui";
 import {
   IconShield,
   IconCheck,
@@ -13,6 +13,8 @@ import {
   IconAlertTriangle,
   IconRefresh,
   Spinner,
+  IconTrophy,
+  IconSparkles,
 } from "@/components/icons";
 import { ProtectionPackages } from "@/components/steps/ProtectionPackages";
 import { LeadCapture } from "@/components/steps/LeadCapture";
@@ -69,206 +71,258 @@ export function ResultsPage({ result, buy, lease, onStartOver }: ResultsPageProp
   };
 
   const isBuy = result.verdict === "buy";
-  const verdictColor = isBuy
-    ? "from-emerald-500 to-teal-500"
-    : "from-amber-500 to-orange-500";
-  const verdictBg = isBuy ? "bg-emerald-500/10" : "bg-amber-500/10";
+  const verdictGradient = isBuy
+    ? "from-emerald-500 via-emerald-400 to-teal-400"
+    : "from-amber-500 via-amber-400 to-orange-400";
+  const verdictBgGlow = isBuy ? "bg-emerald-500/20" : "bg-amber-500/20";
   const verdictText = isBuy ? "text-emerald-400" : "text-amber-400";
-  const verdictRing = isBuy ? "ring-emerald-500" : "ring-amber-500";
+  const verdictBorder = isBuy ? "border-emerald-500/30" : "border-amber-500/30";
 
   const monthlyDiff = Math.abs(result.buyMonthlyAllIn - result.leaseMonthlyAllIn);
   const totalDiff = Math.abs(result.buyTotalCost - result.leaseTotalCost);
   const buyIsCheaper = result.buyTotalCost <= result.leaseTotalCost;
 
-  const confidenceLabel = {
-    high: { text: "High Confidence", color: "text-emerald-400" },
-    medium: { text: "Moderate Confidence", color: "text-amber-400" },
-    low: { text: "Low Confidence", color: "text-slate-400" },
+  const confidenceConfig = {
+    high: { text: "High Confidence", color: "text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/20" },
+    medium: { text: "Moderate Confidence", color: "text-amber-400", bg: "bg-amber-500/10", border: "border-amber-500/20" },
+    low: { text: "Low Confidence", color: "text-slate-400", bg: "bg-slate-500/10", border: "border-slate-500/20" },
   }[result.confidence];
 
   return (
     <div className="max-w-3xl mx-auto">
-      {/* Verdict Card */}
+      {/* Verdict Hero */}
       <div
         className={cn(
-          "text-center mb-10 transition-all duration-700 ease-out",
-          revealed ? "opacity-100 scale-100" : "opacity-0 scale-95"
+          "text-center mb-12 transition-all duration-700 ease-out",
+          revealed ? "opacity-100 scale-100" : "opacity-0 scale-90"
         )}
       >
-        <div
-          className={cn(
-            "inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-medium mb-6",
-            verdictBg,
-            verdictText
-          )}
-        >
-          <IconShield className="w-4 h-4" />
-          <span className={confidenceLabel.color}>{confidenceLabel.text}</span>
+        {/* Trophy Icon */}
+        <div className="flex justify-center mb-6">
+          <div className={cn(
+            "relative w-20 h-20 rounded-3xl flex items-center justify-center",
+            verdictBgGlow,
+            "animate-celebrate"
+          )}>
+            <div className={cn("absolute inset-0 rounded-3xl blur-xl", verdictBgGlow)} />
+            <IconTrophy className={cn("relative w-10 h-10", verdictText)} />
+          </div>
         </div>
 
-        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4">
-          <span
-            className={cn(
-              "bg-gradient-to-r bg-clip-text text-transparent",
-              verdictColor
-            )}
-          >
+        {/* Confidence Badge */}
+        <div
+          className={cn(
+            "inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium mb-6",
+            confidenceConfig.bg,
+            confidenceConfig.border,
+            "border backdrop-blur-sm"
+          )}
+        >
+          <IconShield className={cn("w-4 h-4", confidenceConfig.color)} />
+          <span className={confidenceConfig.color}>{confidenceConfig.text}</span>
+        </div>
+
+        {/* Main Verdict */}
+        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white mb-4 tracking-tight">
+          <span className={cn("bg-gradient-to-r bg-clip-text text-transparent", verdictGradient)}>
             {isBuy ? "Buying" : "Leasing"}
           </span>{" "}
           is safer for you
         </h1>
 
-        <p className="text-lg text-slate-400 max-w-xl mx-auto">{result.summary}</p>
+        <p className="text-lg text-slate-400 max-w-xl mx-auto leading-relaxed">
+          {result.summary}
+        </p>
       </div>
 
       {/* Comparison Cards */}
       <div
         className={cn(
-          "grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8 transition-all duration-700 delay-200 ease-out",
+          "grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-10",
+          "transition-all duration-700 delay-200 ease-out",
           revealed ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
         )}
       >
         {/* Buy Card */}
-        <Card className={cn("relative overflow-hidden", isBuy && `ring-2 ${verdictRing}`)}>
-          {isBuy && (
-            <div className="absolute top-3 right-3">
-              <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 text-xs font-semibold">
-                <IconCheck className="w-3 h-3" />
-                Recommended
+        <div className={cn(
+          "relative group",
+          isBuy && "ring-glow-emerald rounded-2xl"
+        )}>
+          <Card 
+            className={cn(
+              "relative overflow-hidden h-full",
+              isBuy && "border-emerald-500/30"
+            )}
+          >
+            {/* Recommended Badge */}
+            {isBuy && (
+              <div className="absolute top-4 right-4">
+                <Badge variant="success" size="sm" icon={<IconCheck className="w-3 h-3" />}>
+                  Recommended
+                </Badge>
+              </div>
+            )}
+            
+            {/* Header */}
+            <div className="flex items-center gap-3 mb-5">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500/20 to-teal-500/20 flex items-center justify-center">
+                <IconKey className="w-6 h-6 text-emerald-400" />
+              </div>
+              <div>
+                <h3 className="font-bold text-white text-lg">Buy</h3>
+                <p className="text-xs text-slate-500">Own the vehicle</p>
               </div>
             </div>
-          )}
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center">
-              <IconKey className="w-5 h-5 text-emerald-400" />
-            </div>
-            <h3 className="font-semibold text-white">Buy</h3>
-          </div>
 
-          <div className="space-y-3">
-            <div>
-              <div className="text-xs text-slate-500 uppercase tracking-wide mb-1">
-                Monthly all-in
+            {/* Stats */}
+            <div className="space-y-4">
+              <div className="p-4 rounded-xl bg-slate-800/30 border border-slate-700/30">
+                <div className="text-xs text-slate-500 uppercase tracking-wider mb-1">
+                  Monthly all-in
+                </div>
+                <div className="text-3xl font-bold text-white">
+                  {formatCurrency(result.buyMonthlyAllIn)}
+                </div>
               </div>
-              <div className="text-2xl font-bold text-white">
-                {formatCurrency(result.buyMonthlyAllIn)}
+              
+              <div className="flex justify-between items-center py-3 border-b border-slate-700/30">
+                <span className="text-sm text-slate-400">Total cost ({buy.ownershipMonths}mo)</span>
+                <span className="text-lg font-semibold text-slate-200">
+                  {formatCurrency(result.buyTotalCost)}
+                </span>
               </div>
             </div>
-            <div>
-              <div className="text-xs text-slate-500 uppercase tracking-wide mb-1">
-                Total cost ({buy.ownershipMonths}mo)
-              </div>
-              <div className="text-xl font-semibold text-slate-300">
-                {formatCurrency(result.buyTotalCost)}
-              </div>
-            </div>
-          </div>
 
-          <div className="mt-5 pt-4 border-t border-slate-700/50">
-            <StressMeter score={result.buyStressScore} label="Financial Stress" size="sm" />
-          </div>
-        </Card>
+            {/* Stress Meter */}
+            <div className="mt-5 pt-5 border-t border-slate-700/30">
+              <StressMeter score={result.buyStressScore} label="Financial Stress" size="sm" />
+            </div>
+          </Card>
+        </div>
 
         {/* Lease Card */}
-        <Card className={cn("relative overflow-hidden", !isBuy && `ring-2 ${verdictRing}`)}>
-          {!isBuy && (
-            <div className="absolute top-3 right-3">
-              <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-400 text-xs font-semibold">
-                <IconCheck className="w-3 h-3" />
-                Recommended
+        <div className={cn(
+          "relative group",
+          !isBuy && "ring-glow-amber rounded-2xl"
+        )}>
+          <Card 
+            className={cn(
+              "relative overflow-hidden h-full",
+              !isBuy && "border-amber-500/30"
+            )}
+          >
+            {/* Recommended Badge */}
+            {!isBuy && (
+              <div className="absolute top-4 right-4">
+                <Badge variant="warning" size="sm" icon={<IconCheck className="w-3 h-3" />}>
+                  Recommended
+                </Badge>
+              </div>
+            )}
+            
+            {/* Header */}
+            <div className="flex items-center gap-3 mb-5">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500/20 to-orange-500/20 flex items-center justify-center">
+                <IconFileText className="w-6 h-6 text-amber-400" />
+              </div>
+              <div>
+                <h3 className="font-bold text-white text-lg">Lease</h3>
+                <p className="text-xs text-slate-500">Rent with options</p>
               </div>
             </div>
-          )}
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-xl bg-amber-500/20 flex items-center justify-center">
-              <IconFileText className="w-5 h-5 text-amber-400" />
-            </div>
-            <h3 className="font-semibold text-white">Lease</h3>
-          </div>
 
-          <div className="space-y-3">
-            <div>
-              <div className="text-xs text-slate-500 uppercase tracking-wide mb-1">
-                Monthly all-in
+            {/* Stats */}
+            <div className="space-y-4">
+              <div className="p-4 rounded-xl bg-slate-800/30 border border-slate-700/30">
+                <div className="text-xs text-slate-500 uppercase tracking-wider mb-1">
+                  Monthly all-in
+                </div>
+                <div className="text-3xl font-bold text-white">
+                  {formatCurrency(result.leaseMonthlyAllIn)}
+                </div>
               </div>
-              <div className="text-2xl font-bold text-white">
-                {formatCurrency(result.leaseMonthlyAllIn)}
+              
+              <div className="flex justify-between items-center py-3 border-b border-slate-700/30">
+                <span className="text-sm text-slate-400">Total cost ({buy.ownershipMonths}mo)</span>
+                <span className="text-lg font-semibold text-slate-200">
+                  {formatCurrency(result.leaseTotalCost)}
+                </span>
               </div>
             </div>
-            <div>
-              <div className="text-xs text-slate-500 uppercase tracking-wide mb-1">
-                Total cost ({buy.ownershipMonths}mo)
-              </div>
-              <div className="text-xl font-semibold text-slate-300">
-                {formatCurrency(result.leaseTotalCost)}
-              </div>
-            </div>
-          </div>
 
-          <div className="mt-5 pt-4 border-t border-slate-700/50">
-            <StressMeter score={result.leaseStressScore} label="Financial Stress" size="sm" />
-          </div>
-        </Card>
+            {/* Stress Meter */}
+            <div className="mt-5 pt-5 border-t border-slate-700/30">
+              <StressMeter score={result.leaseStressScore} label="Financial Stress" size="sm" />
+            </div>
+          </Card>
+        </div>
       </div>
 
       {/* Key Insights */}
       <div
         className={cn(
-          "transition-all duration-700 delay-400 ease-out",
+          "space-y-6 transition-all duration-700 delay-400 ease-out",
           revealed ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
         )}
       >
-        <Card className="mb-8">
-          <h3 className="font-semibold text-white mb-4 flex items-center gap-2">
-            <IconDollar className="w-5 h-5 text-emerald-400" />
-            Cost Breakdown
-          </h3>
+        {/* Cost Breakdown */}
+        <Card>
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
+              <IconDollar className="w-5 h-5 text-emerald-400" />
+            </div>
+            <h3 className="font-bold text-white text-lg">Cost Comparison</h3>
+          </div>
 
-          <div className="space-y-4">
-            <div className="flex items-center justify-between py-3 border-b border-slate-700/50">
+          <div className="space-y-1">
+            <div className="flex items-center justify-between py-4 border-b border-slate-700/30">
               <span className="text-slate-400">Monthly difference</span>
-              <span className="font-semibold text-white">
-                {formatCurrency(monthlyDiff)}{" "}
-                <span className="text-slate-500 font-normal">
+              <div className="text-right">
+                <span className="font-bold text-white text-lg">{formatCurrency(monthlyDiff)}</span>
+                <span className="text-slate-500 text-sm ml-2">
                   more to {result.buyMonthlyAllIn > result.leaseMonthlyAllIn ? "buy" : "lease"}
                 </span>
-              </span>
+              </div>
             </div>
 
-            <div className="flex items-center justify-between py-3 border-b border-slate-700/50">
+            <div className="flex items-center justify-between py-4 border-b border-slate-700/30">
               <span className="text-slate-400">Total over {buy.ownershipMonths} months</span>
-              <span className="font-semibold text-white">
-                {formatCurrency(totalDiff)}{" "}
-                <span className="text-slate-500 font-normal">
+              <div className="text-right">
+                <span className="font-bold text-white text-lg">{formatCurrency(totalDiff)}</span>
+                <span className="text-slate-500 text-sm ml-2">
                   {buyIsCheaper ? "savings to buy" : "savings to lease"}
                 </span>
-              </span>
+              </div>
             </div>
 
-            <div className="flex items-center justify-between py-3">
+            <div className="flex items-center justify-between py-4">
               <span className="text-slate-400">Stress score difference</span>
-              <span className="font-semibold text-white">
-                {Math.abs(result.buyStressScore - result.leaseStressScore).toFixed(0)} points{" "}
-                <span className="text-slate-500 font-normal">
+              <div className="text-right">
+                <span className="font-bold text-white text-lg">
+                  {Math.abs(result.buyStressScore - result.leaseStressScore).toFixed(0)} points
+                </span>
+                <span className="text-slate-500 text-sm ml-2">
                   lower for {result.buyStressScore < result.leaseStressScore ? "buying" : "leasing"}
                 </span>
-              </span>
+              </div>
             </div>
           </div>
         </Card>
 
         {/* Risk Flags */}
         {result.riskFlags.length > 0 && (
-          <Card className="mb-8">
-            <h3 className="font-semibold text-white mb-4 flex items-center gap-2">
-              <IconAlertTriangle className="w-5 h-5 text-amber-400" />
-              Things to Consider
-            </h3>
-            <ul className="space-y-2">
+          <Card className="border-amber-500/20 bg-amber-500/5">
+            <div className="flex items-center gap-3 mb-5">
+              <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center">
+                <IconAlertTriangle className="w-5 h-5 text-amber-400" />
+              </div>
+              <h3 className="font-bold text-white text-lg">Things to Consider</h3>
+            </div>
+            <ul className="space-y-3">
               {result.riskFlags.map((flag, i) => (
-                <li key={i} className="flex items-start gap-2 text-sm text-slate-400">
-                  <span className="w-1.5 h-1.5 rounded-full bg-amber-500 mt-1.5 flex-shrink-0" />
-                  {flag}
+                <li key={i} className="flex items-start gap-3 text-sm text-slate-300">
+                  <span className="w-2 h-2 rounded-full bg-amber-500 mt-1.5 flex-shrink-0" />
+                  <span>{flag}</span>
                 </li>
               ))}
             </ul>
@@ -290,12 +344,17 @@ export function ResultsPage({ result, buy, lease, onStartOver }: ResultsPageProp
           monthlyPayment={isBuy ? result.buyMonthlyAllIn : result.leaseMonthlyAllIn}
         />
 
-        {/* Detailed Explanation Section */}
-        <Card className="mb-8">
-          <h3 className="font-semibold text-white mb-4 flex items-center gap-2">
-            <IconFileText className="w-5 h-5 text-teal-400" />
-            Detailed Explanation
-          </h3>
+        {/* AI Explanation Section */}
+        <Card>
+          <div className="flex items-center gap-3 mb-5">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500/10 to-blue-500/10 flex items-center justify-center">
+              <IconSparkles className="w-5 h-5 text-cyan-400" />
+            </div>
+            <div>
+              <h3 className="font-bold text-white text-lg">AI Explanation</h3>
+              <p className="text-xs text-slate-500">Get a personalized breakdown</p>
+            </div>
+          </div>
 
           {explain.status === "idle" && (
             <div className="flex flex-col sm:flex-row gap-3">
@@ -303,29 +362,33 @@ export function ResultsPage({ result, buy, lease, onStartOver }: ResultsPageProp
                 variant="secondary"
                 size="sm"
                 onClick={() => fetchExplanation("short")}
+                className="group"
               >
+                <IconSparkles className="w-4 h-4 text-cyan-400 group-hover:text-cyan-300" />
                 Quick Summary
               </Button>
               <Button
                 variant="secondary"
                 size="sm"
                 onClick={() => fetchExplanation("detailed")}
+                className="group"
               >
+                <IconFileText className="w-4 h-4 text-teal-400 group-hover:text-teal-300" />
                 Full Breakdown
               </Button>
             </div>
           )}
 
           {explain.status === "loading" && (
-            <div className="flex items-center gap-3 text-slate-400">
-              <Spinner className="w-5 h-5" />
-              <span>Generating explanation...</span>
+            <div className="flex items-center gap-3 py-4">
+              <Spinner className="w-5 h-5 text-cyan-400" />
+              <span className="text-slate-400">Generating explanation...</span>
             </div>
           )}
 
           {explain.status === "error" && (
             <div className="space-y-3">
-              <div className="flex items-center gap-2 text-red-400 text-sm">
+              <div className="flex items-center gap-2 text-red-400 text-sm p-3 rounded-lg bg-red-500/10 border border-red-500/20">
                 <IconAlertTriangle className="w-4 h-4" />
                 {explain.message}
               </div>
@@ -341,11 +404,11 @@ export function ResultsPage({ result, buy, lease, onStartOver }: ResultsPageProp
 
           {explain.status === "success" && (
             <div className="space-y-4">
-              <div>
-                <h4 className="text-lg font-semibold text-white mb-2">
+              <div className="p-4 rounded-xl bg-slate-800/30 border border-slate-700/30">
+                <h4 className="text-lg font-semibold text-white mb-3">
                   {explain.headline}
                 </h4>
-                <p className="text-slate-400 leading-relaxed">
+                <p className="text-slate-300 leading-relaxed">
                   {explain.explanation}
                 </p>
               </div>
@@ -354,22 +417,25 @@ export function ResultsPage({ result, buy, lease, onStartOver }: ResultsPageProp
                 size="sm"
                 onClick={() => setExplain({ status: "idle" })}
               >
+                <IconRefresh className="w-4 h-4" />
                 Get Another Explanation
               </Button>
             </div>
           )}
         </Card>
 
+        <Divider className="my-8" />
+
         {/* Actions */}
         <div className="flex flex-col sm:flex-row justify-center gap-4">
-          <Button variant="secondary" onClick={onStartOver}>
-            <IconRefresh className="w-4 h-4" />
+          <Button variant="secondary" onClick={onStartOver} className="group">
+            <IconRefresh className="w-4 h-4 transition-transform duration-300 group-hover:-rotate-180" />
             Start Over
           </Button>
         </div>
 
         {/* Disclaimer */}
-        <p className="text-center text-xs text-slate-500 mt-8">
+        <p className="text-center text-xs text-slate-500 mt-8 max-w-lg mx-auto leading-relaxed">
           This analysis is for educational purposes only and is not financial, legal, or tax
           advice. Always consult with qualified professionals before making major financial
           decisions.
