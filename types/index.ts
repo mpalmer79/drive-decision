@@ -19,7 +19,7 @@ export interface VehiclePreferences {
   annualMiles: number;
   ownershipStyle: "new-often" | "long-term" | "undecided";
   priorities: ("lowest-payment" | "ownership" | "flexibility" | "newest-tech" | "customize")[];
-  financeTerm: 60 | 72 | 84 | "explore";
+  financeTerm: 72 | 78 | 84 | "explore";
 }
 
 // ============================================
