@@ -12,6 +12,7 @@ export const metadata: Metadata = {
     "lease calculator",
     "auto loan",
     "car payment calculator",
+    "quirk auto",
   ],
   authors: [{ name: "Quirk AI" }],
   openGraph: {
@@ -20,6 +21,7 @@ export const metadata: Metadata = {
       "Get a clear, personalized answer in under 2 minutes. We analyze your financial situation—not just the monthly payment.",
     type: "website",
     locale: "en_US",
+    siteName: "DriveDecision by Quirk AI",
   },
   twitter: {
     card: "summary_large_image",
@@ -37,7 +39,7 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 5,
-  themeColor: "#0f172a",
+  themeColor: "#030712",
 };
 
 export default function RootLayout({
@@ -58,11 +60,11 @@ export default function RootLayout({
           crossOrigin="anonymous"
         />
         <link
-          href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap"
           rel="stylesheet"
         />
       </head>
-      <body className="min-h-screen bg-slate-950 text-slate-100 antialiased font-sans">
+      <body className="min-h-screen bg-[#030712] text-slate-100 antialiased font-sans">
         {children}
       </body>
     </html>
