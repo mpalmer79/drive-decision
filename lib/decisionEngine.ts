@@ -1,252 +1,292 @@
+// lib/decisionEngine.ts
+
 import type {
-  BuyScenario,
+  UserProfile,
+  VehiclePreferences,
+  FinanceCalculation,
+  BudgetAnalysis,
+  DecisionFactors,
+  Recommendation,
   DecisionResult,
-  LeaseScenario,
-  UserProfile
 } from "@/types";
 
-import { monthlyPaymentFromLoan, clamp } from "@/lib/math";
-import { scoreMonthlyStress, simulateIncomeShock } from "@/lib/riskScoring";
+const DEFAULT_APR = 7.5;
+const DEFAULT_INSURANCE = 180;
+const DEFAULT_MAINTENANCE = 75;
 
-function assertPositive(name: string, v: number): void {
-  if (!Number.isFinite(v) || v <= 0) throw new Error(`${name} must be a finite number > 0`);
-}
-
-function assertNonNegative(name: string, v: number): void {
-  if (!Number.isFinite(v) || v < 0) throw new Error(`${name} must be a finite number >= 0`);
-}
-
-function monthsToYears(months: number): number {
-  return months / 12;
-}
-
-function uniqueStrings(items: string[]): string[] {
-  return Array.from(new Set(items.map((s) => s.trim()).filter((s) => s.length > 0)));
-}
-
-/**
- * Deterministic buy vs lease decision engine.
- * AI must NEVER be used here. AI only explains the returned DecisionResult.
- */
-export function decideBuyVsLease(
-  user: UserProfile,
-  buy: BuyScenario,
-  lease: LeaseScenario
-): DecisionResult {
-  // ---- Basic validation (keep it strict; bad inputs must fail loudly) ----
-  assertPositive("user.monthlyNetIncome", user.monthlyNetIncome);
-  assertNonNegative("user.monthlyFixedExpenses", user.monthlyFixedExpenses);
-  assertNonNegative("user.currentSavings", user.currentSavings);
-
-  assertPositive("buy.vehiclePrice", buy.vehiclePrice);
-  assertNonNegative("buy.downPayment", buy.downPayment);
-  if (buy.downPayment > buy.vehiclePrice) {
-    throw new Error("buy.downPayment must be <= buy.vehiclePrice");
+export function calculateFinancing(
+  vehiclePrice: number,
+  downPayment: number,
+  termMonths: number,
+  apr: number = DEFAULT_APR
+): FinanceCalculation {
+  const loanAmount = vehiclePrice - downPayment;
+  const monthlyRate = apr / 100 / 12;
+  
+  let monthlyPayment: number;
+  if (apr === 0) {
+    monthlyPayment = loanAmount / termMonths;
+  } else {
+    monthlyPayment =
+      (loanAmount * monthlyRate * Math.pow(1 + monthlyRate, termMonths)) /
+      (Math.pow(1 + monthlyRate, termMonths) - 1);
   }
-  assertNonNegative("buy.aprPercent", buy.aprPercent);
-  assertPositive("buy.termMonths", buy.termMonths);
-  assertNonNegative("buy.estMonthlyInsurance", buy.estMonthlyInsurance);
-  assertNonNegative("buy.estMonthlyMaintenance", buy.estMonthlyMaintenance);
-  assertPositive("buy.ownershipMonths", buy.ownershipMonths);
 
-  assertPositive("lease.msrp", lease.msrp);
-  assertNonNegative("lease.monthlyPayment", lease.monthlyPayment);
-  assertNonNegative("lease.dueAtSigning", lease.dueAtSigning);
-  assertPositive("lease.termMonths", lease.termMonths);
-  assertPositive("lease.mileageAllowancePerYear", lease.mileageAllowancePerYear);
-  assertPositive("lease.estMilesPerYear", lease.estMilesPerYear);
-  assertNonNegative("lease.estExcessMileFee", lease.estExcessMileFee);
-  assertNonNegative("lease.estMonthlyInsurance", lease.estMonthlyInsurance);
-  assertNonNegative("lease.estMonthlyMaintenance", lease.estMonthlyMaintenance);
+  const totalPaid = monthlyPayment * termMonths;
+  const totalInterest = totalPaid - loanAmount;
+  const totalCost = totalPaid + downPayment;
+  const monthlyAllIn = monthlyPayment + DEFAULT_INSURANCE + DEFAULT_MAINTENANCE;
 
-  if (lease.leaseEndPlan === "buyout") {
-    if (lease.estBuyoutPrice == null) {
-      throw new Error("lease.estBuyoutPrice is required when leaseEndPlan is 'buyout'");
+  // Calculate payoff date
+  const payoffDate = new Date();
+  payoffDate.setMonth(payoffDate.getMonth() + termMonths);
+
+  return {
+    loanAmount: Math.round(loanAmount),
+    monthlyPayment: Math.round(monthlyPayment),
+    totalInterest: Math.round(totalInterest),
+    totalCost: Math.round(totalCost),
+    monthlyAllIn: Math.round(monthlyAllIn),
+    payoffDate: payoffDate.toLocaleDateString("en-US", { month: "long", year: "numeric" }),
+  };
+}
+
+export function analyzeBudget(
+  profile: UserProfile,
+  monthlyAllIn: number
+): BudgetAnalysis {
+  const discretionaryIncome = profile.monthlyIncome - profile.monthlyExpenses;
+  const paymentAsPercentOfIncome = (monthlyAllIn / profile.monthlyIncome) * 100;
+  const remainingAfterPayment = discretionaryIncome - monthlyAllIn;
+  const monthsOfSavingsBuffer = profile.currentSavings / monthlyAllIn;
+
+  // Calculate stress score (0-100, lower is better)
+  let stressScore = 0;
+
+  // Payment as % of income (ideal: < 15%)
+  if (paymentAsPercentOfIncome > 25) stressScore += 35;
+  else if (paymentAsPercentOfIncome > 20) stressScore += 25;
+  else if (paymentAsPercentOfIncome > 15) stressScore += 15;
+  else stressScore += 5;
+
+  // Remaining discretionary after payment
+  if (remainingAfterPayment < 200) stressScore += 35;
+  else if (remainingAfterPayment < 500) stressScore += 25;
+  else if (remainingAfterPayment < 800) stressScore += 15;
+  else stressScore += 5;
+
+  // Savings buffer
+  if (monthsOfSavingsBuffer < 3) stressScore += 30;
+  else if (monthsOfSavingsBuffer < 6) stressScore += 20;
+  else if (monthsOfSavingsBuffer < 12) stressScore += 10;
+  else stressScore += 0;
+
+  // Determine affordability rating
+  let affordabilityRating: BudgetAnalysis["affordabilityRating"];
+  if (stressScore <= 30) affordabilityRating = "comfortable";
+  else if (stressScore <= 50) affordabilityRating = "manageable";
+  else if (stressScore <= 70) affordabilityRating = "stretched";
+  else affordabilityRating = "risky";
+
+  return {
+    discretionaryIncome: Math.round(discretionaryIncome),
+    paymentAsPercentOfIncome: Math.round(paymentAsPercentOfIncome * 10) / 10,
+    monthsOfSavingsBuffer: Math.round(monthsOfSavingsBuffer * 10) / 10,
+    stressScore: Math.min(100, stressScore),
+    affordabilityRating,
+  };
+}
+
+export function analyzeFactors(
+  preferences: VehiclePreferences,
+  budgetAnalysis: BudgetAnalysis
+): DecisionFactors {
+  // Mileage analysis
+  let mileageFit: DecisionFactors["mileageFit"] = "neutral";
+  if (preferences.annualMiles > 15000) {
+    mileageFit = "buy"; // High mileage = buy to avoid lease penalties
+  } else if (preferences.annualMiles < 10000) {
+    mileageFit = "lease"; // Low mileage = lease works well
+  }
+
+  // Ownership style analysis
+  let ownershipFit: DecisionFactors["ownershipFit"] = "neutral";
+  if (preferences.ownershipStyle === "long-term") {
+    ownershipFit = "buy";
+  } else if (preferences.ownershipStyle === "new-often") {
+    ownershipFit = "lease";
+  }
+
+  // Budget analysis
+  let budgetFit: DecisionFactors["budgetFit"] = "neutral";
+  if (budgetAnalysis.affordabilityRating === "comfortable") {
+    budgetFit = "buy"; // Can afford to buy
+  } else if (budgetAnalysis.affordabilityRating === "stretched" || budgetAnalysis.affordabilityRating === "risky") {
+    budgetFit = "lease"; // Lease might offer lower monthly
+  }
+
+  // Priorities analysis
+  let prioritiesFit: DecisionFactors["prioritiesFit"] = "neutral";
+  const buyPriorities = ["ownership", "customize"];
+  const leasePriorities = ["lowest-payment", "flexibility", "newest-tech"];
+  
+  const buyScore = preferences.priorities.filter(p => buyPriorities.includes(p)).length;
+  const leaseScore = preferences.priorities.filter(p => leasePriorities.includes(p)).length;
+  
+  if (buyScore > leaseScore) prioritiesFit = "buy";
+  else if (leaseScore > buyScore) prioritiesFit = "lease";
+
+  // Flexibility analysis (undecided users might benefit from lease flexibility)
+  let flexibilityFit: DecisionFactors["flexibilityFit"] = "neutral";
+  if (preferences.ownershipStyle === "undecided") {
+    flexibilityFit = "lease";
+  }
+
+  return {
+    mileageFit,
+    ownershipFit,
+    budgetFit,
+    prioritiesFit,
+    flexibilityFit,
+  };
+}
+
+export function generateRecommendation(
+  factors: DecisionFactors,
+  budgetAnalysis: BudgetAnalysis,
+  preferences: VehiclePreferences
+): Recommendation {
+  // Count factors
+  const factorValues = Object.values(factors);
+  const buyCount = factorValues.filter(f => f === "buy").length;
+  const leaseCount = factorValues.filter(f => f === "lease").length;
+
+  // Strong buy indicators
+  const strongBuyIndicators = [
+    preferences.annualMiles > 15000,
+    preferences.ownershipStyle === "long-term",
+    preferences.priorities.includes("ownership"),
+    preferences.priorities.includes("customize"),
+  ].filter(Boolean).length;
+
+  // Strong lease-explore indicators
+  const strongLeaseIndicators = [
+    preferences.ownershipStyle === "new-often",
+    preferences.priorities.includes("lowest-payment"),
+    preferences.priorities.includes("newest-tech"),
+    budgetAnalysis.affordabilityRating === "stretched" || budgetAnalysis.affordabilityRating === "risky",
+  ].filter(Boolean).length;
+
+  // Determine verdict
+  let verdict: Recommendation["verdict"];
+  let confidence: Recommendation["confidence"];
+
+  if (buyCount > leaseCount + 1 || strongBuyIndicators >= 2) {
+    verdict = "buy";
+    confidence = strongBuyIndicators >= 3 ? "high" : buyCount > leaseCount + 2 ? "high" : "medium";
+  } else if (leaseCount > buyCount + 1 || strongLeaseIndicators >= 2) {
+    verdict = "explore-lease";
+    confidence = strongLeaseIndicators >= 3 ? "high" : leaseCount > buyCount + 2 ? "high" : "medium";
+  } else {
+    // Close call - default based on most impactful factors
+    if (preferences.annualMiles > 12000 || preferences.ownershipStyle === "long-term") {
+      verdict = "buy";
+      confidence = "low";
+    } else {
+      verdict = "explore-lease";
+      confidence = "low";
     }
-    assertPositive("lease.estBuyoutPrice", lease.estBuyoutPrice);
   }
 
-  // ---- Horizon alignment ----
-  // We compare both options over the same horizon so totals are comparable.
-  // Use the user's intended ownership horizon as the comparison window.
-  const horizonMonths = buy.ownershipMonths;
+  // Generate reasons
+  const primaryReasons: string[] = [];
+  const considerations: string[] = [];
 
-  // ---- BUY calculations ----
-  const buyPrincipal = Math.max(0, buy.vehiclePrice - buy.downPayment);
-  const buyMonthlyPayment = monthlyPaymentFromLoan(buyPrincipal, buy.aprPercent, buy.termMonths);
+  if (verdict === "buy") {
+    if (preferences.annualMiles > 15000) {
+      primaryReasons.push("Your high mileage would result in significant lease-end penalties");
+    }
+    if (preferences.ownershipStyle === "long-term") {
+      primaryReasons.push("You prefer to keep vehicles long-term, building equity makes sense");
+    }
+    if (preferences.priorities.includes("ownership")) {
+      primaryReasons.push("Owning your vehicle outright aligns with your priorities");
+    }
+    if (preferences.priorities.includes("customize")) {
+      primaryReasons.push("Buying allows you to customize and modify freely");
+    }
+    if (budgetAnalysis.affordabilityRating === "comfortable") {
+      primaryReasons.push("The finance payment fits comfortably in your budget");
+    }
 
-  const buyMonthlyAllIn =
-    buyMonthlyPayment + buy.estMonthlyInsurance + buy.estMonthlyMaintenance;
-
-  const buyTotalCost =
-    buy.downPayment +
-    buyMonthlyPayment * horizonMonths +
-    (buy.estMonthlyInsurance + buy.estMonthlyMaintenance) * horizonMonths;
-
-  // ---- LEASE calculations ----
-  // Mileage penalty computed as a per-month excess miles based on annual estimates.
-  const estMilesPerMonth = lease.estMilesPerYear / 12;
-  const allowanceMilesPerMonth = lease.mileageAllowancePerYear / 12;
-  const excessMilesPerMonth = Math.max(0, estMilesPerMonth - allowanceMilesPerMonth);
-  const excessMilesTotal = excessMilesPerMonth * horizonMonths;
-  const excessMileageCostTotal = excessMilesTotal * lease.estExcessMileFee;
-  const excessMileageCostMonthly = excessMileageCostTotal / horizonMonths;
-
-  // Amortize due-at-signing across the lease term, not the horizon.
-  // This avoids under-penalizing short horizons.
-  const dueAtSigningMonthly = lease.dueAtSigning / lease.termMonths;
-
-  const leaseMonthlyAllIn =
-    lease.monthlyPayment +
-    dueAtSigningMonthly +
-    lease.estMonthlyInsurance +
-    lease.estMonthlyMaintenance +
-    excessMileageCostMonthly;
-
-  // Total lease cost over the horizon:
-  // - One-time due at signing (not multiplied by horizon)
-  // - Monthly payment across horizon
-  // - Insurance + maintenance across horizon
-  // - Mileage penalty across horizon
-  // - Buyout price only if plan is buyout AND horizon reaches the lease term
-  const leaseBuyoutCost =
-    lease.leaseEndPlan === "buyout" && horizonMonths >= lease.termMonths
-      ? (lease.estBuyoutPrice ?? 0)
-      : 0;
-
-  const leaseTotalCost =
-    lease.dueAtSigning +
-    lease.monthlyPayment * horizonMonths +
-    (lease.estMonthlyInsurance + lease.estMonthlyMaintenance) * horizonMonths +
-    excessMileageCostTotal +
-    leaseBuyoutCost;
-
-  // ---- Stress scoring (base) ----
-  const buyStress = scoreMonthlyStress({
-    monthlyNetIncome: user.monthlyNetIncome,
-    monthlyFixedExpenses: user.monthlyFixedExpenses,
-    monthlyCarAllIn: buyMonthlyAllIn,
-    riskTolerance: user.riskTolerance
-  });
-
-  const leaseStress = scoreMonthlyStress({
-    monthlyNetIncome: user.monthlyNetIncome,
-    monthlyFixedExpenses: user.monthlyFixedExpenses,
-    monthlyCarAllIn: leaseMonthlyAllIn,
-    riskTolerance: user.riskTolerance
-  });
-
-  // ---- Downside simulation: 10% income drop ----
-  const buyShock10 = simulateIncomeShock({
-    monthlyNetIncome: user.monthlyNetIncome,
-    monthlyFixedExpenses: user.monthlyFixedExpenses,
-    monthlyCarAllIn: buyMonthlyAllIn,
-    riskTolerance: user.riskTolerance,
-    incomeDropPercent: 10
-  });
-
-  const leaseShock10 = simulateIncomeShock({
-    monthlyNetIncome: user.monthlyNetIncome,
-    monthlyFixedExpenses: user.monthlyFixedExpenses,
-    monthlyCarAllIn: leaseMonthlyAllIn,
-    riskTolerance: user.riskTolerance,
-    incomeDropPercent: 10
-  });
-
-  // ---- Savings impact flags (down payment / due at signing) ----
-  const buyRemainingSavings = user.currentSavings - buy.downPayment;
-  const leaseRemainingSavings = user.currentSavings - lease.dueAtSigning;
-
-  const monthsOfFixedExpenses = (savings: number) =>
-    user.monthlyFixedExpenses > 0 ? savings / user.monthlyFixedExpenses : Infinity;
-
-  const buySavingsMonths = monthsOfFixedExpenses(buyRemainingSavings);
-  const leaseSavingsMonths = monthsOfFixedExpenses(leaseRemainingSavings);
-
-  const savingsFlags: string[] = [];
-  if (buyRemainingSavings < 0) savingsFlags.push("Buy down payment exceeds current savings.");
-  if (leaseRemainingSavings < 0) savingsFlags.push("Lease due-at-signing exceeds current savings.");
-
-  if (Number.isFinite(buySavingsMonths) && buySavingsMonths < 2) {
-    savingsFlags.push("Buying leaves less than ~2 months of fixed-expense buffer in savings.");
-  }
-  if (Number.isFinite(leaseSavingsMonths) && leaseSavingsMonths < 2) {
-    savingsFlags.push("Leasing leaves less than ~2 months of fixed-expense buffer in savings.");
-  }
-
-  // ---- Verdict logic ----
-  const stressGap = buyStress.stressScore - leaseStress.stressScore; // positive => buy worse
-  const absStressGap = Math.abs(stressGap);
-
-  // Also consider fragility under shock
-  const shockGap = buyShock10.stressScore - leaseShock10.stressScore;
-  const absShockGap = Math.abs(shockGap);
-
-  // Choose by stress if materially different, otherwise by total cost
-  let verdict: "buy" | "lease";
-  if (absStressGap >= 8) {
-    verdict = stressGap < 0 ? "buy" : "lease";
+    // Considerations for buy
+    considerations.push("You'll be responsible for maintenance after warranty expires");
+    considerations.push("Vehicle depreciation affects your equity");
+    if (preferences.annualMiles > 12000) {
+      considerations.push("Consider GAP insurance to protect against depreciation");
+    }
   } else {
-    verdict = buyTotalCost <= leaseTotalCost ? "buy" : "lease";
+    if (preferences.ownershipStyle === "new-often") {
+      primaryReasons.push("You enjoy driving the latest vehicles every few years");
+    }
+    if (preferences.priorities.includes("lowest-payment")) {
+      primaryReasons.push("Leasing typically offers lower monthly payments");
+    }
+    if (preferences.priorities.includes("newest-tech")) {
+      primaryReasons.push("Leasing lets you upgrade to the latest technology regularly");
+    }
+    if (budgetAnalysis.affordabilityRating === "stretched" || budgetAnalysis.affordabilityRating === "risky") {
+      primaryReasons.push("A lease payment may better fit your current budget");
+    }
+    if (preferences.ownershipStyle === "undecided") {
+      primaryReasons.push("Leasing offers flexibility while you decide your long-term needs");
+    }
+
+    // Considerations for lease-explore
+    considerations.push("Lease payments depend on vehicle model, term, and current incentives");
+    considerations.push("Mileage limits typically range from 10,000-15,000 per year");
+    considerations.push("Excess wear and mileage fees may apply at lease end");
   }
 
-  // Confidence logic
-  // - high if large stress gap or one option becomes negative cash flow under shock
-  // - medium if moderate stress gap
-  // - low otherwise
-  const buyNegCash = buyShock10.flags.some((f) => f.toLowerCase().includes("negative monthly cash flow"));
-  const leaseNegCash = leaseShock10.flags.some((f) => f.toLowerCase().includes("negative monthly cash flow"));
-
-  let confidence: "low" | "medium" | "high" = "low";
-
-  if (absStressGap >= 15 || absShockGap >= 15 || (buyNegCash !== leaseNegCash)) {
-    confidence = "high";
-  } else if (absStressGap >= 8 || absShockGap >= 8) {
-    confidence = "medium";
+  // Add fallback reasons if empty
+  if (primaryReasons.length === 0) {
+    primaryReasons.push(
+      verdict === "buy"
+        ? "Based on your overall profile, financing offers the best long-term value"
+        : "Based on your preferences, leasing may offer benefits worth exploring"
+    );
   }
-
-  // ---- Summary ----
-  const cheaper = buyTotalCost <= leaseTotalCost ? "buy" : "lease";
-  const safer = verdict;
-
-  const summaryParts: string[] = [];
-  summaryParts.push(`${safer === "buy" ? "Buying" : "Leasing"} is safer based on cash-flow stress for your profile.`);
-
-  if (absStressGap >= 8) {
-    summaryParts.push(`Stress difference is ${Math.round(absStressGap)} points (0–100 scale).`);
-  } else {
-    summaryParts.push(`Stress is similar, so total cost breaks the tie (${cheaper} is cheaper over the chosen horizon).`);
-  }
-
-  // ---- Risk flags ----
-  const riskFlags = uniqueStrings([
-    ...buyStress.flags.map((f) => `Buy: ${f}`),
-    ...leaseStress.flags.map((f) => `Lease: ${f}`),
-    ...savingsFlags
-  ]);
-
-  // Add 10% shock flags if they materially differ
-  if (absShockGap >= 8) {
-    riskFlags.push(`10% income shock favors ${shockGap < 0 ? "buy" : "lease"} by ~${Math.round(absShockGap)} stress points.`);
-  }
-
-  // Mild guardrail: cap risk flags so the UI stays readable
-  const cappedRiskFlags = riskFlags.slice(0, 12);
 
   return {
     verdict,
     confidence,
-    summary: summaryParts.join(" "),
+    primaryReasons: primaryReasons.slice(0, 4),
+    considerations: considerations.slice(0, 3),
+    factors,
+  };
+}
 
-    buyTotalCost: clamp(buyTotalCost, 0, Number.MAX_SAFE_INTEGER),
-    leaseTotalCost: clamp(leaseTotalCost, 0, Number.MAX_SAFE_INTEGER),
+export function generateDecision(
+  profile: UserProfile,
+  preferences: VehiclePreferences
+): DecisionResult {
+  const termMonths = preferences.financeTerm === "explore" ? 72 : preferences.financeTerm;
+  
+  const financeCalculation = calculateFinancing(
+    preferences.vehiclePrice,
+    preferences.downPayment,
+    termMonths
+  );
 
-    buyMonthlyAllIn: clamp(buyMonthlyAllIn, 0, Number.MAX_SAFE_INTEGER),
-    leaseMonthlyAllIn: clamp(leaseMonthlyAllIn, 0, Number.MAX_SAFE_INTEGER),
+  const budgetAnalysis = analyzeBudget(profile, financeCalculation.monthlyAllIn);
+  const factors = analyzeFactors(preferences, budgetAnalysis);
+  const recommendation = generateRecommendation(factors, budgetAnalysis, preferences);
 
-    buyStressScore: clamp(buyStress.stressScore, 0, 100),
-    leaseStressScore: clamp(leaseStress.stressScore, 0, 100),
-
-    riskFlags: cappedRiskFlags
+  return {
+    recommendation,
+    financeCalculation,
+    budgetAnalysis,
+    profile,
+    preferences,
   };
 }
