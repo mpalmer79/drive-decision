@@ -20,6 +20,9 @@ import { Confetti, ConfettiBurst } from "@/components/Confetti";
 import { AnimatedCounter, PercentageRing } from "@/components/AnimatedCounter";
 import { WhatIfSliders } from "@/components/WhatIfSliders";
 import { useWhatIfCalculation } from "@/hooks/useWhatIfCalculation";
+import { PaymentTimeline } from "@/components/PaymentTimeline";
+import { CostBreakdownChart } from "@/components/CostBreakdownChart";
+import { EquityChart } from "@/components/EquityChart";
 import { ProtectionPackages } from "@/components/steps/ProtectionPackages";
 import { LeadCapture } from "@/components/steps/LeadCapture";
 
@@ -381,6 +384,56 @@ export function ResultsPage({ result, buy, lease, onStartOver }: ResultsPageProp
           leaseMonthly={displayResult.leaseMonthlyAllIn}
           buyTotal={displayResult.buyTotalCost}
           leaseTotal={displayResult.leaseTotalCost}
+        />
+      </div>
+
+      {/* Payment Timeline */}
+      <div className={cn(
+        "mb-10 transition-all duration-700 delay-100",
+        revealStage >= 6 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+      )}>
+        <PaymentTimeline
+          termMonths={buy.termMonths}
+          ownershipMonths={buy.ownershipMonths}
+          buyMonthly={displayResult.buyMonthlyAllIn}
+          leaseMonthly={displayResult.leaseMonthlyAllIn}
+          buyTotal={displayResult.buyTotalCost}
+          leaseTotal={displayResult.leaseTotalCost}
+          downPayment={buy.downPayment}
+          vehiclePrice={buy.vehiclePrice}
+          verdict={displayResult.verdict}
+        />
+      </div>
+
+      {/* Cost Breakdown Chart */}
+      <div className={cn(
+        "mb-10 transition-all duration-700 delay-200",
+        revealStage >= 6 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+      )}>
+        <CostBreakdownChart
+          buyMonthly={displayResult.buyMonthlyAllIn}
+          leaseMonthly={displayResult.leaseMonthlyAllIn}
+          termMonths={buy.termMonths}
+          ownershipMonths={buy.ownershipMonths}
+          downPayment={buy.downPayment}
+          insurance={buy.estMonthlyInsurance || 180}
+          maintenance={buy.estMonthlyMaintenance || 75}
+          verdict={displayResult.verdict}
+        />
+      </div>
+
+      {/* Equity Chart */}
+      <div className={cn(
+        "mb-10 transition-all duration-700 delay-300",
+        revealStage >= 6 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+      )}>
+        <EquityChart
+          vehiclePrice={buy.vehiclePrice}
+          downPayment={buy.downPayment}
+          termMonths={buy.termMonths}
+          ownershipMonths={buy.ownershipMonths}
+          buyMonthly={displayResult.buyMonthlyAllIn}
+          leaseMonthly={displayResult.leaseMonthlyAllIn}
         />
       </div>
 
