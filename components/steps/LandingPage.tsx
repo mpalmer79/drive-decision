@@ -87,8 +87,8 @@ export function LandingPage({ onStart }: LandingPageProps) {
               <div className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
                 DriveDecision
               </div>
-              <div className="text-xs sm:text-sm text-slate-400 tracking-widest uppercase font-medium">
-                by Quirk Auto
+              <div className="text-xs sm:text-sm text-slate-400 tracking-widest font-medium">
+                powered by Quirk AI
               </div>
             </div>
           </div>
