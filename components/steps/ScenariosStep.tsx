@@ -1,16 +1,19 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { BuyScenario, LeaseScenario } from "@/types";
 import { cn, formatNumber, toNumber } from "@/lib/utils";
-import { Button, Card, Input, Select } from "@/components/ui";
+import { Button, Card, Input } from "@/components/ui";
 import {
   IconArrowLeft,
   IconArrowRight,
-  IconKey,
-  IconFileText,
-  Spinner,
+  IconCar,
+  IconDollar,
+  IconCalendar,
+  IconUser,
+  IconCheck,
   IconSparkles,
+  Spinner,
 } from "@/components/icons";
 
 interface ScenariosStepProps {
@@ -23,6 +26,9 @@ interface ScenariosStepProps {
   isLoading: boolean;
 }
 
+type TermOption = 72 | 75 | 84 | "explore";
+type OwnershipType = "new-often" | "long-term" | "undecided";
+
 export function ScenariosStep({
   buy,
   setBuy,
@@ -32,360 +38,405 @@ export function ScenariosStep({
   onBack,
   isLoading,
 }: ScenariosStepProps) {
-  const [activeTab, setActiveTab] = useState<"buy" | "lease">("buy");
+  const [currentQuestion, setCurrentQuestion] = useState(0);
+  const [vehiclePrice, setVehiclePrice] = useState<number>(buy.vehiclePrice || 0);
+  const [downPayment, setDownPayment] = useState<number>(buy.downPayment || 0);
+  const [selectedTerm, setSelectedTerm] = useState<TermOption | null>(null);
+  const [ownershipType, setOwnershipType] = useState<OwnershipType | null>(null);
+  const [animating, setAnimating] = useState(false);
+
+  // Calculate suggested down payment (10%)
+  const suggestedDown = Math.round(vehiclePrice * 0.1);
+
+  // Sync values back to buy/lease scenarios
+  useEffect(() => {
+    setBuy(prev => ({
+      ...prev,
+      vehiclePrice: vehiclePrice,
+      downPayment: downPayment,
+      termMonths: selectedTerm === "explore" ? 72 : (selectedTerm || 72),
+      ownershipMonths: ownershipType === "new-often" ? 36 : ownershipType === "long-term" ? 72 : 48,
+      // Set reasonable defaults for removed fields
+      aprPercent: prev.aprPercent || 7.5,
+      estMonthlyInsurance: prev.estMonthlyInsurance || 180,
+      estMonthlyMaintenance: prev.estMonthlyMaintenance || 75,
+    }));
+    
+    setLease(prev => ({
+      ...prev,
+      msrp: vehiclePrice,
+      dueAtSigning: downPayment,
+      monthlyPayment: prev.monthlyPayment || Math.round(vehiclePrice * 0.015), // Estimate ~1.5% of price
+      termMonths: ownershipType === "new-often" ? 36 : 36,
+      estMonthlyInsurance: prev.estMonthlyInsurance || 180,
+      estMonthlyMaintenance: prev.estMonthlyMaintenance || 40,
+    }));
+  }, [vehiclePrice, downPayment, selectedTerm, ownershipType, setBuy, setLease]);
+
+  const goToQuestion = (index: number) => {
+    setAnimating(true);
+    setTimeout(() => {
+      setCurrentQuestion(index);
+      setAnimating(false);
+    }, 300);
+  };
+
+  const canProceed = () => {
+    switch (currentQuestion) {
+      case 0: return vehiclePrice > 0;
+      case 1: return downPayment >= 0;
+      case 2: return selectedTerm !== null;
+      case 3: return ownershipType !== null;
+      default: return false;
+    }
+  };
+
+  const handleNext = () => {
+    if (currentQuestion < 3) {
+      goToQuestion(currentQuestion + 1);
+    } else {
+      onSubmit();
+    }
+  };
+
+  const handleBack = () => {
+    if (currentQuestion > 0) {
+      goToQuestion(currentQuestion - 1);
+    } else {
+      onBack();
+    }
+  };
+
+  const questions = [
+    {
+      number: 1,
+      icon: IconCar,
+      iconBg: "from-emerald-500/20 to-teal-500/20",
+      iconColor: "text-emerald-400",
+      title: "What is the price of the vehicle you're looking at?",
+      subtitle: "This helps us calculate both financing and leasing options for you.",
+    },
+    {
+      number: 2,
+      icon: IconDollar,
+      iconBg: "from-amber-500/20 to-orange-500/20",
+      iconColor: "text-amber-400",
+      title: "What amount are you applying to your purchase today?",
+      subtitle: "Most lenders like to see at least 10% as your initial investment for money down.",
+    },
+    {
+      number: 3,
+      icon: IconCalendar,
+      iconBg: "from-cyan-500/20 to-blue-500/20",
+      iconColor: "text-cyan-400",
+      title: "If you are financing, what term are you considering?",
+      subtitle: "Select the loan length that fits your budget.",
+    },
+    {
+      number: 4,
+      icon: IconUser,
+      iconBg: "from-purple-500/20 to-pink-500/20",
+      iconColor: "text-purple-400",
+      title: "What type of vehicle owner are you?",
+      subtitle: "This helps us tailor our recommendation to your lifestyle.",
+    },
+  ];
+
+  const currentQ = questions[currentQuestion];
 
   return (
-    <div className="max-w-4xl mx-auto">
-      {/* Header */}
-      <div className="text-center mb-10">
-        <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-3 tracking-tight">
-          Compare Your Options
-        </h2>
-        <p className="text-slate-400 text-lg">
-          Enter the details for both scenarios to get your personalized analysis
-        </p>
-      </div>
-
-      {/* Tab Switcher (Mobile) */}
-      <div className="flex gap-3 mb-8 sm:hidden">
-        <button
-          onClick={() => setActiveTab("buy")}
-          className={cn(
-            "flex-1 py-4 px-4 rounded-xl font-semibold text-sm transition-all duration-300",
-            "flex items-center justify-center gap-2",
-            activeTab === "buy"
-              ? "bg-gradient-to-br from-emerald-500/20 to-teal-500/20 text-emerald-400 ring-2 ring-emerald-500/50 shadow-lg shadow-emerald-500/10"
-              : "bg-slate-800/50 text-slate-400 border border-slate-700/50"
-          )}
-        >
-          <IconKey className="w-4 h-4" />
-          Buy
-        </button>
-        <button
-          onClick={() => setActiveTab("lease")}
-          className={cn(
-            "flex-1 py-4 px-4 rounded-xl font-semibold text-sm transition-all duration-300",
-            "flex items-center justify-center gap-2",
-            activeTab === "lease"
-              ? "bg-gradient-to-br from-amber-500/20 to-orange-500/20 text-amber-400 ring-2 ring-amber-500/50 shadow-lg shadow-amber-500/10"
-              : "bg-slate-800/50 text-slate-400 border border-slate-700/50"
-          )}
-        >
-          <IconFileText className="w-4 h-4" />
-          Lease
-        </button>
-      </div>
-
-      {/* Cards Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
-        {/* BUY Card */}
-        <div className={cn(activeTab !== "buy" && "hidden sm:block")}>
-          <Card className="space-y-5 h-full border-emerald-500/10 hover:border-emerald-500/30 transition-colors duration-300">
-            {/* Card Header */}
-            <div className="flex items-center gap-4 pb-4 border-b border-slate-700/50">
-              <div className="relative">
-                <div className="absolute inset-0 bg-emerald-500/20 rounded-xl blur-md" />
-                <div className="relative w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500/20 to-teal-500/20 flex items-center justify-center border border-emerald-500/20">
-                  <IconKey className="w-6 h-6 text-emerald-400" />
-                </div>
-              </div>
-              <div>
-                <h3 className="font-bold text-white text-lg">Buy Scenario</h3>
-                <p className="text-sm text-slate-500">Finance and own the vehicle</p>
-              </div>
-            </div>
-
-            {/* Form Fields */}
-            <div className="space-y-4">
-              <Input
-                label="Vehicle price"
-                prefix="$"
-                type="text"
-                inputMode="numeric"
-                value={buy.vehiclePrice === 0 ? "" : formatNumber(buy.vehiclePrice)}
-                onChange={(e) => setBuy({ ...buy, vehiclePrice: toNumber(e.target.value) })}
-                placeholder="42,000"
-              />
-
-              <Input
-                label="Down payment"
-                prefix="$"
-                type="text"
-                inputMode="numeric"
-                value={buy.downPayment === 0 ? "" : formatNumber(buy.downPayment)}
-                onChange={(e) => setBuy({ ...buy, downPayment: toNumber(e.target.value) })}
-                placeholder="4,000"
-              />
-
-              <div className="grid grid-cols-2 gap-4">
-                <Input
-                  label="APR"
-                  suffix="%"
-                  type="number"
-                  step="0.1"
-                  value={buy.aprPercent || ""}
-                  onChange={(e) => setBuy({ ...buy, aprPercent: toNumber(e.target.value) })}
-                  placeholder="7.2"
-                />
-                <Input
-                  label="Loan term"
-                  suffix="mo"
-                  type="number"
-                  value={buy.termMonths || ""}
-                  onChange={(e) =>
-                    setBuy({ ...buy, termMonths: Math.floor(toNumber(e.target.value)) })
-                  }
-                  placeholder="72"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <Input
-                  label="Insurance"
-                  hint="/month"
-                  prefix="$"
-                  type="text"
-                  inputMode="numeric"
-                  value={buy.estMonthlyInsurance === 0 ? "" : formatNumber(buy.estMonthlyInsurance)}
-                  onChange={(e) =>
-                    setBuy({ ...buy, estMonthlyInsurance: toNumber(e.target.value) })
-                  }
-                  placeholder="220"
-                />
-                <Input
-                  label="Maintenance"
-                  hint="/month"
-                  prefix="$"
-                  type="text"
-                  inputMode="numeric"
-                  value={buy.estMonthlyMaintenance === 0 ? "" : formatNumber(buy.estMonthlyMaintenance)}
-                  onChange={(e) =>
-                    setBuy({ ...buy, estMonthlyMaintenance: toNumber(e.target.value) })
-                  }
-                  placeholder="90"
-                />
-              </div>
-
-              <Input
-                label="How long will you keep it?"
-                suffix="months"
-                type="number"
-                value={buy.ownershipMonths || ""}
-                onChange={(e) =>
-                  setBuy({ ...buy, ownershipMonths: Math.floor(toNumber(e.target.value)) })
-                }
-                placeholder="48"
-              />
-            </div>
-          </Card>
-        </div>
-
-        {/* LEASE Card */}
-        <div className={cn(activeTab !== "lease" && "hidden sm:block")}>
-          <Card className="space-y-5 h-full border-amber-500/10 hover:border-amber-500/30 transition-colors duration-300">
-            {/* Card Header */}
-            <div className="flex items-center gap-4 pb-4 border-b border-slate-700/50">
-              <div className="relative">
-                <div className="absolute inset-0 bg-amber-500/20 rounded-xl blur-md" />
-                <div className="relative w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500/20 to-orange-500/20 flex items-center justify-center border border-amber-500/20">
-                  <IconFileText className="w-6 h-6 text-amber-400" />
-                </div>
-              </div>
-              <div>
-                <h3 className="font-bold text-white text-lg">Lease Scenario</h3>
-                <p className="text-sm text-slate-500">Rent with option to buy</p>
-              </div>
-            </div>
-
-            {/* Form Fields */}
-            <div className="space-y-4">
-              <Input
-                label="Vehicle MSRP"
-                prefix="$"
-                type="text"
-                inputMode="numeric"
-                value={lease.msrp === 0 ? "" : formatNumber(lease.msrp)}
-                onChange={(e) => setLease({ ...lease, msrp: toNumber(e.target.value) })}
-                placeholder="45,000"
-              />
-
-              <div className="grid grid-cols-2 gap-4">
-                <Input
-                  label="Monthly payment"
-                  prefix="$"
-                  type="text"
-                  inputMode="numeric"
-                  value={lease.monthlyPayment === 0 ? "" : formatNumber(lease.monthlyPayment)}
-                  onChange={(e) =>
-                    setLease({ ...lease, monthlyPayment: toNumber(e.target.value) })
-                  }
-                  placeholder="499"
-                />
-                <Input
-                  label="Due at signing"
-                  prefix="$"
-                  type="text"
-                  inputMode="numeric"
-                  value={lease.dueAtSigning === 0 ? "" : formatNumber(lease.dueAtSigning)}
-                  onChange={(e) =>
-                    setLease({ ...lease, dueAtSigning: toNumber(e.target.value) })
-                  }
-                  placeholder="2,500"
-                />
-              </div>
-
-              <Input
-                label="Lease term"
-                suffix="months"
-                type="number"
-                value={lease.termMonths || ""}
-                onChange={(e) =>
-                  setLease({ ...lease, termMonths: Math.floor(toNumber(e.target.value)) })
-                }
-                placeholder="36"
-              />
-
-              <div className="grid grid-cols-2 gap-4">
-                <Input
-                  label="Miles allowed"
-                  hint="/year"
-                  type="text"
-                  inputMode="numeric"
-                  value={
-                    lease.mileageAllowancePerYear === 0
-                      ? ""
-                      : formatNumber(lease.mileageAllowancePerYear)
-                  }
-                  onChange={(e) =>
-                    setLease({
-                      ...lease,
-                      mileageAllowancePerYear: Math.floor(toNumber(e.target.value)),
-                    })
-                  }
-                  placeholder="12,000"
-                />
-                <Input
-                  label="You'll drive"
-                  hint="/year"
-                  type="text"
-                  inputMode="numeric"
-                  value={lease.estMilesPerYear === 0 ? "" : formatNumber(lease.estMilesPerYear)}
-                  onChange={(e) =>
-                    setLease({
-                      ...lease,
-                      estMilesPerYear: Math.floor(toNumber(e.target.value)),
-                    })
-                  }
-                  placeholder="14,000"
-                />
-              </div>
-
-              <Input
-                label="Excess mile fee"
-                prefix="$"
-                suffix="/mile"
-                type="number"
-                step="0.05"
-                value={lease.estExcessMileFee || ""}
-                onChange={(e) =>
-                  setLease({ ...lease, estExcessMileFee: toNumber(e.target.value) })
-                }
-                placeholder="0.25"
-              />
-
-              <div className="grid grid-cols-2 gap-4">
-                <Input
-                  label="Insurance"
-                  hint="/month"
-                  prefix="$"
-                  type="text"
-                  inputMode="numeric"
-                  value={
-                    lease.estMonthlyInsurance === 0 ? "" : formatNumber(lease.estMonthlyInsurance)
-                  }
-                  onChange={(e) =>
-                    setLease({ ...lease, estMonthlyInsurance: toNumber(e.target.value) })
-                  }
-                  placeholder="230"
-                />
-                <Input
-                  label="Maintenance"
-                  hint="/month"
-                  prefix="$"
-                  type="text"
-                  inputMode="numeric"
-                  value={
-                    lease.estMonthlyMaintenance === 0
-                      ? ""
-                      : formatNumber(lease.estMonthlyMaintenance)
-                  }
-                  onChange={(e) =>
-                    setLease({ ...lease, estMonthlyMaintenance: toNumber(e.target.value) })
-                  }
-                  placeholder="40"
-                />
-              </div>
-
-              <Select
-                label="At lease end, you plan to..."
-                value={lease.leaseEndPlan}
-                onChange={(e) =>
-                  setLease({
-                    ...lease,
-                    leaseEndPlan: e.target.value as LeaseScenario["leaseEndPlan"],
-                  })
-                }
-              >
-                <option value="return">Return the vehicle</option>
-                <option value="buyout">Buy it out</option>
-              </Select>
-
-              {lease.leaseEndPlan === "buyout" && (
-                <Input
-                  label="Buyout price"
-                  prefix="$"
-                  type="text"
-                  inputMode="numeric"
-                  value={lease.estBuyoutPrice === 0 ? "" : formatNumber(lease.estBuyoutPrice || 0)}
-                  onChange={(e) =>
-                    setLease({ ...lease, estBuyoutPrice: toNumber(e.target.value) })
-                  }
-                  placeholder="28,000"
-                />
+    <div className="max-w-2xl mx-auto">
+      {/* Progress Indicator */}
+      <div className="flex items-center justify-center gap-2 mb-10">
+        {questions.map((q, i) => (
+          <div key={i} className="flex items-center gap-2">
+            <button
+              onClick={() => i < currentQuestion && goToQuestion(i)}
+              disabled={i > currentQuestion}
+              className={cn(
+                "w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm transition-all duration-300",
+                i < currentQuestion
+                  ? "bg-gradient-to-br from-emerald-500 to-teal-500 text-white shadow-lg shadow-emerald-500/30 cursor-pointer hover:scale-105"
+                  : i === currentQuestion
+                    ? "bg-gradient-to-br from-emerald-500/20 to-teal-500/20 text-emerald-400 ring-2 ring-emerald-500"
+                    : "bg-slate-800/50 text-slate-500 border border-slate-700/50 cursor-not-allowed"
               )}
+            >
+              {i < currentQuestion ? <IconCheck className="w-5 h-5" /> : i + 1}
+            </button>
+            {i < questions.length - 1 && (
+              <div className={cn(
+                "w-8 sm:w-12 h-1 rounded-full transition-all duration-500",
+                i < currentQuestion 
+                  ? "bg-gradient-to-r from-emerald-500 to-teal-500" 
+                  : "bg-slate-700/50"
+              )} />
+            )}
+          </div>
+        ))}
+      </div>
+
+      {/* Question Card */}
+      <div className={cn(
+        "transition-all duration-300",
+        animating ? "opacity-0 translate-y-4" : "opacity-100 translate-y-0"
+      )}>
+        <div className="question-card rounded-3xl p-8 sm:p-10">
+          {/* Question Header */}
+          <div className="flex items-start gap-5 mb-8">
+            <div className={cn(
+              "step-number flex-shrink-0",
+              "bg-gradient-to-br",
+              currentQ.iconBg
+            )}>
+              <currentQ.icon className={cn("w-6 h-6", currentQ.iconColor)} />
             </div>
-          </Card>
+            <div>
+              <h2 className="text-xl sm:text-2xl font-bold text-white mb-2 leading-tight">
+                {currentQ.title}
+              </h2>
+              <p className="text-slate-400 text-sm sm:text-base">
+                {currentQ.subtitle}
+              </p>
+            </div>
+          </div>
+
+          {/* Question Content */}
+          <div className="space-y-6">
+            {/* Question 1: Vehicle Price */}
+            {currentQuestion === 0 && (
+              <div className="space-y-4">
+                <Input
+                  prefix="$"
+                  type="text"
+                  inputMode="numeric"
+                  value={vehiclePrice === 0 ? "" : formatNumber(vehiclePrice)}
+                  onChange={(e) => setVehiclePrice(toNumber(e.target.value))}
+                  placeholder="42,000"
+                  className="text-2xl font-bold py-5"
+                />
+                
+                {/* Quick Select Buttons */}
+                <div className="flex flex-wrap gap-2">
+                  {[25000, 35000, 45000, 55000, 65000].map((price) => (
+                    <button
+                      key={price}
+                      onClick={() => setVehiclePrice(price)}
+                      className={cn(
+                        "px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200",
+                        vehiclePrice === price
+                          ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/50"
+                          : "bg-slate-800/50 text-slate-400 border border-slate-700/50 hover:border-slate-600 hover:text-white"
+                      )}
+                    >
+                      ${formatNumber(price)}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Question 2: Down Payment */}
+            {currentQuestion === 1 && (
+              <div className="space-y-4">
+                <Input
+                  prefix="$"
+                  type="text"
+                  inputMode="numeric"
+                  value={downPayment === 0 ? "" : formatNumber(downPayment)}
+                  onChange={(e) => setDownPayment(toNumber(e.target.value))}
+                  placeholder={formatNumber(suggestedDown)}
+                  className="text-2xl font-bold py-5"
+                />
+                
+                {/* Suggestion Banner */}
+                {vehiclePrice > 0 && (
+                  <div className="p-4 rounded-xl bg-gradient-to-r from-emerald-500/10 to-teal-500/10 border border-emerald-500/20">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm text-slate-400 mb-1">Suggested (10%)</p>
+                        <p className="text-xl font-bold text-emerald-400">${formatNumber(suggestedDown)}</p>
+                      </div>
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        onClick={() => setDownPayment(suggestedDown)}
+                      >
+                        Use This
+                      </Button>
+                    </div>
+                  </div>
+                )}
+                
+                {/* Quick Select */}
+                <div className="flex flex-wrap gap-2">
+                  {[0, 2000, 5000, 10000].map((amount) => (
+                    <button
+                      key={amount}
+                      onClick={() => setDownPayment(amount)}
+                      className={cn(
+                        "px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200",
+                        downPayment === amount
+                          ? "bg-amber-500/20 text-amber-400 border border-amber-500/50"
+                          : "bg-slate-800/50 text-slate-400 border border-slate-700/50 hover:border-slate-600 hover:text-white"
+                      )}
+                    >
+                      {amount === 0 ? "$0 Down" : `$${formatNumber(amount)}`}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Question 3: Term Selection */}
+            {currentQuestion === 2 && (
+              <div className="grid grid-cols-2 gap-4">
+                {([
+                  { value: 72 as TermOption, label: "72 Months", sublabel: "6 years • Lower payments" },
+                  { value: 75 as TermOption, label: "75 Months", sublabel: "6.25 years • Flexible" },
+                  { value: 84 as TermOption, label: "84 Months", sublabel: "7 years • Lowest payments" },
+                  { value: "explore" as TermOption, label: "Explore All", sublabel: "Show me all options" },
+                ]).map((option) => (
+                  <button
+                    key={option.value}
+                    onClick={() => setSelectedTerm(option.value)}
+                    className={cn(
+                      "choice-button rounded-2xl p-5 text-left transition-all duration-300",
+                      selectedTerm === option.value && "selected"
+                    )}
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-lg font-bold text-white">{option.label}</span>
+                      {selectedTerm === option.value && (
+                        <div className="w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center">
+                          <IconCheck className="w-4 h-4 text-white" />
+                        </div>
+                      )}
+                    </div>
+                    <span className="text-sm text-slate-400">{option.sublabel}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {/* Question 4: Ownership Type */}
+            {currentQuestion === 3 && (
+              <div className="space-y-4">
+                {([
+                  {
+                    value: "new-often" as OwnershipType,
+                    emoji: "🚗",
+                    title: "I prefer a new vehicle every 3-5 years",
+                    description: "Without the long-term cost of ownership concerns like depreciation and major repairs.",
+                  },
+                  {
+                    value: "long-term" as OwnershipType,
+                    emoji: "🔧",
+                    title: "I hold onto vehicles long-term",
+                    description: "For as long as it makes financial sense, considering mechanical expenses and repairs.",
+                  },
+                  {
+                    value: "undecided" as OwnershipType,
+                    emoji: "🤔",
+                    title: "I haven't decided yet",
+                    description: "It depends on the difference in monthly payment between buying and leasing.",
+                  },
+                ]).map((option) => (
+                  <button
+                    key={option.value}
+                    onClick={() => setOwnershipType(option.value)}
+                    className={cn(
+                      "choice-button w-full rounded-2xl p-5 text-left transition-all duration-300",
+                      ownershipType === option.value && "selected"
+                    )}
+                  >
+                    <div className="flex items-start gap-4">
+                      <span className="text-3xl">{option.emoji}</span>
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="font-bold text-white">{option.title}</span>
+                          {ownershipType === option.value && (
+                            <div className="w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center flex-shrink-0">
+                              <IconCheck className="w-4 h-4 text-white" />
+                            </div>
+                          )}
+                        </div>
+                        <span className="text-sm text-slate-400 leading-relaxed">{option.description}</span>
+                      </div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
-      {/* Actions */}
-      <div className="flex justify-between items-center mt-10">
-        <Button variant="ghost" onClick={onBack} disabled={isLoading}>
+      {/* Navigation */}
+      <div className="flex justify-between items-center mt-8">
+        <Button variant="ghost" onClick={handleBack} disabled={isLoading}>
           <IconArrowLeft className="w-4 h-4" />
-          <span className="hidden sm:inline">Back</span>
+          <span>Back</span>
         </Button>
-        
-        <Button 
-          variant="primary" 
+
+        <Button
+          variant="primary"
           size="lg"
-          onClick={onSubmit} 
-          disabled={isLoading}
-          className="group min-w-[200px]"
+          onClick={handleNext}
+          disabled={!canProceed() || isLoading}
+          className="group min-w-[180px]"
         >
           {isLoading ? (
             <>
               <Spinner className="w-5 h-5" />
               Analyzing...
             </>
-          ) : (
+          ) : currentQuestion === 3 ? (
             <>
               <IconSparkles className="w-5 h-5" />
               Get My Decision
+            </>
+          ) : (
+            <>
+              Continue
               <IconArrowRight className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1" />
             </>
           )}
         </Button>
       </div>
+
+      {/* Summary Preview (shows after question 2) */}
+      {currentQuestion >= 2 && vehiclePrice > 0 && (
+        <div className="mt-8 p-4 rounded-xl bg-slate-800/30 border border-slate-700/30">
+          <div className="text-xs text-slate-500 uppercase tracking-wider mb-3">Your Selection</div>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
+            <div>
+              <div className="text-lg font-bold text-white">${formatNumber(vehiclePrice)}</div>
+              <div className="text-xs text-slate-500">Vehicle Price</div>
+            </div>
+            <div>
+              <div className="text-lg font-bold text-emerald-400">${formatNumber(downPayment)}</div>
+              <div className="text-xs text-slate-500">Down Payment</div>
+            </div>
+            {selectedTerm && (
+              <div>
+                <div className="text-lg font-bold text-cyan-400">
+                  {selectedTerm === "explore" ? "All" : `${selectedTerm}mo`}
+                </div>
+                <div className="text-xs text-slate-500">Term</div>
+              </div>
+            )}
+            {ownershipType && (
+              <div>
+                <div className="text-lg font-bold text-purple-400">
+                  {ownershipType === "new-often" ? "🚗" : ownershipType === "long-term" ? "🔧" : "🤔"}
+                </div>
+                <div className="text-xs text-slate-500">Owner Type</div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
