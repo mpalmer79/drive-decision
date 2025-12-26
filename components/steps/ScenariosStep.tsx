@@ -466,10 +466,10 @@ export function ScenariosStep({
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   {[
-                    { value: 60 as const, label: "60 Months", sublabel: "5 years • Higher payments" },
-                    { value: 72 as const, label: "72 Months", sublabel: "6 years • Balanced" },
-                    { value: 84 as const, label: "84 Months", sublabel: "7 years • Lower payments" },
-                    { value: "explore" as const, label: "Show Me Options", sublabel: "Compare all terms" },
+                    { value: 72 as const, label: "72 Months", sublabel: "6 years • Standard payments" },
+{ value: 78 as const, label: "78 Months", sublabel: "6.5 years • Balanced" },
+{ value: 84 as const, label: "84 Months", sublabel: "7 years • Lower payments" },
+                    { value: "explore" as const, label: "Show Me All Options", sublabel: "Compare all terms" },
                   ].map((option) => (
                     <button
                       key={option.value}
