@@ -155,11 +155,12 @@ export default function Page() {
               )}
 
               {step === "results" && appState.status === "success" && (
-                <ResultsPage
-                  result={appState.result}
-                  onStartOver={handleStartOver}
-                />
-              )}
+  <ResultsPage
+    result={appState.result}
+    onStartOver={handleStartOver}
+    onBack={() => setStep("scenarios")}
+  />
+)}
             </div>
           </div>
         )}
