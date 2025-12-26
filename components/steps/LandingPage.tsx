@@ -162,6 +162,7 @@ export function LandingPage({ onStart }: LandingPageProps) {
               iconBg: "bg-emerald-500/10",
               iconColor: "text-emerald-400",
               delay: "delay-[800ms]",
+              bgImage: "/b.png",
             },
             {
               icon: IconTrendingUp,
@@ -171,6 +172,7 @@ export function LandingPage({ onStart }: LandingPageProps) {
               iconBg: "bg-cyan-500/10",
               iconColor: "text-cyan-400",
               delay: "delay-[900ms]",
+              bgImage: "/a.png",
             },
             {
               icon: IconAlertTriangle,
@@ -180,6 +182,7 @@ export function LandingPage({ onStart }: LandingPageProps) {
               iconBg: "bg-amber-500/10",
               iconColor: "text-amber-400",
               delay: "delay-[1000ms]",
+              bgImage: "/c.png",
             },
           ].map((feature) => (
             <div
@@ -197,20 +200,33 @@ export function LandingPage({ onStart }: LandingPageProps) {
                 feature.gradient
               )} />
               
-              <Card className="relative h-full glass-card-hover flex flex-col items-center text-center p-6 sm:p-8">
-                {/* Icon */}
-                <div className={cn(
-                  "w-14 h-14 rounded-2xl flex items-center justify-center mb-5",
-                  "transition-transform duration-300 group-hover:scale-110",
-                  feature.iconBg
-                )}>
-                  <feature.icon className={cn("w-7 h-7", feature.iconColor)} />
-                </div>
+              <div 
+                className="relative h-full rounded-2xl border border-slate-700/50 overflow-hidden"
+                style={{ 
+                  backgroundImage: `url(${feature.bgImage})`, 
+                  backgroundSize: 'cover', 
+                  backgroundPosition: 'center' 
+                }}
+              >
+                {/* Dark overlay for readability */}
+                <div className="absolute inset-0 bg-slate-900/75" />
                 
                 {/* Content */}
-                <h3 className="font-bold text-white text-lg mb-2">{feature.title}</h3>
-                <p className="text-sm text-slate-400 leading-relaxed">{feature.desc}</p>
-              </Card>
+                <div className="relative z-10 flex flex-col items-center text-center p-6 sm:p-8">
+                  {/* Icon */}
+                  <div className={cn(
+                    "w-14 h-14 rounded-2xl flex items-center justify-center mb-5",
+                    "transition-transform duration-300 group-hover:scale-110",
+                    feature.iconBg
+                  )}>
+                    <feature.icon className={cn("w-7 h-7", feature.iconColor)} />
+                  </div>
+                  
+                  {/* Content */}
+                  <h3 className="font-bold text-white text-lg mb-2">{feature.title}</h3>
+                  <p className="text-sm text-slate-400 leading-relaxed">{feature.desc}</p>
+                </div>
+              </div>
             </div>
           ))}
         </div>
