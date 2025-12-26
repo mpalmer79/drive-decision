@@ -10,7 +10,7 @@ export function QuirkHeader() {
   return (
     <div className="w-full pt-8 pb-4 flex justify-center">
       <a
-        href="https://www.quirkcars.com"
+        href="https://www.quirkchevynh.com"
         target="_blank"
         rel="noopener noreferrer"
         className="group relative transition-all duration-300 hover:scale-105"
