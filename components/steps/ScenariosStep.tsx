@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import type { VehiclePreferences } from "@/types";
+import { useState } from "react";
+import type { VehiclePreferences, CreditTier } from "@/types";
 import { cn, formatNumber, toNumber } from "@/lib/utils";
 import { Button, Card, Input } from "@/components/ui";
 import {
@@ -27,6 +27,15 @@ interface ScenariosStepProps {
 }
 
 type Priority = "lowest-payment" | "ownership" | "flexibility" | "newest-tech" | "customize";
+
+// Credit score icon
+function IconCreditCard({ className }: { className?: string }) {
+  return (
+    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+    </svg>
+  );
+}
 
 export function ScenariosStep({
   preferences,
@@ -55,12 +64,14 @@ export function ScenariosStep({
       case 1:
         return preferences.downPayment >= 0;
       case 2:
-        return preferences.annualMiles > 0;
+        return preferences.creditTier !== null;
       case 3:
-        return preferences.ownershipStyle !== null;
+        return preferences.annualMiles > 0;
       case 4:
-        return preferences.priorities.length > 0;
+        return preferences.ownershipStyle !== null;
       case 5:
+        return preferences.priorities.length > 0;
+      case 6:
         return preferences.financeTerm !== null;
       default:
         return false;
@@ -68,7 +79,7 @@ export function ScenariosStep({
   };
 
   const handleNext = () => {
-    if (currentQuestion < 5) {
+    if (currentQuestion < 6) {
       goToQuestion(currentQuestion + 1);
     } else {
       onSubmit();
@@ -111,6 +122,14 @@ export function ScenariosStep({
     },
     {
       number: 3,
+      icon: IconCreditCard,
+      iconBg: "from-violet-500/20 to-purple-500/20",
+      iconColor: "text-violet-400",
+      title: "What's your credit situation?",
+      subtitle: "This helps us estimate your interest rate. Be honest — it only affects your payment estimate.",
+    },
+    {
+      number: 4,
       icon: IconTrendingUp,
       iconBg: "from-cyan-500/20 to-blue-500/20",
       iconColor: "text-cyan-400",
@@ -118,7 +137,7 @@ export function ScenariosStep({
       subtitle: "This is important for understanding your driving habits.",
     },
     {
-      number: 4,
+      number: 5,
       icon: IconUser,
       iconBg: "from-purple-500/20 to-pink-500/20",
       iconColor: "text-purple-400",
@@ -126,7 +145,7 @@ export function ScenariosStep({
       subtitle: "This helps us tailor our recommendation to your lifestyle.",
     },
     {
-      number: 5,
+      number: 6,
       icon: IconShield,
       iconBg: "from-rose-500/20 to-red-500/20",
       iconColor: "text-rose-400",
@@ -134,7 +153,7 @@ export function ScenariosStep({
       subtitle: "Select all that apply to help us understand your priorities.",
     },
     {
-      number: 6,
+      number: 7,
       icon: IconCalendar,
       iconBg: "from-indigo-500/20 to-violet-500/20",
       iconColor: "text-indigo-400",
@@ -144,6 +163,14 @@ export function ScenariosStep({
   ];
 
   const currentQ = questions[currentQuestion];
+
+  // Credit tier options with APR info
+  const creditTierOptions: { value: CreditTier; label: string; score: string; apr: string; color: string }[] = [
+    { value: "excellent", label: "Excellent", score: "750+", apr: "~6.5%", color: "emerald" },
+    { value: "good", label: "Good", score: "700-749", apr: "~7.5%", color: "cyan" },
+    { value: "fair", label: "Fair", score: "650-699", apr: "~8.5%", color: "amber" },
+    { value: "rebuilding", label: "Rebuilding", score: "Below 650", apr: "~14.5%", color: "rose" },
+  ];
 
   return (
     <div className="max-w-2xl mx-auto">
@@ -168,7 +195,7 @@ export function ScenariosStep({
             {i < questions.length - 1 && (
               <div
                 className={cn(
-                  "w-6 sm:w-8 h-1 rounded-full transition-all duration-500",
+                  "w-4 sm:w-6 h-1 rounded-full transition-all duration-500",
                   i < currentQuestion
                     ? "bg-gradient-to-r from-emerald-500 to-teal-500"
                     : "bg-slate-700/50"
@@ -295,8 +322,75 @@ export function ScenariosStep({
               </div>
             )}
 
-            {/* Question 3: Annual Miles */}
+            {/* Question 3: Credit Tier (NEW) */}
             {currentQuestion === 2 && (
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {creditTierOptions.map((option) => {
+                    const colorClasses = {
+                      emerald: {
+                        selected: "bg-emerald-500/20 border-emerald-500/50 ring-2 ring-emerald-500",
+                        badge: "bg-emerald-500/20 text-emerald-400",
+                        text: "text-emerald-400",
+                      },
+                      cyan: {
+                        selected: "bg-cyan-500/20 border-cyan-500/50 ring-2 ring-cyan-500",
+                        badge: "bg-cyan-500/20 text-cyan-400",
+                        text: "text-cyan-400",
+                      },
+                      amber: {
+                        selected: "bg-amber-500/20 border-amber-500/50 ring-2 ring-amber-500",
+                        badge: "bg-amber-500/20 text-amber-400",
+                        text: "text-amber-400",
+                      },
+                      rose: {
+                        selected: "bg-rose-500/20 border-rose-500/50 ring-2 ring-rose-500",
+                        badge: "bg-rose-500/20 text-rose-400",
+                        text: "text-rose-400",
+                      },
+                    }[option.color];
+
+                    return (
+                      <button
+                        key={option.value}
+                        onClick={() =>
+                          setPreferences((prev) => ({ ...prev, creditTier: option.value }))
+                        }
+                        className={cn(
+                          "choice-button rounded-2xl p-5 text-left transition-all duration-300 relative",
+                          preferences.creditTier === option.value
+                            ? colorClasses.selected
+                            : "hover:border-slate-600"
+                        )}
+                      >
+                        <div className="flex items-center justify-between mb-3">
+                          <span className="text-lg font-bold text-white">{option.label}</span>
+                          {preferences.creditTier === option.value && (
+                            <div className={cn("w-6 h-6 rounded-full flex items-center justify-center", colorClasses.badge)}>
+                              <IconCheck className="w-4 h-4" />
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <span className={cn("text-sm font-medium px-2 py-1 rounded-lg", colorClasses.badge)}>
+                            {option.score}
+                          </span>
+                          <span className="text-sm text-slate-400">
+                            APR: <span className={colorClasses.text}>{option.apr}</span>
+                          </span>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+                <div className="p-3 rounded-xl bg-slate-800/50 border border-slate-700/30 text-sm text-slate-400">
+                  💡 Not sure? Check your score free at Credit Karma or your bank's app. Most people are in the "Good" range.
+                </div>
+              </div>
+            )}
+
+            {/* Question 4: Annual Miles */}
+            {currentQuestion === 3 && (
               <div className="space-y-4">
                 <Input
                   type="text"
@@ -341,8 +435,8 @@ export function ScenariosStep({
               </div>
             )}
 
-            {/* Question 4: Ownership Style */}
-            {currentQuestion === 3 && (
+            {/* Question 5: Ownership Style */}
+            {currentQuestion === 4 && (
               <div className="space-y-4">
                 {[
                   {
@@ -398,8 +492,8 @@ export function ScenariosStep({
               </div>
             )}
 
-            {/* Question 5: Priorities (Multi-select) */}
-            {currentQuestion === 4 && (
+            {/* Question 6: Priorities (Multi-select) */}
+            {currentQuestion === 5 && (
               <div className="space-y-4">
                 <p className="text-sm text-slate-500 mb-2">Select all that apply:</p>
                 {[
@@ -461,8 +555,8 @@ export function ScenariosStep({
               </div>
             )}
 
-            {/* Question 6: Finance Term */}
-            {currentQuestion === 5 && (
+            {/* Question 7: Finance Term */}
+            {currentQuestion === 6 && (
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   {[
@@ -524,7 +618,7 @@ export function ScenariosStep({
               <Spinner className="w-5 h-5" />
               Analyzing...
             </>
-          ) : currentQuestion === 5 ? (
+          ) : currentQuestion === 6 ? (
             <>
               <IconSparkles className="w-5 h-5" />
               Get My Recommendation
@@ -556,23 +650,19 @@ export function ScenariosStep({
               <div className="text-xs text-slate-500">Down Payment</div>
             </div>
             <div>
+              <div className="text-lg font-bold text-violet-400">
+                {preferences.creditTier === "excellent" ? "6.5%" : 
+                 preferences.creditTier === "good" ? "7.5%" :
+                 preferences.creditTier === "fair" ? "8.5%" : "14.5%"}
+              </div>
+              <div className="text-xs text-slate-500">Est. APR</div>
+            </div>
+            <div>
               <div className="text-lg font-bold text-cyan-400">
                 {formatNumber(preferences.annualMiles)}
               </div>
               <div className="text-xs text-slate-500">Miles/Year</div>
             </div>
-            {preferences.ownershipStyle && (
-              <div>
-                <div className="text-lg font-bold text-purple-400">
-                  {preferences.ownershipStyle === "new-often"
-                    ? "🚗"
-                    : preferences.ownershipStyle === "long-term"
-                      ? "🔧"
-                      : "🤔"}
-                </div>
-                <div className="text-xs text-slate-500">Style</div>
-              </div>
-            )}
           </div>
         </div>
       )}
