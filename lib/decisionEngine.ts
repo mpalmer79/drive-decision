@@ -8,18 +8,31 @@ import type {
   DecisionFactors,
   Recommendation,
   DecisionResult,
+  CreditTier,
 } from "@/types";
 
-const DEFAULT_APR = 7.5;
+// APR rates by credit tier
+const APR_BY_CREDIT_TIER: Record<CreditTier, number> = {
+  excellent: 6.5,   // 750+ credit score
+  good: 7.5,        // 700-749 credit score
+  fair: 8.5,        // 650-699 credit score
+  rebuilding: 14.5, // <650 credit score
+};
+
 const DEFAULT_INSURANCE = 180;
 const DEFAULT_MAINTENANCE = 75;
+
+export function getAprForCreditTier(creditTier: CreditTier): number {
+  return APR_BY_CREDIT_TIER[creditTier];
+}
 
 export function calculateFinancing(
   vehiclePrice: number,
   downPayment: number,
   termMonths: number,
-  apr: number = DEFAULT_APR
+  creditTier: CreditTier = "good"
 ): FinanceCalculation {
+  const apr = APR_BY_CREDIT_TIER[creditTier];
   const loanAmount = vehiclePrice - downPayment;
   const monthlyRate = apr / 100 / 12;
   
@@ -48,6 +61,8 @@ export function calculateFinancing(
     totalCost: Math.round(totalCost),
     monthlyAllIn: Math.round(monthlyAllIn),
     payoffDate: payoffDate.toLocaleDateString("en-US", { month: "long", year: "numeric" }),
+    aprUsed: apr,
+    creditTier,
   };
 }
 
@@ -275,7 +290,8 @@ export function generateDecision(
   const financeCalculation = calculateFinancing(
     preferences.vehiclePrice,
     preferences.downPayment,
-    termMonths
+    termMonths,
+    preferences.creditTier
   );
 
   const budgetAnalysis = analyzeBudget(profile, financeCalculation.monthlyAllIn);
