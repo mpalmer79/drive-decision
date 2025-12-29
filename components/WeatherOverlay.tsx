@@ -16,20 +16,48 @@ interface WeatherOverlayProps {
   className?: string;
 }
 
-export function WeatherOverlay({ zipCode = "03103", className }: WeatherOverlayProps) {
-  const [weather, setWeather] = useState<WeatherData | null>(null);
-  const [error, setError] = useState<string | null>(null);
+// Demo weather function (outside component to avoid recreation)
+const getDemoWeather = (): WeatherData => {
+  const hour = new Date().getHours();
+  const isDay = hour >= 6 && hour < 18;
+  
+  // Current conditions based on time of day for demo
+  // Adjust these to test different weather effects
+  const conditions = [
+    { condition: "snow", description: "light snow" },      // 0-5am
+    { condition: "clear", description: "clear sky" },      // 6-11am  
+    { condition: "clouds", description: "partly cloudy" }, // 12-5pm
+    { condition: "rain", description: "light rain" },      // 6-11pm
+  ];
+  
+  const conditionIndex = Math.floor(hour / 6) % conditions.length;
+  
+  return {
+    ...conditions[conditionIndex],
+    temp: 35,
+    icon: isDay ? "01d" : "01n",
+    isDay,
+  };
+};
 
-  // Fetch weather data
+export function WeatherOverlay({ zipCode = "03103", className }: WeatherOverlayProps) {
+  // Initialize with demo weather immediately
+  const [weather, setWeather] = useState<WeatherData>(getDemoWeather);
+  const [mounted, setMounted] = useState(false);
+
+  // Set mounted state for client-side rendering
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Fetch real weather data (or use demo if no API key)
   useEffect(() => {
     const fetchWeather = async () => {
       try {
-        // Using OpenWeatherMap API - requires API key in env
         const apiKey = process.env.NEXT_PUBLIC_OPENWEATHER_API_KEY;
         
         if (!apiKey) {
-          // Fallback to demo mode with simulated weather
-          console.log("No API key found, using demo mode");
+          console.log("WeatherOverlay: No API key, using demo weather");
           setWeather(getDemoWeather());
           return;
         }
@@ -44,7 +72,6 @@ export function WeatherOverlay({ zipCode = "03103", className }: WeatherOverlayP
 
         const data = await response.json();
         
-        // Determine if it's daytime based on sunrise/sunset
         const now = Date.now() / 1000;
         const isDay = now > data.sys.sunrise && now < data.sys.sunset;
 
@@ -57,8 +84,6 @@ export function WeatherOverlay({ zipCode = "03103", className }: WeatherOverlayP
         });
       } catch (err) {
         console.error("Weather fetch error:", err);
-        setError("Could not fetch weather");
-        // Use demo weather on error
         setWeather(getDemoWeather());
       }
     };
@@ -70,38 +95,12 @@ export function WeatherOverlay({ zipCode = "03103", className }: WeatherOverlayP
     return () => clearInterval(interval);
   }, [zipCode]);
 
-  // Demo weather for testing (cycles through conditions)
-  const getDemoWeather = (): WeatherData => {
-    const hour = new Date().getHours();
-    const isDay = hour >= 6 && hour < 18;
-    
-    // For demo, use current time to simulate different weather
-    // In production, this would be real API data
-    const conditions = [
-      { condition: "clouds", description: "partly cloudy" },
-      { condition: "clear", description: "clear sky" },
-      { condition: "rain", description: "light rain" },
-      { condition: "snow", description: "light snow" },
-    ];
-    
-    // Use hour to pick a condition for demo variety
-    const conditionIndex = Math.floor(hour / 6) % conditions.length;
-    
-    return {
-      ...conditions[conditionIndex],
-      temp: 35,
-      icon: isDay ? "01d" : "01n",
-      isDay,
-    };
-  };
-
   // Generate particles based on weather
   const particles = useMemo(() => {
     if (!weather) return [];
 
     const { condition, description } = weather;
     
-    // Determine particle count and type
     let count = 0;
     let type: "snow" | "rain" | "none" = "none";
 
@@ -140,7 +139,8 @@ export function WeatherOverlay({ zipCode = "03103", className }: WeatherOverlayP
     }));
   }, [weather]);
 
-  if (!weather) return null;
+  // Don't render on server
+  if (!mounted) return null;
 
   const { condition, description, isDay } = weather;
 
@@ -158,7 +158,7 @@ export function WeatherOverlay({ zipCode = "03103", className }: WeatherOverlayP
       return "bg-gradient-to-b from-slate-500/40 via-slate-400/30 to-transparent";
     }
     if (condition === "snow") {
-      return "bg-gradient-to-b from-slate-300/50 via-white/30 to-transparent";
+      return "bg-gradient-to-b from-slate-200/50 via-white/30 to-transparent";
     }
     if (condition === "thunderstorm") {
       return "bg-gradient-to-b from-slate-700/50 via-slate-600/40 to-transparent";
