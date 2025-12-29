@@ -13,9 +13,12 @@ export interface UserProfile {
 // ============================================
 // VEHICLE PREFERENCES
 // ============================================
+export type CreditTier = "excellent" | "good" | "fair" | "rebuilding";
+
 export interface VehiclePreferences {
   vehiclePrice: number;
   downPayment: number;
+  creditTier: CreditTier;
   annualMiles: number;
   ownershipStyle: "new-often" | "long-term" | "undecided";
   priorities: ("lowest-payment" | "ownership" | "flexibility" | "newest-tech" | "customize")[];
@@ -32,6 +35,8 @@ export interface FinanceCalculation {
   totalCost: number;
   monthlyAllIn: number;
   payoffDate: string;
+  aprUsed: number;
+  creditTier: CreditTier;
 }
 
 // ============================================
