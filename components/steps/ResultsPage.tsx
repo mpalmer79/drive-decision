@@ -476,7 +476,8 @@ export function ResultsPage({ result, onStartOver, onBack }: ResultsPageProps) {
               </div>
 
               <LeaseExplorer
-                preferences={preferences}
+                vehiclePrice={preferences.vehiclePrice}
+                annualMiles={preferences.annualMiles}
                 onLeadCapture={handleLeaseLeadCapture}
               />
             </div>
