@@ -19,6 +19,7 @@ import { Confetti, ConfettiBurst } from "@/components/Confetti";
 import { AnimatedCounter, PercentageRing } from "@/components/AnimatedCounter";
 import { LeaseExplorer } from "@/components/LeaseExplorer";
 import { PaymentTimeline } from "@/components/PaymentTimeline";
+import { TermComparison } from "@/components/TermComparison";
 import { ProtectionPackages } from "@/components/steps/ProtectionPackages";
 import { LeadCapture } from "@/components/steps/LeadCapture";
 
@@ -255,7 +256,7 @@ export function ResultsPage({ result, onStartOver, onBack }: ResultsPageProps) {
                 <div>
                   <h3 className="font-bold text-white text-lg">Your Finance Details</h3>
                   <p className="text-xs text-slate-500">
-                    {preferences.financeTerm === "explore" ? 72 : preferences.financeTerm} month term at 7.5% APR
+                    {preferences.financeTerm === "explore" ? 72 : preferences.financeTerm} month term at {financeCalculation.aprUsed}% APR
                   </p>
                 </div>
                 <Badge variant="success" size="sm" icon={<IconCheck className="w-3 h-3" />} className="ml-auto">
@@ -321,6 +322,20 @@ export function ResultsPage({ result, onStartOver, onBack }: ResultsPageProps) {
               </div>
             </Card>
           </div>
+
+          {/* Term Comparison - Show when user selected "explore" */}
+          {preferences.financeTerm === "explore" && (
+            <div className={cn(
+              "mb-10 transition-all duration-700",
+              revealStage >= 5 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+            )}>
+              <TermComparison
+                vehiclePrice={preferences.vehiclePrice}
+                downPayment={preferences.downPayment}
+                creditTier={preferences.creditTier}
+              />
+            </div>
+          )}
 
           {/* Budget Analysis */}
           <div className={cn(
@@ -472,10 +487,24 @@ export function ResultsPage({ result, onStartOver, onBack }: ResultsPageProps) {
 
               <p className="text-sm text-slate-500">
                 Based on ${formatNumber(preferences.vehiclePrice)} vehicle, ${formatNumber(preferences.downPayment)} down,{" "}
-                {preferences.financeTerm === "explore" ? 72 : preferences.financeTerm} months at 7.5% APR.
+                {preferences.financeTerm === "explore" ? 72 : preferences.financeTerm} months at {financeCalculation.aprUsed}% APR.
               </p>
             </Card>
           </div>
+
+          {/* Term Comparison for Lease path - Show when user selected "explore" */}
+          {preferences.financeTerm === "explore" && (
+            <div className={cn(
+              "mb-10 transition-all duration-700",
+              revealStage >= 6 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+            )}>
+              <TermComparison
+                vehiclePrice={preferences.vehiclePrice}
+                downPayment={preferences.downPayment}
+                creditTier={preferences.creditTier}
+              />
+            </div>
+          )}
         </>
       )}
 
