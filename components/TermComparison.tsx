@@ -74,7 +74,7 @@ export function TermComparison({
           <IconCalendar className="w-6 h-6 text-indigo-400" />
         </div>
         <div>
-          <h3 className="font-bold text-white text-lg">Compare Your Options</h3>
+          <h3 className="font-bold text-slate-900 text-lg">Compare Your Options</h3>
           <p className="text-xs text-slate-500">
             See how term length affects your payment at {term72.aprUsed}% APR
           </p>
@@ -88,21 +88,21 @@ export function TermComparison({
 
           const highlightColors = {
             emerald: {
-              bg: "bg-emerald-500/10",
-              text: "text-emerald-400",
-              border: "border-emerald-500/30",
+              bg: "bg-emerald-100",
+              text: "text-emerald-600",
+              border: "border-emerald-300",
               ring: "ring-emerald-500",
             },
             cyan: {
-              bg: "bg-cyan-500/10",
-              text: "text-cyan-400",
+              bg: "bg-cyan-100",
+              text: "text-cyan-600",
               border: "border-cyan-500/30",
               ring: "ring-cyan-500",
             },
             amber: {
-              bg: "bg-amber-500/10",
-              text: "text-amber-400",
-              border: "border-amber-500/30",
+              bg: "bg-amber-100",
+              text: "text-amber-600",
+              border: "border-amber-300",
               ring: "ring-amber-500",
             },
           }[option.highlightColor as "emerald" | "cyan" | "amber"]!;
@@ -113,16 +113,16 @@ export function TermComparison({
               onClick={() => handleSelect(option.term)}
               className={cn(
                 "relative p-5 rounded-2xl border-2 text-left transition-all duration-300",
-                "bg-slate-800/30 hover:bg-slate-800/50",
+                "bg-slate-50 hover:bg-slate-100",
                 isSelected
                   ? `${highlightColors.border} ${highlightColors.bg} ring-2 ${highlightColors.ring}`
-                  : "border-slate-700/50 hover:border-slate-600"
+                  : "border-slate-300 hover:border-slate-400"
               )}
             >
               {/* Popular Badge */}
               {option.popular && !isSelected && (
                 <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 px-3 py-0.5 bg-gradient-to-r from-amber-500 to-orange-500 rounded-full">
-                  <span className="text-[10px] font-bold text-white uppercase tracking-wider">
+                  <span className="text-[10px] font-bold text-slate-900 uppercase tracking-wider">
                     Most Popular
                   </span>
                 </div>
@@ -140,7 +140,7 @@ export function TermComparison({
 
               {/* Term Label */}
               <div className="mb-4">
-                <div className="text-lg font-bold text-white">{option.label}</div>
+                <div className="text-lg font-bold text-slate-900">{option.label}</div>
                 <div className="text-xs text-slate-500">{option.years}</div>
               </div>
 
@@ -151,7 +151,7 @@ export function TermComparison({
                 </div>
                 <div className={cn(
                   "text-3xl font-bold",
-                  isSelected ? highlightColors.text : "text-white"
+                  isSelected ? highlightColors.text : "text-slate-900"
                 )}>
                   ${formatNumber(option.calc.monthlyPayment)}
                 </div>
@@ -161,10 +161,10 @@ export function TermComparison({
               </div>
 
               {/* Total Interest */}
-              <div className="pt-3 border-t border-slate-700/50">
+              <div className="pt-3 border-t border-slate-300">
                 <div className="flex justify-between items-center mb-1">
                   <span className="text-xs text-slate-500">Total Interest</span>
-                  <span className="text-sm font-semibold text-amber-400">
+                  <span className="text-sm font-semibold text-amber-600">
                     ${formatNumber(option.calc.totalInterest)}
                   </span>
                 </div>
@@ -174,7 +174,7 @@ export function TermComparison({
                   </div>
                 )}
                 {interestDiff === 0 && (
-                  <div className="text-xs text-emerald-400">
+                  <div className="text-xs text-emerald-600">
                     Lowest interest cost
                   </div>
                 )}
@@ -194,17 +194,17 @@ export function TermComparison({
       </div>
 
       {/* Summary Footer */}
-      <div className="mt-6 p-4 rounded-xl bg-slate-800/50 border border-slate-700/30">
+      <div className="mt-6 p-4 rounded-xl bg-slate-100 border border-slate-200">
         <div className="grid grid-cols-3 gap-4 text-center text-sm">
           <div>
             <div className="text-slate-500 mb-1">Payment Range</div>
-            <div className="font-semibold text-white">
+            <div className="font-semibold text-slate-900">
               ${formatNumber(term84.monthlyPayment)} – ${formatNumber(term72.monthlyPayment)}
             </div>
           </div>
           <div>
             <div className="text-slate-500 mb-1">Interest Spread</div>
-            <div className="font-semibold text-amber-400">
+            <div className="font-semibold text-amber-600">
               ${formatNumber(term84.totalInterest - term72.totalInterest)}
             </div>
           </div>
@@ -218,8 +218,8 @@ export function TermComparison({
       </div>
 
       {selectedTerm && (
-        <div className="mt-4 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-center">
-          <span className="text-sm text-emerald-400">
+        <div className="mt-4 p-3 rounded-xl bg-emerald-100 border border-emerald-200 text-center">
+          <span className="text-sm text-emerald-600">
             ✓ {selectedTerm}-month term selected — this will be included in your quote request
           </span>
         </div>
