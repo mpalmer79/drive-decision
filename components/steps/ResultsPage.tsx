@@ -32,6 +32,7 @@ interface ResultsPageProps {
 export function ResultsPage({ result, onStartOver, onBack }: ResultsPageProps) {
   const [revealStage, setRevealStage] = useState(0);
   const [showConfetti, setShowConfetti] = useState(false);
+  const [showLeaseExplorer, setShowLeaseExplorer] = useState(false);
 
   const { recommendation, financeCalculation, budgetAnalysis, preferences } = result;
   const isBuyRecommended = recommendation.verdict === "buy";
@@ -399,43 +400,86 @@ export function ResultsPage({ result, onStartOver, onBack }: ResultsPageProps) {
           </div>
 
           {/* Still Curious About Leasing? */}
-          <div className={cn(
-            "mb-10 transition-all duration-700",
-            revealStage >= 6 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-          )}>
-            <Card className="border-amber-500/20 bg-amber-500/5">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                <div className="flex items-center gap-3 flex-1">
-                  <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center">
-                    <IconSparkles className="w-5 h-5 text-amber-600" />
+          {!showLeaseExplorer && (
+            <div className={cn(
+              "mb-10 transition-all duration-700",
+              revealStage >= 6 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+            )}>
+              <Card className="border-amber-500/20 bg-amber-500/5">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                  <div className="flex items-center gap-3 flex-1">
+                    <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center">
+                      <IconSparkles className="w-5 h-5 text-amber-600" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-slate-900">Still curious about leasing?</h4>
+                      <p className="text-sm text-slate-500">
+                        Our specialists can show you lease options for comparison.
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <h4 className="font-semibold text-slate-900">Still curious about leasing?</h4>
-                    <p className="text-sm text-slate-500">
-                      Our specialists can show you lease options for comparison.
-                    </p>
-                  </div>
+                  <Button 
+                    variant="secondary" 
+                    size="sm" 
+                    className="group"
+                    onClick={() => setShowLeaseExplorer(true)}
+                  >
+                    Explore Lease Options
+                    <IconArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                  </Button>
                 </div>
-                <Button variant="secondary" size="sm" className="group">
-                  Explore Lease Options
-                  <IconArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+              </Card>
+            </div>
+          )}
+
+          {/* Lease Explorer (shown when user clicks Explore Lease Options) */}
+          {showLeaseExplorer && (
+            <div className={cn(
+              "mb-10 transition-all duration-500 animate-fade-in-up"
+            )}>
+              {/* Navigation buttons */}
+              <div className="flex justify-between items-center mb-6">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={() => setShowLeaseExplorer(false)}
+                  className="group"
+                >
+                  <IconArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
+                  <span>Back to Results</span>
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={onStartOver}
+                  className="group"
+                >
+                  <IconRefresh className="w-4 h-4" />
+                  <span>Try Again</span>
                 </Button>
               </div>
-            </Card>
-          </div>
+
+              <LeaseExplorer
+                preferences={preferences}
+                onLeadCapture={handleLeaseLeadCapture}
+              />
+            </div>
+          )}
 
           {/* Protection Packages */}
-          <div className={cn(
-            "mb-10 transition-all duration-700",
-            revealStage >= 6 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-          )}>
-            <ProtectionPackages
-              verdict="buy"
-              termMonths={preferences.financeTerm === "explore" ? 72 : preferences.financeTerm}
-              baseTotal={financeCalculation.totalCost}
-              baseMonthly={financeCalculation.monthlyAllIn}
-            />
-          </div>
+          {!showLeaseExplorer && (
+            <div className={cn(
+              "mb-10 transition-all duration-700",
+              revealStage >= 6 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+            )}>
+              <ProtectionPackages
+                verdict="buy"
+                termMonths={preferences.financeTerm === "explore" ? 72 : preferences.financeTerm}
+                baseTotal={financeCalculation.totalCost}
+                baseMonthly={financeCalculation.monthlyAllIn}
+              />
+            </div>
+          )}
         </>
       )}
 
