@@ -348,7 +348,7 @@ export function ScenariosStep({
                         badge: "bg-rose-500/20 text-rose-400",
                         text: "text-rose-400",
                       },
-                    }[option.color];
+                    }[option.color as "emerald" | "cyan" | "amber" | "rose"]!;
 
                     return (
                       <button
