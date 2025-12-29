@@ -164,12 +164,12 @@ export function ScenariosStep({
 
   const currentQ = questions[currentQuestion];
 
-  // Credit tier options with APR info
-  const creditTierOptions: { value: CreditTier; label: string; score: string; apr: string; color: string }[] = [
-    { value: "excellent", label: "Excellent", score: "750+", apr: "~6.5%", color: "emerald" },
-    { value: "good", label: "Good", score: "700-749", apr: "~7.5%", color: "cyan" },
-    { value: "fair", label: "Fair", score: "650-699", apr: "~8.5%", color: "amber" },
-    { value: "rebuilding", label: "Rebuilding", score: "Below 650", apr: "~14.5%", color: "rose" },
+  // Credit tier options
+  const creditTierOptions: { value: CreditTier; label: string; score: string; color: string }[] = [
+    { value: "excellent", label: "Excellent", score: "750+", color: "emerald" },
+    { value: "good", label: "Good", score: "700-749", color: "cyan" },
+    { value: "fair", label: "Fair", score: "650-699", color: "amber" },
+    { value: "rebuilding", label: "Rebuilding", score: "Below 650", color: "rose" },
   ];
 
   return (
@@ -371,14 +371,9 @@ export function ScenariosStep({
                             </div>
                           )}
                         </div>
-                        <div className="flex items-center gap-3">
-                          <span className={cn("text-sm font-medium px-2 py-1 rounded-lg", colorClasses.badge)}>
-                            {option.score}
-                          </span>
-                          <span className="text-sm text-slate-400">
-                            APR: <span className={colorClasses.text}>{option.apr}</span>
-                          </span>
-                        </div>
+                        <span className={cn("text-sm font-medium px-2 py-1 rounded-lg", colorClasses.badge)}>
+                          {option.score}
+                        </span>
                       </button>
                     );
                   })}
@@ -636,7 +631,7 @@ export function ScenariosStep({
       {currentQuestion >= 3 && preferences.vehiclePrice > 0 && (
         <div className="mt-8 p-4 rounded-xl bg-slate-800/30 border border-slate-700/30">
           <div className="text-xs text-slate-500 uppercase tracking-wider mb-3">Your Selection</div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
+          <div className="grid grid-cols-3 gap-4 text-center">
             <div>
               <div className="text-lg font-bold text-white">
                 ${formatNumber(preferences.vehiclePrice)}
@@ -648,14 +643,6 @@ export function ScenariosStep({
                 ${formatNumber(preferences.downPayment)}
               </div>
               <div className="text-xs text-slate-500">Down Payment</div>
-            </div>
-            <div>
-              <div className="text-lg font-bold text-violet-400">
-                {preferences.creditTier === "excellent" ? "6.5%" : 
-                 preferences.creditTier === "good" ? "7.5%" :
-                 preferences.creditTier === "fair" ? "8.5%" : "14.5%"}
-              </div>
-              <div className="text-xs text-slate-500">Est. APR</div>
             </div>
             <div>
               <div className="text-lg font-bold text-cyan-400">
