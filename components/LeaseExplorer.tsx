@@ -86,7 +86,7 @@ export function LeaseExplorer({ vehiclePrice, annualMiles, onLeadCapture }: Leas
   return (
     <Card className="overflow-hidden">
       {/* Header */}
-      <div className="flex items-center gap-4 mb-6">
+      <div className="flex items-center justify-center gap-4 mb-6">
         <div className="relative">
           <div className="absolute inset-0 bg-amber-500 rounded-xl blur-lg opacity-40" />
           <div className="relative w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500/20 to-orange-500/20 flex items-center justify-center border border-amber-500/30">
@@ -162,7 +162,7 @@ export function LeaseExplorer({ vehiclePrice, annualMiles, onLeadCapture }: Leas
 
       {/* Why We Can't Show Payment */}
       <div className="p-4 rounded-xl bg-slate-800/50 border border-slate-700/30 mb-6">
-        <h4 className="font-semibold text-white mb-2">Why We Need a Specialist</h4>
+        <h4 className="font-semibold text-white mb-2 text-center">Why We Need a Specialist</h4>
         <p className="text-sm text-slate-400 leading-relaxed">
           Lease payments are calculated using manufacturer-specific factors including the money
           factor (like an interest rate), residual value (predicted end-of-lease value), and
