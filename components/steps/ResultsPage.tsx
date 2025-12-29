@@ -20,6 +20,7 @@ import { AnimatedCounter, PercentageRing } from "@/components/AnimatedCounter";
 import { LeaseExplorer } from "@/components/LeaseExplorer";
 import { PaymentTimeline } from "@/components/PaymentTimeline";
 import { TermComparison } from "@/components/TermComparison";
+import { PaymentPlayground } from "@/components/PaymentPlayground";
 import { ProtectionPackages } from "@/components/steps/ProtectionPackages";
 import { LeadCapture } from "@/components/steps/LeadCapture";
 
@@ -379,6 +380,21 @@ export function ResultsPage({ result, onStartOver, onBack }: ResultsPageProps) {
                 </div>
               </div>
             </Card>
+          </div>
+
+          {/* Payment Playground - Interactive Slider */}
+          <div className={cn(
+            "mb-10 transition-all duration-700",
+            revealStage >= 5 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+          )}>
+            <PaymentPlayground
+              initialVehiclePrice={preferences.vehiclePrice}
+              initialDownPayment={preferences.downPayment}
+              initialTerm={preferences.financeTerm === "explore" ? 72 : preferences.financeTerm}
+              apr={financeCalculation.aprUsed}
+              monthlyIncome={result.profile.monthlyIncome}
+              monthlyExpenses={result.profile.monthlyExpenses}
+            />
           </div>
 
           {/* Payment Timeline */}
