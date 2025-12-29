@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import type {
   UserProfile,
   VehiclePreferences,
@@ -8,8 +8,15 @@ import type {
 } from "@/types";
 
 import { generateDecision } from "@/lib/decisionEngine";
-import { QuirkHeader, ProgressSteps, Card } from "@/components/ui";
-import { IconCar, IconAlertTriangle } from "@/components/icons";
+import {
+  useSessionPersistence,
+  getSavedSession,
+  clearSession,
+  getSessionSummary,
+  type SavedSession,
+} from "@/hooks/useSessionPersistence";
+import { QuirkHeader, ProgressSteps, Card, Button } from "@/components/ui";
+import { IconCar, IconAlertTriangle, IconRefresh } from "@/components/icons";
 import { LandingPage } from "@/components/steps/LandingPage";
 import { ProfileStep } from "@/components/steps/ProfileStep";
 import { ScenariosStep } from "@/components/steps/ScenariosStep";
@@ -42,31 +49,72 @@ const DEFAULT_PREFERENCES: VehiclePreferences = {
 export default function Page() {
   const [step, setStep] = useState<Step>("landing");
   const [appState, setAppState] = useState<AppState>({ status: "idle" });
-
   const [profile, setProfile] = useState<UserProfile>(DEFAULT_USER);
   const [preferences, setPreferences] = useState<VehiclePreferences>(DEFAULT_PREFERENCES);
+
+  // Session recovery state
+  const [savedSession, setSavedSession] = useState<SavedSession | null>(null);
+  const [showRecoveryPrompt, setShowRecoveryPrompt] = useState(false);
+  const [isHydrated, setIsHydrated] = useState(false);
+
+  // Auto-save progress
+  const { clearSavedSession } = useSessionPersistence(
+    step,
+    profile,
+    preferences,
+    isHydrated && step !== "landing" && step !== "results"
+  );
+
+  // Check for saved session on mount
+  useEffect(() => {
+    const session = getSavedSession();
+    if (session) {
+      setSavedSession(session);
+      setShowRecoveryPrompt(true);
+    }
+    setIsHydrated(true);
+  }, []);
+
+  // Handle restoring saved session
+  const handleResumeSession = useCallback(() => {
+    if (savedSession) {
+      setProfile(savedSession.profile);
+      setPreferences(savedSession.preferences);
+      setStep(savedSession.step);
+      setShowRecoveryPrompt(false);
+      setSavedSession(null);
+    }
+  }, [savedSession]);
+
+  // Handle dismissing recovery prompt
+  const handleStartFresh = useCallback(() => {
+    clearSession();
+    setShowRecoveryPrompt(false);
+    setSavedSession(null);
+  }, []);
 
   const runDecision = useCallback(() => {
     setAppState({ status: "loading" });
 
     try {
-      // Use the local decision engine (no API call needed)
       const result = generateDecision(profile, preferences);
-      
       setAppState({ status: "success", result });
       setStep("results");
+      // Clear saved session on successful completion
+      clearSavedSession();
     } catch (e) {
       const msg = e instanceof Error ? e.message : "Something went wrong";
       setAppState({ status: "error", message: msg });
     }
-  }, [profile, preferences]);
+  }, [profile, preferences, clearSavedSession]);
 
   const handleStartOver = useCallback(() => {
     setStep("landing");
     setAppState({ status: "idle" });
     setProfile(DEFAULT_USER);
     setPreferences(DEFAULT_PREFERENCES);
-  }, []);
+    clearSavedSession();
+  }, [clearSavedSession]);
 
   const currentStepIndex = { landing: -1, profile: 0, scenarios: 1, results: 2 }[step];
 
@@ -83,6 +131,44 @@ export default function Page() {
           <div className="absolute bottom-20 right-[10%] w-80 h-80 bg-teal-500/10 rounded-full blur-[120px] floating-orb" style={{ animationDelay: '-3s' }} />
           <div className="absolute top-1/3 right-[5%] w-48 h-48 bg-cyan-500/10 rounded-full blur-[80px] floating-orb" style={{ animationDelay: '-5s' }} />
         </>
+      )}
+
+      {/* Session Recovery Prompt */}
+      {showRecoveryPrompt && savedSession && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
+          <div className="w-full max-w-md animate-fade-in-up">
+            <Card className="!p-6">
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500/20 to-teal-500/20 flex items-center justify-center flex-shrink-0">
+                  <IconRefresh className="w-6 h-6 text-emerald-400" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-semibold text-white mb-1">
+                    Welcome back!
+                  </h3>
+                  <p className="text-slate-400 text-sm mb-4">
+                    We found {getSessionSummary(savedSession)}. Would you like to continue where you left off?
+                  </p>
+                  <div className="flex gap-3">
+                    <Button
+                      onClick={handleResumeSession}
+                      className="flex-1"
+                    >
+                      Continue
+                    </Button>
+                    <Button
+                      variant="secondary"
+                      onClick={handleStartFresh}
+                      className="flex-1"
+                    >
+                      Start Fresh
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </Card>
+          </div>
+        </div>
       )}
 
       {/* Content */}
@@ -155,12 +241,12 @@ export default function Page() {
               )}
 
               {step === "results" && appState.status === "success" && (
-  <ResultsPage
-    result={appState.result}
-    onStartOver={handleStartOver}
-    onBack={() => setStep("scenarios")}
-  />
-)}
+                <ResultsPage
+                  result={appState.result}
+                  onStartOver={handleStartOver}
+                  onBack={() => setStep("scenarios")}
+                />
+              )}
             </div>
           </div>
         )}
