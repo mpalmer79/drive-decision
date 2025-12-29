@@ -107,16 +107,16 @@ export function ScenariosStep({
     {
       number: 1,
       icon: IconCar,
-      iconBg: "from-emerald-500/20 to-teal-500/20",
-      iconColor: "text-emerald-400",
+      iconBg: "from-emerald-100 to-teal-100",
+      iconColor: "text-emerald-600",
       title: "What is the price of the vehicle you're looking at?",
       subtitle: "This helps us calculate your financing options.",
     },
     {
       number: 2,
       icon: IconDollar,
-      iconBg: "from-amber-500/20 to-orange-500/20",
-      iconColor: "text-amber-400",
+      iconBg: "from-amber-100 to-orange-100",
+      iconColor: "text-amber-600",
       title: "What amount are you applying as a down payment?",
       subtitle: "Most lenders like to see at least 10% as your initial investment.",
     },
@@ -131,8 +131,8 @@ export function ScenariosStep({
     {
       number: 4,
       icon: IconTrendingUp,
-      iconBg: "from-cyan-500/20 to-blue-500/20",
-      iconColor: "text-cyan-400",
+      iconBg: "from-cyan-100 to-blue-100",
+      iconColor: "text-cyan-600",
       title: "How many miles do you drive per year?",
       subtitle: "This is important for understanding your driving habits.",
     },
@@ -184,10 +184,10 @@ export function ScenariosStep({
               className={cn(
                 "w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm transition-all duration-300",
                 i < currentQuestion
-                  ? "bg-gradient-to-br from-emerald-500 to-teal-500 text-white shadow-lg shadow-emerald-500/30 cursor-pointer hover:scale-105"
+                  ? "bg-gradient-to-br from-emerald-500 to-teal-500 text-slate-900 shadow-lg shadow-emerald-500/30 cursor-pointer hover:scale-105"
                   : i === currentQuestion
-                    ? "bg-gradient-to-br from-emerald-500/20 to-teal-500/20 text-emerald-400 ring-2 ring-emerald-500"
-                    : "bg-slate-800/50 text-slate-500 border border-slate-700/50 cursor-not-allowed"
+                    ? "bg-gradient-to-br from-emerald-100 to-teal-100 text-emerald-600 ring-2 ring-emerald-500"
+                    : "bg-slate-100 text-slate-500 border border-slate-300 cursor-not-allowed"
               )}
             >
               {i < currentQuestion ? <IconCheck className="w-5 h-5" /> : i + 1}
@@ -198,7 +198,7 @@ export function ScenariosStep({
                   "w-4 sm:w-6 h-1 rounded-full transition-all duration-500",
                   i < currentQuestion
                     ? "bg-gradient-to-r from-emerald-500 to-teal-500"
-                    : "bg-slate-700/50"
+                    : "bg-slate-200"
                 )}
               />
             )}
@@ -226,10 +226,10 @@ export function ScenariosStep({
               <currentQ.icon className={cn("w-6 h-6", currentQ.iconColor)} />
             </div>
             <div>
-              <h2 className="text-xl sm:text-2xl font-bold text-white mb-2 leading-tight">
+              <h2 className="text-xl sm:text-2xl font-bold text-slate-900 mb-2 leading-tight">
                 {currentQ.title}
               </h2>
-              <p className="text-slate-400 text-sm sm:text-base">{currentQ.subtitle}</p>
+              <p className="text-slate-500 text-sm sm:text-base">{currentQ.subtitle}</p>
             </div>
           </div>
 
@@ -257,8 +257,8 @@ export function ScenariosStep({
                       className={cn(
                         "px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200",
                         preferences.vehiclePrice === price
-                          ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/50"
-                          : "bg-slate-800/50 text-slate-400 border border-slate-700/50 hover:border-slate-600 hover:text-white"
+                          ? "bg-emerald-500/20 text-emerald-600 border border-emerald-500/50"
+                          : "bg-slate-100 text-slate-500 border border-slate-300 hover:border-slate-400 hover:text-slate-900"
                       )}
                     >
                       ${formatNumber(price)}
@@ -286,8 +286,8 @@ export function ScenariosStep({
                   <div className="p-4 rounded-xl bg-gradient-to-r from-emerald-500/10 to-teal-500/10 border border-emerald-500/20">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm text-slate-400 mb-1">Suggested (10%)</p>
-                        <p className="text-xl font-bold text-emerald-400">
+                        <p className="text-sm text-slate-500 mb-1">Suggested (10%)</p>
+                        <p className="text-xl font-bold text-emerald-600">
                           ${formatNumber(suggestedDown)}
                         </p>
                       </div>
@@ -311,8 +311,8 @@ export function ScenariosStep({
                       className={cn(
                         "px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200",
                         preferences.downPayment === amount
-                          ? "bg-amber-500/20 text-amber-400 border border-amber-500/50"
-                          : "bg-slate-800/50 text-slate-400 border border-slate-700/50 hover:border-slate-600 hover:text-white"
+                          ? "bg-amber-500/20 text-amber-600 border border-amber-500/50"
+                          : "bg-slate-100 text-slate-500 border border-slate-300 hover:border-slate-400 hover:text-slate-900"
                       )}
                     >
                       {amount === 0 ? "$0 Down" : `$${formatNumber(amount)}`}
@@ -330,18 +330,18 @@ export function ScenariosStep({
                     const colorClasses = {
                       emerald: {
                         selected: "bg-emerald-500/20 border-emerald-500/50 ring-2 ring-emerald-500",
-                        badge: "bg-emerald-500/20 text-emerald-400",
-                        text: "text-emerald-400",
+                        badge: "bg-emerald-500/20 text-emerald-600",
+                        text: "text-emerald-600",
                       },
                       cyan: {
                         selected: "bg-cyan-500/20 border-cyan-500/50 ring-2 ring-cyan-500",
-                        badge: "bg-cyan-500/20 text-cyan-400",
-                        text: "text-cyan-400",
+                        badge: "bg-cyan-500/20 text-cyan-600",
+                        text: "text-cyan-600",
                       },
                       amber: {
                         selected: "bg-amber-500/20 border-amber-500/50 ring-2 ring-amber-500",
-                        badge: "bg-amber-500/20 text-amber-400",
-                        text: "text-amber-400",
+                        badge: "bg-amber-500/20 text-amber-600",
+                        text: "text-amber-600",
                       },
                       rose: {
                         selected: "bg-rose-500/20 border-rose-500/50 ring-2 ring-rose-500",
@@ -360,11 +360,11 @@ export function ScenariosStep({
                           "choice-button rounded-2xl p-5 text-left transition-all duration-300 relative",
                           preferences.creditTier === option.value
                             ? colorClasses.selected
-                            : "hover:border-slate-600"
+                            : "hover:border-slate-400"
                         )}
                       >
                         <div className="flex items-center justify-between mb-3">
-                          <span className="text-lg font-bold text-white">{option.label}</span>
+                          <span className="text-lg font-bold text-slate-900">{option.label}</span>
                           {preferences.creditTier === option.value && (
                             <div className={cn("w-6 h-6 rounded-full flex items-center justify-center", colorClasses.badge)}>
                               <IconCheck className="w-4 h-4" />
@@ -378,7 +378,7 @@ export function ScenariosStep({
                     );
                   })}
                 </div>
-                <div className="p-3 rounded-xl bg-slate-800/50 border border-slate-700/30 text-sm text-slate-400">
+                <div className="p-3 rounded-xl bg-slate-100 border border-slate-200 text-sm text-slate-500">
                   💡 Not sure? Check your score free at Credit Karma or your bank's app. Most people are in the "Good" range.
                 </div>
               </div>
@@ -413,8 +413,8 @@ export function ScenariosStep({
                       className={cn(
                         "p-3 rounded-xl text-center transition-all duration-200",
                         preferences.annualMiles === option.value
-                          ? "bg-cyan-500/20 text-cyan-400 border-2 border-cyan-500/50"
-                          : "bg-slate-800/50 text-slate-400 border border-slate-700/50 hover:border-slate-600"
+                          ? "bg-cyan-500/20 text-cyan-600 border-2 border-cyan-500/50"
+                          : "bg-slate-100 text-slate-500 border border-slate-300 hover:border-slate-400"
                       )}
                     >
                       <div className="font-bold">{option.label}</div>
@@ -423,7 +423,7 @@ export function ScenariosStep({
                   ))}
                 </div>
                 {preferences.annualMiles > 15000 && (
-                  <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-sm text-amber-300">
+                  <div className="p-3 rounded-xl bg-amber-100 border border-amber-500/20 text-sm text-amber-300">
                     💡 High mileage drivers often benefit more from buying to avoid lease mileage penalties.
                   </div>
                 )}
@@ -470,14 +470,14 @@ export function ScenariosStep({
                       <span className="text-3xl">{option.emoji}</span>
                       <div className="flex-1">
                         <div className="flex items-center justify-between mb-1">
-                          <span className="font-bold text-white">{option.title}</span>
+                          <span className="font-bold text-slate-900">{option.title}</span>
                           {preferences.ownershipStyle === option.value && (
                             <div className="w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center flex-shrink-0">
-                              <IconCheck className="w-4 h-4 text-white" />
+                              <IconCheck className="w-4 h-4 text-slate-900" />
                             </div>
                           )}
                         </div>
-                        <span className="text-sm text-slate-400 leading-relaxed">
+                        <span className="text-sm text-slate-500 leading-relaxed">
                           {option.description}
                         </span>
                       </div>
@@ -535,14 +535,14 @@ export function ScenariosStep({
                       <span className="text-2xl">{option.emoji}</span>
                       <div className="flex-1">
                         <div className="flex items-center justify-between mb-1">
-                          <span className="font-semibold text-white">{option.title}</span>
+                          <span className="font-semibold text-slate-900">{option.title}</span>
                           {preferences.priorities.includes(option.value) && (
                             <div className="w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center flex-shrink-0">
-                              <IconCheck className="w-4 h-4 text-white" />
+                              <IconCheck className="w-4 h-4 text-slate-900" />
                             </div>
                           )}
                         </div>
-                        <span className="text-xs text-slate-400">{option.description}</span>
+                        <span className="text-xs text-slate-500">{option.description}</span>
                       </div>
                     </div>
                   </button>
@@ -573,18 +573,18 @@ export function ScenariosStep({
                     >
                       {option.popular && (
                         <div className="absolute -top-2 left-4 px-2 py-0.5 bg-gradient-to-r from-emerald-500/90 to-teal-500/90 rounded-full">
-                          <span className="text-[10px] font-semibold text-white uppercase tracking-wider">Most Popular</span>
+                          <span className="text-[10px] font-semibold text-slate-900 uppercase tracking-wider">Most Popular</span>
                         </div>
                       )}
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-lg font-bold text-white">{option.label}</span>
+                        <span className="text-lg font-bold text-slate-900">{option.label}</span>
                         {preferences.financeTerm === option.value && (
                           <div className="w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center">
-                            <IconCheck className="w-4 h-4 text-white" />
+                            <IconCheck className="w-4 h-4 text-slate-900" />
                           </div>
                         )}
                       </div>
-                      <span className="text-sm text-slate-400">{option.sublabel}</span>
+                      <span className="text-sm text-slate-500">{option.sublabel}</span>
                     </button>
                   ))}
                 </div>
@@ -629,23 +629,23 @@ export function ScenariosStep({
 
       {/* Summary Preview */}
       {currentQuestion >= 3 && preferences.vehiclePrice > 0 && (
-        <div className="mt-8 p-4 rounded-xl bg-slate-800/30 border border-slate-700/30">
+        <div className="mt-8 p-4 rounded-xl bg-slate-50 border border-slate-200">
           <div className="text-xs text-slate-500 uppercase tracking-wider mb-3">Your Selection</div>
           <div className="grid grid-cols-3 gap-4 text-center">
             <div>
-              <div className="text-lg font-bold text-white">
+              <div className="text-lg font-bold text-slate-900">
                 ${formatNumber(preferences.vehiclePrice)}
               </div>
               <div className="text-xs text-slate-500">Vehicle Price</div>
             </div>
             <div>
-              <div className="text-lg font-bold text-emerald-400">
+              <div className="text-lg font-bold text-emerald-600">
                 ${formatNumber(preferences.downPayment)}
               </div>
               <div className="text-xs text-slate-500">Down Payment</div>
             </div>
             <div>
-              <div className="text-lg font-bold text-cyan-400">
+              <div className="text-lg font-bold text-cyan-600">
                 {formatNumber(preferences.annualMiles)}
               </div>
               <div className="text-xs text-slate-500">Miles/Year</div>
