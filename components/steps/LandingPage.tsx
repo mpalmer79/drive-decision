@@ -162,7 +162,7 @@ export function LandingPage({ onStart }: LandingPageProps) {
               iconBg: "bg-emerald-100",
               iconColor: "text-emerald-600",
               delay: "delay-[800ms]",
-              bgImage: "/b.png",
+              bgImage: "/card.jfif",
             },
             {
               icon: IconTrendingUp,
@@ -172,7 +172,7 @@ export function LandingPage({ onStart }: LandingPageProps) {
               iconBg: "bg-cyan-100",
               iconColor: "text-cyan-600",
               delay: "delay-[900ms]",
-              bgImage: "/a.png",
+              bgImage: "/card1.jfif",
             },
             {
               icon: IconAlertTriangle,
@@ -182,7 +182,7 @@ export function LandingPage({ onStart }: LandingPageProps) {
               iconBg: "bg-amber-100",
               iconColor: "text-amber-600",
               delay: "delay-[1000ms]",
-              bgImage: "/c.png",
+              bgImage: "/card2.jfif",
             },
           ].map((feature) => (
             <div
