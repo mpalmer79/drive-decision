@@ -1,6 +1,6 @@
 import "./globals.css";
 import type { Metadata, Viewport } from "next";
-import { WeatherOverlay } from "@/components/WeatherOverlay";
+import { WeatherProvider } from "@/components/WeatherProvider";
 
 export const metadata: Metadata = {
   title: "DriveDecision by Quirk AI — Buy vs Lease Calculator",
@@ -66,17 +66,16 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-screen bg-slate-300 text-slate-900 antialiased font-sans flex flex-col">
-        {/* Weather Overlay - reflects real weather for Manchester, NH (03103) */}
-        <WeatherOverlay zipCode="03103" />
-        
-        <main className="flex-1 relative z-10">
-          {children}
-        </main>
-        <footer className="bg-slate-600 py-4 relative z-10">
-          <p className="text-white text-sm text-center">
-            © {new Date().getFullYear()} Quirk Auto Dealers
-          </p>
-        </footer>
+        <WeatherProvider>
+          <main className="flex-1 relative z-10">
+            {children}
+          </main>
+          <footer className="bg-slate-600 py-4 relative z-10">
+            <p className="text-white text-sm text-center">
+              © {new Date().getFullYear()} Quirk Auto Dealers
+            </p>
+          </footer>
+        </WeatherProvider>
       </body>
     </html>
   );
