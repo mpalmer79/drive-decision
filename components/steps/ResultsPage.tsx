@@ -207,8 +207,12 @@ export function ResultsPage({ result, onStartOver, onBack }: ResultsPageProps) {
         revealStage >= 4 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
       )}>
         <Card>
-          <div className="flex items-center justify-between mb-5">
-            <div className="flex items-center gap-3">
+          <div className="relative mb-5">
+            <Button variant="ghost" size="sm" onClick={onBack} className="group absolute right-0 top-0">
+              <IconArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
+              <span>Back</span>
+            </Button>
+            <div className="flex items-center justify-center gap-3">
               <div className={cn(
                 "w-10 h-10 rounded-xl flex items-center justify-center",
                 isBuyRecommended ? "bg-emerald-500/10" : "bg-amber-500/10"
@@ -217,10 +221,6 @@ export function ResultsPage({ result, onStartOver, onBack }: ResultsPageProps) {
               </div>
               <h3 className="font-bold text-white text-lg">Why This Recommendation</h3>
             </div>
-            <Button variant="ghost" size="sm" onClick={onBack} className="group">
-              <IconArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
-              <span>Back</span>
-            </Button>
           </div>
           <ul className="space-y-3">
             {recommendation.primaryReasons.map((reason, i) => (
@@ -460,7 +460,7 @@ export function ResultsPage({ result, onStartOver, onBack }: ResultsPageProps) {
             revealStage >= 6 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
           )}>
             <Card className="border-slate-700/50">
-              <div className="flex items-center gap-3 mb-5">
+              <div className="flex items-center justify-center gap-3 mb-5">
                 <div className="w-10 h-10 rounded-xl bg-slate-700/50 flex items-center justify-center">
                   <IconKey className="w-5 h-5 text-slate-400" />
                 </div>
@@ -515,7 +515,7 @@ export function ResultsPage({ result, onStartOver, onBack }: ResultsPageProps) {
           revealStage >= 6 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
         )}>
           <Card className="border-amber-500/20 bg-amber-500/5">
-            <div className="flex items-center gap-3 mb-5">
+            <div className="flex items-center justify-center gap-3 mb-5">
               <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center">
                 <IconAlertTriangle className="w-5 h-5 text-amber-400" />
               </div>
