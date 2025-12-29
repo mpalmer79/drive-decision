@@ -92,7 +92,7 @@ export function LeadCapture({ verdict, vehiclePrice, monthlyPayment, downPayment
 
   return (
     <Card className="mb-8">
-      <div className="flex items-center gap-3 mb-6">
+      <div className="flex items-center justify-center gap-3 mb-6">
         <div className="w-10 h-10 rounded-xl bg-teal-500/20 flex items-center justify-center">
           <IconCalendar className="w-5 h-5 text-teal-400" />
         </div>
@@ -156,7 +156,7 @@ export function LeadCapture({ verdict, vehiclePrice, monthlyPayment, downPayment
 
         {/* Contact Preference */}
         <div>
-          <label className="block text-sm font-medium text-slate-300 mb-2">
+          <label className="block text-sm font-medium text-slate-300 mb-2 text-center">
             Preferred Contact Method
           </label>
           <div className="flex gap-3">
@@ -184,7 +184,7 @@ export function LeadCapture({ verdict, vehiclePrice, monthlyPayment, downPayment
 
         {/* Notes */}
         <div>
-          <label className="block text-sm font-medium text-slate-300 mb-1.5">
+          <label className="block text-sm font-medium text-slate-300 mb-1.5 text-center">
             Anything else we should know? <span className="text-slate-500">(optional)</span>
           </label>
           <textarea
