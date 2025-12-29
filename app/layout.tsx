@@ -64,8 +64,15 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className="min-h-screen bg-slate-300 text-slate-900 antialiased font-sans">
-        {children}
+      <body className="min-h-screen bg-slate-300 text-slate-900 antialiased font-sans flex flex-col">
+        <main className="flex-1">
+          {children}
+        </main>
+        <footer className="bg-slate-600 py-4">
+          <p className="text-white text-sm text-center">
+            © {new Date().getFullYear()} Quirk Auto Dealers
+          </p>
+        </footer>
       </body>
     </html>
   );
