@@ -40,6 +40,7 @@ const DEFAULT_USER: UserProfile = {
 const DEFAULT_PREFERENCES: VehiclePreferences = {
   vehiclePrice: 0,
   downPayment: 0,
+  creditTier: "good",
   annualMiles: 12000,
   ownershipStyle: "undecided",
   priorities: [],
