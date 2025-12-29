@@ -17,6 +17,8 @@ interface LeadCaptureProps {
   verdict: "buy" | "lease";
   vehiclePrice: number;
   monthlyPayment: number;
+  downPayment?: number;
+  financeTerm?: number;
 }
 
 type FormState =
@@ -25,7 +27,7 @@ type FormState =
   | { status: "success" }
   | { status: "error"; message: string };
 
-export function LeadCapture({ verdict, vehiclePrice, monthlyPayment }: LeadCaptureProps) {
+export function LeadCapture({ verdict, vehiclePrice, monthlyPayment, downPayment, financeTerm }: LeadCaptureProps) {
   const [formState, setFormState] = useState<FormState>({ status: "idle" });
   const [formData, setFormData] = useState({
     name: "",
@@ -48,6 +50,8 @@ export function LeadCapture({ verdict, vehiclePrice, monthlyPayment }: LeadCaptu
           verdict,
           vehiclePrice,
           monthlyPayment,
+          downPayment,
+          financeTerm,
           submittedAt: new Date().toISOString(),
         }),
       });
