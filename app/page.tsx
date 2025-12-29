@@ -44,7 +44,7 @@ const DEFAULT_PREFERENCES: VehiclePreferences = {
   annualMiles: 12000,
   ownershipStyle: "undecided",
   priorities: [],
-  financeTerm: 72,
+  financeTerm: 84,
 };
 
 export default function Page() {
