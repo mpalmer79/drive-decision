@@ -21,6 +21,7 @@ import { LandingPage } from "@/components/steps/LandingPage";
 import { ProfileStep } from "@/components/steps/ProfileStep";
 import { ScenariosStep } from "@/components/steps/ScenariosStep";
 import { ResultsPage } from "@/components/steps/ResultsPage";
+import { SideImages } from "@/components/SideImages";
 
 type Step = "landing" | "profile" | "scenarios" | "results";
 
@@ -120,8 +121,14 @@ export default function Page() {
   const currentStepIndex = { landing: -1, profile: 0, scenarios: 1, results: 2 }[step];
 
   return (
-    <div className="min-h-screen bg-[#030712] relative overflow-hidden">
-      {/* Animated Mesh Gradient Background */}
+    <div className="min-h-screen relative overflow-hidden">
+      {/* Side Images - Showroom Photography */}
+      <SideImages 
+        leftImage="/side-left.jpg"
+        rightImage="/side-right.jpg"
+      />
+
+      {/* Light Gradient Background */}
       <div className="mesh-gradient" />
       <div className="grain-overlay" />
       
@@ -136,22 +143,23 @@ export default function Page() {
 
       {/* Session Recovery Prompt */}
       {showRecoveryPrompt && savedSession && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-fade-in">
           <div className="w-full max-w-md animate-fade-in-up">
             <Card className="!p-6">
               <div className="flex items-start gap-4">
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500/20 to-teal-500/20 flex items-center justify-center flex-shrink-0">
-                  <IconRefresh className="w-6 h-6 text-emerald-400" />
+                <div className="w-12 h-12 rounded-xl bg-emerald-100 flex items-center justify-center flex-shrink-0">
+                  <IconRefresh className="w-6 h-6 text-emerald-600" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-white mb-1">
+                  <h3 className="text-lg font-semibold text-slate-900 mb-1">
                     Welcome back!
                   </h3>
-                  <p className="text-slate-400 text-sm mb-4">
+                  <p className="text-slate-600 text-sm mb-4">
                     We found {getSessionSummary(savedSession)}. Would you like to continue where you left off?
                   </p>
                   <div className="flex gap-3">
                     <Button
+                      variant="primary"
                       onClick={handleResumeSession}
                       className="flex-1"
                     >
@@ -186,12 +194,11 @@ export default function Page() {
               {/* Brand */}
               <div className="flex items-center justify-center gap-3 mb-8">
                 <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl blur-md opacity-50" />
-                  <div className="relative w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg">
+                  <div className="relative w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-md">
                     <IconCar className="w-5 h-5 text-white" />
                   </div>
                 </div>
-                <span className="text-xl font-bold text-white tracking-tight">DriveDecision</span>
+                <span className="text-xl font-bold text-slate-900 tracking-tight">DriveDecision</span>
               </div>
 
               {/* Progress Steps */}
@@ -206,14 +213,14 @@ export default function Page() {
             {/* Error Banner */}
             {appState.status === "error" && (
               <div className="max-w-xl mx-auto mb-8 animate-fade-in-up">
-                <Card className="!p-4 border-red-500/30 bg-red-500/5">
-                  <div className="flex items-center gap-3 text-red-400">
-                    <div className="w-10 h-10 rounded-xl bg-red-500/10 flex items-center justify-center flex-shrink-0">
+                <Card className="!p-4 border-red-300 bg-red-50">
+                  <div className="flex items-center gap-3 text-red-600">
+                    <div className="w-10 h-10 rounded-xl bg-red-100 flex items-center justify-center flex-shrink-0">
                       <IconAlertTriangle className="w-5 h-5" />
                     </div>
                     <div>
                       <p className="font-medium">Something went wrong</p>
-                      <p className="text-sm text-red-400/70">{appState.message}</p>
+                      <p className="text-sm text-red-500">{appState.message}</p>
                     </div>
                   </div>
                 </Card>
