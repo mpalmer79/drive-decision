@@ -52,7 +52,6 @@ export function ProfileStep({ profile, setProfile, onNext, onBack }: ProfileStep
 
   const updateField = (field: keyof UserProfile, value: number) => {
     setProfile((prev) => ({ ...prev, [field]: value }));
-    // Clear error when user starts typing
     if (errors[field]) {
       setErrors((prev) => ({ ...prev, [field]: "" }));
     }
@@ -64,11 +63,11 @@ export function ProfileStep({ profile, setProfile, onNext, onBack }: ProfileStep
         {/* Income Section */}
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-5">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500/20 to-teal-500/20 flex items-center justify-center">
-              <IconDollar className="w-5 h-5 text-emerald-400" />
+            <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center">
+              <IconDollar className="w-5 h-5 text-emerald-600" />
             </div>
             <div>
-              <h3 className="font-bold text-white">Monthly Finances</h3>
+              <h3 className="font-bold text-slate-900">Monthly Finances</h3>
               <p className="text-xs text-slate-500">Your take-home income and regular expenses</p>
             </div>
           </div>
@@ -104,11 +103,11 @@ export function ProfileStep({ profile, setProfile, onNext, onBack }: ProfileStep
         {/* Savings Section */}
         <div className="my-8">
           <div className="flex items-center gap-3 mb-5">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500/20 to-blue-500/20 flex items-center justify-center">
-              <IconShield className="w-5 h-5 text-cyan-400" />
+            <div className="w-10 h-10 rounded-xl bg-cyan-100 flex items-center justify-center">
+              <IconShield className="w-5 h-5 text-cyan-600" />
             </div>
             <div>
-              <h3 className="font-bold text-white">Emergency Fund</h3>
+              <h3 className="font-bold text-slate-900">Emergency Fund</h3>
               <p className="text-xs text-slate-500">Your financial safety net</p>
             </div>
           </div>
@@ -129,17 +128,17 @@ export function ProfileStep({ profile, setProfile, onNext, onBack }: ProfileStep
         {profile.monthlyIncome > 0 && profile.monthlyExpenses > 0 && (
           <>
             <Divider />
-            <div className="mt-8 p-4 rounded-xl bg-slate-800/30 border border-slate-700/30">
+            <div className="mt-8 p-4 rounded-xl bg-slate-50 border border-slate-200">
               <div className="flex items-center gap-2 mb-3">
-                <IconTrendingUp className="w-4 h-4 text-emerald-400" />
-                <span className="text-sm font-medium text-slate-300">Your Snapshot</span>
+                <IconTrendingUp className="w-4 h-4 text-emerald-600" />
+                <span className="text-sm font-medium text-slate-700">Your Snapshot</span>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <div className="text-xs text-slate-500 mb-1">Monthly Discretionary</div>
                   <div className={cn(
                     "text-xl font-bold",
-                    discretionaryIncome > 0 ? "text-emerald-400" : "text-red-400"
+                    discretionaryIncome > 0 ? "text-emerald-600" : "text-red-600"
                   )}>
                     ${formatNumber(Math.max(0, discretionaryIncome))}
                   </div>
@@ -148,14 +147,14 @@ export function ProfileStep({ profile, setProfile, onNext, onBack }: ProfileStep
                   <div className="text-xs text-slate-500 mb-1">Savings Buffer</div>
                   <div className={cn(
                     "text-xl font-bold",
-                    parseFloat(savingsMonths) >= 3 ? "text-cyan-400" : "text-amber-400"
+                    parseFloat(savingsMonths) >= 3 ? "text-cyan-600" : "text-amber-600"
                   )}>
                     {savingsMonths} months
                   </div>
                 </div>
               </div>
               {parseFloat(savingsMonths) < 3 && (
-                <p className="text-xs text-amber-400/80 mt-3">
+                <p className="text-xs text-amber-600 mt-3">
                   💡 Financial experts recommend 3-6 months of expenses in savings.
                 </p>
               )}
