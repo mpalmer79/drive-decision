@@ -259,15 +259,6 @@ export function LandingPage({ onStart }: LandingPageProps) {
           </div>
         </div>
       </div>
-
-      {/* Footer */}
-      <footer className="relative z-10 py-6 px-4 text-center border-t border-slate-800/50 bg-slate-950/50 backdrop-blur-sm">
-        <p className="text-xs text-slate-500">
-          Educational decision support only. Not financial, legal, or tax advice. 
-          <span className="mx-2">•</span>
-          © {new Date().getFullYear()} Quirk Auto Dealers
-        </p>
-      </footer>
     </div>
   );
 }
