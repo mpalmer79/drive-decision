@@ -63,21 +63,21 @@ export function ResultsPage({ result, onStartOver, onBack }: ResultsPageProps) {
   const confidenceConfig = {
     high: {
       text: "High Confidence",
-      color: "text-emerald-400",
-      bg: "bg-emerald-500/10",
+      color: "text-emerald-600",
+      bg: "bg-emerald-100",
       border: "border-emerald-500/20",
       value: 95,
     },
     medium: {
       text: "Moderate Confidence",
-      color: "text-amber-400",
-      bg: "bg-amber-500/10",
+      color: "text-amber-600",
+      bg: "bg-amber-100",
       border: "border-amber-500/20",
       value: 70,
     },
     low: {
       text: "Close Call",
-      color: "text-slate-400",
+      color: "text-slate-500",
       bg: "bg-slate-500/10",
       border: "border-slate-500/20",
       value: 50,
@@ -85,10 +85,10 @@ export function ResultsPage({ result, onStartOver, onBack }: ResultsPageProps) {
   }[recommendation.confidence];
 
   const affordabilityColors = {
-    comfortable: { text: "text-emerald-400", bg: "bg-emerald-500/10", label: "Comfortable" },
-    manageable: { text: "text-cyan-400", bg: "bg-cyan-500/10", label: "Manageable" },
-    stretched: { text: "text-amber-400", bg: "bg-amber-500/10", label: "Stretched" },
-    risky: { text: "text-red-400", bg: "bg-red-500/10", label: "Risky" },
+    comfortable: { text: "text-emerald-600", bg: "bg-emerald-100", label: "Comfortable" },
+    manageable: { text: "text-cyan-600", bg: "bg-cyan-100", label: "Manageable" },
+    stretched: { text: "text-amber-600", bg: "bg-amber-100", label: "Stretched" },
+    risky: { text: "text-red-600", bg: "bg-red-500/10", label: "Risky" },
   }[budgetAnalysis.affordabilityRating];
 
   return (
@@ -121,17 +121,17 @@ export function ResultsPage({ result, onStartOver, onBack }: ResultsPageProps) {
             <div className={cn(
               "relative w-24 h-24 rounded-3xl flex items-center justify-center bg-gradient-to-br border-2",
               isBuyRecommended
-                ? "from-emerald-500/20 to-teal-500/20 border-emerald-500/50"
-                : "from-amber-500/20 to-orange-500/20 border-amber-500/50"
+                ? "from-emerald-100 to-teal-100 border-emerald-500/50"
+                : "from-amber-100 to-orange-100 border-amber-500/50"
             )}>
               {isBuyRecommended ? (
                 <IconKey className={cn(
-                  "w-12 h-12 transition-all duration-500 text-emerald-400",
+                  "w-12 h-12 transition-all duration-500 text-emerald-600",
                   revealStage >= 2 ? "scale-100" : "scale-0"
                 )} />
               ) : (
                 <IconSparkles className={cn(
-                  "w-12 h-12 transition-all duration-500 text-amber-400",
+                  "w-12 h-12 transition-all duration-500 text-amber-600",
                   revealStage >= 2 ? "scale-100" : "scale-0"
                 )} />
               )}
@@ -171,7 +171,7 @@ export function ResultsPage({ result, onStartOver, onBack }: ResultsPageProps) {
 
         {/* Main Verdict */}
         <h1 className={cn(
-          "text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white mb-4 tracking-tight transition-all duration-700",
+          "text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 mb-4 tracking-tight transition-all duration-700",
           revealStage >= 2 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
         )}>
           {isBuyRecommended ? (
@@ -192,7 +192,7 @@ export function ResultsPage({ result, onStartOver, onBack }: ResultsPageProps) {
         </h1>
 
         <p className={cn(
-          "text-lg text-slate-400 max-w-xl mx-auto leading-relaxed transition-all duration-700 delay-200",
+          "text-lg text-slate-500 max-w-xl mx-auto leading-relaxed transition-all duration-700 delay-200",
           revealStage >= 2 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
         )}>
           {isBuyRecommended
@@ -215,18 +215,18 @@ export function ResultsPage({ result, onStartOver, onBack }: ResultsPageProps) {
             <div className="flex items-center justify-center gap-3">
               <div className={cn(
                 "w-10 h-10 rounded-xl flex items-center justify-center",
-                isBuyRecommended ? "bg-emerald-500/10" : "bg-amber-500/10"
+                isBuyRecommended ? "bg-emerald-100" : "bg-amber-100"
               )}>
-                <IconCheck className={cn("w-5 h-5", isBuyRecommended ? "text-emerald-400" : "text-amber-400")} />
+                <IconCheck className={cn("w-5 h-5", isBuyRecommended ? "text-emerald-600" : "text-amber-600")} />
               </div>
-              <h3 className="font-bold text-white text-lg">Why This Recommendation</h3>
+              <h3 className="font-bold text-slate-900 text-lg">Why This Recommendation</h3>
             </div>
           </div>
           <ul className="space-y-3">
             {recommendation.primaryReasons.map((reason, i) => (
               <li
                 key={i}
-                className="flex items-start gap-3 text-slate-300"
+                className="flex items-start gap-3 text-slate-600"
                 style={{ animationDelay: `${i * 100}ms` }}
               >
                 <span className={cn(
@@ -250,11 +250,11 @@ export function ResultsPage({ result, onStartOver, onBack }: ResultsPageProps) {
           )}>
             <Card className="ring-glow-emerald border-emerald-500/30">
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500/20 to-teal-500/20 flex items-center justify-center">
-                  <IconKey className="w-6 h-6 text-emerald-400" />
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-100 to-teal-100 flex items-center justify-center">
+                  <IconKey className="w-6 h-6 text-emerald-600" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-white text-lg">Your Finance Details</h3>
+                  <h3 className="font-bold text-slate-900 text-lg">Your Finance Details</h3>
                   <p className="text-xs text-slate-500">
                     {preferences.financeTerm === "explore" ? 72 : preferences.financeTerm} month term at {financeCalculation.aprUsed}% APR
                   </p>
@@ -265,9 +265,9 @@ export function ResultsPage({ result, onStartOver, onBack }: ResultsPageProps) {
               </div>
 
               <div className="grid grid-cols-2 gap-4 mb-6">
-                <div className="p-4 rounded-xl bg-slate-800/30 border border-slate-700/30">
+                <div className="p-4 rounded-xl bg-slate-50 border border-slate-200">
                   <div className="text-xs text-slate-500 uppercase tracking-wider mb-1">Monthly Payment</div>
-                  <div className="text-3xl font-bold text-white">
+                  <div className="text-3xl font-bold text-slate-900">
                     {revealStage >= 5 ? (
                       <AnimatedCounter
                         value={financeCalculation.monthlyPayment}
@@ -280,9 +280,9 @@ export function ResultsPage({ result, onStartOver, onBack }: ResultsPageProps) {
                   </div>
                   <div className="text-xs text-slate-500 mt-1">Principal + Interest</div>
                 </div>
-                <div className="p-4 rounded-xl bg-slate-800/30 border border-slate-700/30">
+                <div className="p-4 rounded-xl bg-slate-50 border border-slate-200">
                   <div className="text-xs text-slate-500 uppercase tracking-wider mb-1">Monthly All-In</div>
-                  <div className="text-3xl font-bold text-emerald-400">
+                  <div className="text-3xl font-bold text-emerald-600">
                     {revealStage >= 5 ? (
                       <AnimatedCounter
                         value={financeCalculation.monthlyAllIn}
@@ -299,25 +299,25 @@ export function ResultsPage({ result, onStartOver, onBack }: ResultsPageProps) {
               </div>
 
               <div className="space-y-3">
-                <div className="flex justify-between py-3 border-b border-slate-700/30">
-                  <span className="text-slate-400">Vehicle Price</span>
-                  <span className="font-semibold text-white">${formatNumber(preferences.vehiclePrice)}</span>
+                <div className="flex justify-between py-3 border-b border-slate-200">
+                  <span className="text-slate-500">Vehicle Price</span>
+                  <span className="font-semibold text-slate-900">${formatNumber(preferences.vehiclePrice)}</span>
                 </div>
-                <div className="flex justify-between py-3 border-b border-slate-700/30">
-                  <span className="text-slate-400">Down Payment</span>
-                  <span className="font-semibold text-white">${formatNumber(preferences.downPayment)}</span>
+                <div className="flex justify-between py-3 border-b border-slate-200">
+                  <span className="text-slate-500">Down Payment</span>
+                  <span className="font-semibold text-slate-900">${formatNumber(preferences.downPayment)}</span>
                 </div>
-                <div className="flex justify-between py-3 border-b border-slate-700/30">
-                  <span className="text-slate-400">Amount Financed</span>
-                  <span className="font-semibold text-white">${formatNumber(financeCalculation.loanAmount)}</span>
+                <div className="flex justify-between py-3 border-b border-slate-200">
+                  <span className="text-slate-500">Amount Financed</span>
+                  <span className="font-semibold text-slate-900">${formatNumber(financeCalculation.loanAmount)}</span>
                 </div>
-                <div className="flex justify-between py-3 border-b border-slate-700/30">
-                  <span className="text-slate-400">Total Interest</span>
-                  <span className="font-semibold text-amber-400">${formatNumber(financeCalculation.totalInterest)}</span>
+                <div className="flex justify-between py-3 border-b border-slate-200">
+                  <span className="text-slate-500">Total Interest</span>
+                  <span className="font-semibold text-amber-600">${formatNumber(financeCalculation.totalInterest)}</span>
                 </div>
                 <div className="flex justify-between py-3">
-                  <span className="text-slate-400">Payoff Date</span>
-                  <span className="font-semibold text-emerald-400">{financeCalculation.payoffDate}</span>
+                  <span className="text-slate-500">Payoff Date</span>
+                  <span className="font-semibold text-emerald-600">{financeCalculation.payoffDate}</span>
                 </div>
               </div>
             </Card>
@@ -344,10 +344,10 @@ export function ResultsPage({ result, onStartOver, onBack }: ResultsPageProps) {
           )}>
             <Card>
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 rounded-xl bg-cyan-500/10 flex items-center justify-center">
-                  <IconTrendingUp className="w-5 h-5 text-cyan-400" />
+                <div className="w-10 h-10 rounded-xl bg-cyan-100 flex items-center justify-center">
+                  <IconTrendingUp className="w-5 h-5 text-cyan-600" />
                 </div>
-                <h3 className="font-bold text-white text-lg">Budget Analysis</h3>
+                <h3 className="font-bold text-slate-900 text-lg">Budget Analysis</h3>
                 <div className={cn("ml-auto px-3 py-1 rounded-full text-xs font-medium", affordabilityColors.bg, affordabilityColors.text)}>
                   {affordabilityColors.label}
                 </div>
@@ -358,20 +358,20 @@ export function ResultsPage({ result, onStartOver, onBack }: ResultsPageProps) {
               </div>
 
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                <div className="p-3 rounded-xl bg-slate-800/30 border border-slate-700/30 text-center">
-                  <div className="text-2xl font-bold text-white">
+                <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-center">
+                  <div className="text-2xl font-bold text-slate-900">
                     {budgetAnalysis.paymentAsPercentOfIncome}%
                   </div>
                   <div className="text-xs text-slate-500">of Income</div>
                 </div>
-                <div className="p-3 rounded-xl bg-slate-800/30 border border-slate-700/30 text-center">
-                  <div className="text-2xl font-bold text-cyan-400">
+                <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-center">
+                  <div className="text-2xl font-bold text-cyan-600">
                     {budgetAnalysis.monthsOfSavingsBuffer}
                   </div>
                   <div className="text-xs text-slate-500">Months Buffer</div>
                 </div>
-                <div className="p-3 rounded-xl bg-slate-800/30 border border-slate-700/30 text-center sm:col-span-1 col-span-2">
-                  <div className="text-2xl font-bold text-emerald-400">
+                <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-center sm:col-span-1 col-span-2">
+                  <div className="text-2xl font-bold text-emerald-600">
                     ${formatNumber(budgetAnalysis.discretionaryIncome - financeCalculation.monthlyAllIn)}
                   </div>
                   <div className="text-xs text-slate-500">Left Over Monthly</div>
@@ -406,12 +406,12 @@ export function ResultsPage({ result, onStartOver, onBack }: ResultsPageProps) {
             <Card className="border-amber-500/20 bg-amber-500/5">
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
                 <div className="flex items-center gap-3 flex-1">
-                  <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center">
-                    <IconSparkles className="w-5 h-5 text-amber-400" />
+                  <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center">
+                    <IconSparkles className="w-5 h-5 text-amber-600" />
                   </div>
                   <div>
-                    <h4 className="font-semibold text-white">Still curious about leasing?</h4>
-                    <p className="text-sm text-slate-400">
+                    <h4 className="font-semibold text-slate-900">Still curious about leasing?</h4>
+                    <p className="text-sm text-slate-500">
                       Our specialists can show you lease options for comparison.
                     </p>
                   </div>
@@ -459,27 +459,27 @@ export function ResultsPage({ result, onStartOver, onBack }: ResultsPageProps) {
             "mb-10 transition-all duration-700",
             revealStage >= 6 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
           )}>
-            <Card className="border-slate-700/50">
+            <Card className="border-slate-300">
               <div className="flex items-center justify-center gap-3 mb-5">
-                <div className="w-10 h-10 rounded-xl bg-slate-700/50 flex items-center justify-center">
-                  <IconKey className="w-5 h-5 text-slate-400" />
+                <div className="w-10 h-10 rounded-xl bg-slate-200 flex items-center justify-center">
+                  <IconKey className="w-5 h-5 text-slate-500" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-white text-lg">For Comparison: Finance Option</h3>
+                  <h3 className="font-bold text-slate-900 text-lg">For Comparison: Finance Option</h3>
                   <p className="text-xs text-slate-500">If you decide buying is better for you</p>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4 mb-4">
-                <div className="p-3 rounded-xl bg-slate-800/30 border border-slate-700/30">
+                <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
                   <div className="text-xs text-slate-500 mb-1">Monthly Payment</div>
-                  <div className="text-xl font-bold text-white">
+                  <div className="text-xl font-bold text-slate-900">
                     ${formatNumber(financeCalculation.monthlyPayment)}
                   </div>
                 </div>
-                <div className="p-3 rounded-xl bg-slate-800/30 border border-slate-700/30">
+                <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
                   <div className="text-xs text-slate-500 mb-1">Monthly All-In</div>
-                  <div className="text-xl font-bold text-slate-300">
+                  <div className="text-xl font-bold text-slate-600">
                     ${formatNumber(financeCalculation.monthlyAllIn)}
                   </div>
                 </div>
@@ -516,14 +516,14 @@ export function ResultsPage({ result, onStartOver, onBack }: ResultsPageProps) {
         )}>
           <Card className="border-amber-500/20 bg-amber-500/5">
             <div className="flex items-center justify-center gap-3 mb-5">
-              <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center">
-                <IconAlertTriangle className="w-5 h-5 text-amber-400" />
+              <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center">
+                <IconAlertTriangle className="w-5 h-5 text-amber-600" />
               </div>
-              <h3 className="font-bold text-white text-lg">Things to Consider</h3>
+              <h3 className="font-bold text-slate-900 text-lg">Things to Consider</h3>
             </div>
             <ul className="space-y-3">
               {recommendation.considerations.map((item, i) => (
-                <li key={i} className="flex items-start gap-3 text-sm text-slate-300">
+                <li key={i} className="flex items-start gap-3 text-sm text-slate-600">
                   <span className="w-2 h-2 rounded-full bg-amber-500 mt-1.5 flex-shrink-0" />
                   <span>{item}</span>
                 </li>
