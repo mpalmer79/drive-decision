@@ -32,9 +32,9 @@ export function LandingPage({ onStart }: LandingPageProps) {
       <div className="grain-overlay" />
       
       {/* Floating Orbs */}
-      <div className="absolute top-20 left-[10%] w-72 h-72 bg-emerald-500/20 rounded-full blur-[100px] floating-orb" />
-      <div className="absolute bottom-20 right-[15%] w-96 h-96 bg-teal-500/15 rounded-full blur-[120px] floating-orb" style={{ animationDelay: '-2s' }} />
-      <div className="absolute top-1/2 left-[60%] w-64 h-64 bg-amber-500/10 rounded-full blur-[80px] floating-orb" style={{ animationDelay: '-4s' }} />
+      <div className="absolute top-20 left-[10%] w-72 h-72 bg-emerald-200/50 rounded-full blur-[100px] floating-orb" />
+      <div className="absolute bottom-20 right-[15%] w-96 h-96 bg-teal-200/40 rounded-full blur-[120px] floating-orb" style={{ animationDelay: '-2s' }} />
+      <div className="absolute top-1/2 left-[60%] w-64 h-64 bg-amber-100 rounded-full blur-[80px] floating-orb" style={{ animationDelay: '-4s' }} />
       
       {/* Quirk Logo Header */}
       <div className="relative z-10">
@@ -60,7 +60,7 @@ export function LandingPage({ onStart }: LandingPageProps) {
           >
             <div className="relative">
               <div className="absolute inset-0 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-2xl blur-xl opacity-50 animate-pulse-glow" />
-              <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700/50 flex items-center justify-center shadow-2xl overflow-hidden">
+              <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-br from-white to-slate-100 border border-slate-300 flex items-center justify-center shadow-2xl overflow-hidden">
                 <Image
                   src="/favicon.png"
                   alt="DriveDecision"
@@ -71,10 +71,10 @@ export function LandingPage({ onStart }: LandingPageProps) {
               </div>
             </div>
             <div className="text-left">
-              <div className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
+              <div className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
                 DriveDecision
               </div>
-              <div className="text-xs sm:text-sm text-slate-400 tracking-widest font-medium">
+              <div className="text-xs sm:text-sm text-slate-500 tracking-widest font-medium">
                 powered by Quirk AI
               </div>
             </div>
@@ -83,7 +83,7 @@ export function LandingPage({ onStart }: LandingPageProps) {
           {/* Headline */}
           <h1 
             className={cn(
-              "text-4xl sm:text-5xl lg:text-7xl font-extrabold text-white mb-6 tracking-tight leading-[1.1]",
+              "text-4xl sm:text-5xl lg:text-7xl font-extrabold text-slate-900 mb-6 tracking-tight leading-[1.1]",
               "transition-all duration-700 delay-300",
               mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
             )}
@@ -101,13 +101,13 @@ export function LandingPage({ onStart }: LandingPageProps) {
 
           <p 
             className={cn(
-              "text-lg sm:text-xl text-slate-400 max-w-2xl mx-auto mb-10 leading-relaxed",
+              "text-lg sm:text-xl text-slate-500 max-w-2xl mx-auto mb-10 leading-relaxed",
               "transition-all duration-700 delay-400",
               mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
             )}
           >
             Get a clear, personalized answer in under{" "}
-            <span className="text-white font-semibold">2 minutes</span>. 
+            <span className="text-slate-900 font-semibold">2 minutes</span>. 
             We analyze your complete financial picture—not just the monthly payment.
           </p>
 
@@ -159,8 +159,8 @@ export function LandingPage({ onStart }: LandingPageProps) {
               title: "Risk-First Analysis",
               desc: "We calculate what you can actually afford, factoring in your complete financial situation.",
               gradient: "from-emerald-500 to-teal-500",
-              iconBg: "bg-emerald-500/10",
-              iconColor: "text-emerald-400",
+              iconBg: "bg-emerald-100",
+              iconColor: "text-emerald-600",
               delay: "delay-[800ms]",
               bgImage: "/b.png",
             },
@@ -169,8 +169,8 @@ export function LandingPage({ onStart }: LandingPageProps) {
               title: "Cash Flow Stress Test",
               desc: "See how each option impacts your monthly finances and emergency savings buffer.",
               gradient: "from-cyan-500 to-blue-500",
-              iconBg: "bg-cyan-500/10",
-              iconColor: "text-cyan-400",
+              iconBg: "bg-cyan-100",
+              iconColor: "text-cyan-600",
               delay: "delay-[900ms]",
               bgImage: "/a.png",
             },
@@ -179,8 +179,8 @@ export function LandingPage({ onStart }: LandingPageProps) {
               title: "Downside Protection",
               desc: "Know which option keeps you safer if your income drops unexpectedly.",
               gradient: "from-amber-500 to-orange-500",
-              iconBg: "bg-amber-500/10",
-              iconColor: "text-amber-400",
+              iconBg: "bg-amber-100",
+              iconColor: "text-amber-600",
               delay: "delay-[1000ms]",
               bgImage: "/c.png",
             },
@@ -201,7 +201,7 @@ export function LandingPage({ onStart }: LandingPageProps) {
               )} />
               
               <div 
-                className="relative h-full rounded-2xl border border-slate-700/50 overflow-hidden"
+                className="relative h-full rounded-2xl border border-slate-300 overflow-hidden"
                 style={{ 
                   backgroundImage: `url(${feature.bgImage})`, 
                   backgroundSize: 'cover', 
@@ -223,8 +223,8 @@ export function LandingPage({ onStart }: LandingPageProps) {
                   </div>
                   
                   {/* Content */}
-                  <h3 className="font-bold text-white text-lg mb-2">{feature.title}</h3>
-                  <p className="text-sm text-slate-400 leading-relaxed">{feature.desc}</p>
+                  <h3 className="font-bold text-slate-900 text-lg mb-2">{feature.title}</h3>
+                  <p className="text-sm text-slate-500 leading-relaxed">{feature.desc}</p>
                 </div>
               </div>
             </div>
@@ -240,35 +240,35 @@ export function LandingPage({ onStart }: LandingPageProps) {
           )}
         >
           <div className="flex items-center gap-3 w-48 sm:w-auto">
-            <div className="w-12 h-12 rounded-xl bg-slate-800/50 border border-slate-700/50 flex items-center justify-center flex-shrink-0">
-              <IconCar className="w-6 h-6 text-slate-400" />
+            <div className="w-12 h-12 rounded-xl bg-slate-100 border border-slate-300 flex items-center justify-center flex-shrink-0">
+              <IconCar className="w-6 h-6 text-slate-500" />
             </div>
             <div className="text-left">
-              <div className="text-2xl font-bold text-white">18</div>
+              <div className="text-2xl font-bold text-slate-900">18</div>
               <div className="text-xs text-slate-500 uppercase tracking-wider">Dealerships</div>
             </div>
           </div>
           
-          <div className="h-12 w-px bg-slate-700/50 hidden sm:block" />
+          <div className="h-12 w-px bg-slate-200 hidden sm:block" />
           
           <div className="flex items-center gap-3 w-48 sm:w-auto">
-            <div className="w-12 h-12 rounded-xl bg-slate-800/50 border border-slate-700/50 flex items-center justify-center flex-shrink-0">
-              <IconCheck className="w-6 h-6 text-emerald-400" />
+            <div className="w-12 h-12 rounded-xl bg-slate-100 border border-slate-300 flex items-center justify-center flex-shrink-0">
+              <IconCheck className="w-6 h-6 text-emerald-600" />
             </div>
             <div className="text-left">
-              <div className="text-2xl font-bold text-white">40+</div>
+              <div className="text-2xl font-bold text-slate-900">40+</div>
               <div className="text-xs text-slate-500 uppercase tracking-wider">Years Experience</div>
             </div>
           </div>
           
-          <div className="h-12 w-px bg-slate-700/50 hidden sm:block" />
+          <div className="h-12 w-px bg-slate-200 hidden sm:block" />
           
           <div className="flex items-center gap-3 w-48 sm:w-auto">
-            <div className="w-12 h-12 rounded-xl bg-slate-800/50 border border-slate-700/50 flex items-center justify-center flex-shrink-0">
-              <IconSparkles className="w-6 h-6 text-amber-400" />
+            <div className="w-12 h-12 rounded-xl bg-slate-100 border border-slate-300 flex items-center justify-center flex-shrink-0">
+              <IconSparkles className="w-6 h-6 text-amber-600" />
             </div>
             <div className="text-left">
-              <div className="text-2xl font-bold text-white">AI</div>
+              <div className="text-2xl font-bold text-slate-900">AI</div>
               <div className="text-xs text-slate-500 uppercase tracking-wider">Powered Analysis</div>
             </div>
           </div>
