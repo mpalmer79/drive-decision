@@ -167,32 +167,32 @@ export function CostBreakdownChart({
             <div className={cn(
               "relative w-12 h-12 rounded-xl flex items-center justify-center border",
               selectedView === "buy" 
-                ? "bg-emerald-500/20 border-emerald-500/30" 
-                : "bg-amber-500/20 border-amber-500/30"
+                ? "bg-emerald-500/20 border-emerald-300" 
+                : "bg-amber-500/20 border-amber-300"
             )}>
               <IconDollar className={cn(
                 "w-6 h-6",
-                selectedView === "buy" ? "text-emerald-400" : "text-amber-400"
+                selectedView === "buy" ? "text-emerald-600" : "text-amber-600"
               )} />
             </div>
           </div>
           <div>
-            <h3 className="font-bold text-white text-lg">Where Your Money Goes</h3>
-            <p className="text-sm text-slate-400">
+            <h3 className="font-bold text-slate-900 text-lg">Where Your Money Goes</h3>
+            <p className="text-sm text-slate-500">
               Total cost breakdown over {ownershipMonths} months
             </p>
           </div>
         </div>
 
         {/* Toggle */}
-        <div className="flex bg-slate-800/50 rounded-xl p-1">
+        <div className="flex bg-slate-100 rounded-xl p-1">
           <button
             onClick={() => setSelectedView("buy")}
             className={cn(
               "px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300",
               selectedView === "buy"
-                ? "bg-emerald-500/20 text-emerald-400"
-                : "text-slate-400 hover:text-white"
+                ? "bg-emerald-500/20 text-emerald-600"
+                : "text-slate-500 hover:text-slate-900"
             )}
           >
             Buy
@@ -202,8 +202,8 @@ export function CostBreakdownChart({
             className={cn(
               "px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300",
               selectedView === "lease"
-                ? "bg-amber-500/20 text-amber-400"
-                : "text-slate-400 hover:text-white"
+                ? "bg-amber-500/20 text-amber-600"
+                : "text-slate-500 hover:text-slate-900"
             )}
           >
             Lease
@@ -257,19 +257,19 @@ export function CostBreakdownChart({
           <div className="absolute inset-0 flex flex-col items-center justify-center">
             {hoveredSegment ? (
               <>
-                <div className="text-2xl font-bold text-white">
+                <div className="text-2xl font-bold text-slate-900">
                   ${formatNumber(segments.find(s => s.id === hoveredSegment)?.amount || 0)}
                 </div>
-                <div className="text-xs text-slate-400">
+                <div className="text-xs text-slate-500">
                   {segments.find(s => s.id === hoveredSegment)?.label}
                 </div>
               </>
             ) : (
               <>
-                <div className="text-3xl font-bold text-white">
+                <div className="text-3xl font-bold text-slate-900">
                   ${formatNumber(Math.round(totalCost))}
                 </div>
-                <div className="text-xs text-slate-400">Total Cost</div>
+                <div className="text-xs text-slate-500">Total Cost</div>
               </>
             )}
           </div>
@@ -282,8 +282,8 @@ export function CostBreakdownChart({
               key={segment.id}
               className={cn(
                 "flex items-center gap-4 p-3 rounded-xl transition-all duration-300 cursor-pointer",
-                "hover:bg-slate-800/50",
-                hoveredSegment === segment.id && "bg-slate-800/50 ring-1 ring-slate-700"
+                "hover:bg-slate-100",
+                hoveredSegment === segment.id && "bg-slate-100 ring-1 ring-slate-700"
               )}
               onMouseEnter={() => setHoveredSegment(segment.id)}
               onMouseLeave={() => setHoveredSegment(null)}
@@ -305,10 +305,10 @@ export function CostBreakdownChart({
               {/* Label & Amount */}
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-white truncate">
+                  <span className="text-sm font-medium text-slate-900 truncate">
                     {segment.label}
                   </span>
-                  <span className="text-sm font-bold text-white ml-2">
+                  <span className="text-sm font-bold text-slate-900 ml-2">
                     ${formatNumber(segment.amount)}
                   </span>
                 </div>
@@ -322,7 +322,7 @@ export function CostBreakdownChart({
                       }}
                     />
                   </div>
-                  <span className="text-xs text-slate-400 w-12 text-right">
+                  <span className="text-xs text-slate-500 w-12 text-right">
                     {Math.round(segment.percentage * 100)}%
                   </span>
                 </div>
@@ -333,13 +333,13 @@ export function CostBreakdownChart({
       </div>
 
       {/* Monthly Breakdown */}
-      <div className="mt-8 pt-6 border-t border-slate-700/50">
-        <h4 className="text-sm font-medium text-slate-400 mb-4">Monthly Breakdown</h4>
+      <div className="mt-8 pt-6 border-t border-slate-300">
+        <h4 className="text-sm font-medium text-slate-500 mb-4">Monthly Breakdown</h4>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           {categories.map((cat) => (
             <div
               key={cat.id}
-              className="p-3 rounded-xl bg-slate-800/30 border border-slate-700/30"
+              className="p-3 rounded-xl bg-slate-50 border border-slate-200"
             >
               <div className="flex items-center gap-2 mb-2">
                 <div
@@ -348,7 +348,7 @@ export function CostBreakdownChart({
                 />
                 <span className="text-xs text-slate-500">{cat.label}</span>
               </div>
-              <div className="text-lg font-bold text-white">
+              <div className="text-lg font-bold text-slate-900">
                 ${formatNumber(Math.round(cat.amount / ownershipMonths))}
               </div>
               <div className="text-xs text-slate-500">/month</div>
