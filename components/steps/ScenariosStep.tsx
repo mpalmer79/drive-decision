@@ -466,10 +466,10 @@ export function ScenariosStep({
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   {[
-                    { value: 72 as const, label: "72 Months", sublabel: "6 years • Standard payments" },
-{ value: 78 as const, label: "78 Months", sublabel: "6.5 years • Balanced" },
-{ value: 84 as const, label: "84 Months", sublabel: "7 years • Lower payments" },
-                    { value: "explore" as const, label: "Show Me Some Options", sublabel: "Compare all terms" },
+                    { value: 72 as const, label: "72 Months", sublabel: "6 years • Standard payments", popular: false },
+                    { value: 78 as const, label: "78 Months", sublabel: "6.5 years • Balanced", popular: false },
+                    { value: 84 as const, label: "84 Months", sublabel: "7 years • Lower payments", popular: true },
+                    { value: "explore" as const, label: "What are my options?", sublabel: "Show me these three payment options", popular: false },
                   ].map((option) => (
                     <button
                       key={option.value}
@@ -477,10 +477,16 @@ export function ScenariosStep({
                         setPreferences((prev) => ({ ...prev, financeTerm: option.value }))
                       }
                       className={cn(
-                        "choice-button rounded-2xl p-5 text-left transition-all duration-300",
-                        preferences.financeTerm === option.value && "selected"
+                        "choice-button rounded-2xl p-5 text-left transition-all duration-300 relative",
+                        preferences.financeTerm === option.value && "selected",
+                        option.popular && preferences.financeTerm !== option.value && "ring-1 ring-emerald-500/40 shadow-[0_0_15px_rgba(16,185,129,0.15)]"
                       )}
                     >
+                      {option.popular && (
+                        <div className="absolute -top-2 left-4 px-2 py-0.5 bg-gradient-to-r from-emerald-500/90 to-teal-500/90 rounded-full">
+                          <span className="text-[10px] font-semibold text-white uppercase tracking-wider">Most Popular</span>
+                        </div>
+                      )}
                       <div className="flex items-center justify-between mb-2">
                         <span className="text-lg font-bold text-white">{option.label}</span>
                         {preferences.financeTerm === option.value && (
