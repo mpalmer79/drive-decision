@@ -604,6 +604,92 @@ input[type="range"]:focus::-webkit-slider-thumb {
    WEATHER OVERLAY ANIMATIONS
    ============================================ */
 
+/* Rain animation */
+@keyframes rain {
+  0% {
+    transform: translateY(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.8;
+  }
+  90% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(100vh);
+    opacity: 0;
+  }
+}
+
+.animate-rain {
+  animation: rain linear infinite;
+}
+
+/* Snow animation */
+@keyframes snow {
+  0% {
+    transform: translateY(0) translateX(0) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.8;
+  }
+  90% {
+    opacity: 0.6;
+  }
+  100% {
+    transform: translateY(100vh) translateX(30px) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+.animate-snow {
+  animation: snow linear infinite;
+}
+
+/* Cloud animations */
+@keyframes cloudMove1 {
+  0% {
+    transform: translateX(-200px);
+  }
+  100% {
+    transform: translateX(100vw);
+  }
+}
+
+@keyframes cloudMove2 {
+  0% {
+    transform: translateX(-150px);
+  }
+  100% {
+    transform: translateX(100vw);
+  }
+}
+
+@keyframes cloudMove3 {
+  0% {
+    transform: translateX(-100px);
+  }
+  100% {
+    transform: translateX(100vw);
+  }
+}
+
+.animate-cloud-1 {
+  animation: cloudMove1 60s linear infinite;
+}
+
+.animate-cloud-2 {
+  animation: cloudMove2 45s linear infinite;
+  animation-delay: -15s;
+}
+
+.animate-cloud-3 {
+  animation: cloudMove3 35s linear infinite;
+  animation-delay: -25s;
+}
+
 /* Slow pulse for sun glow */
 @keyframes pulseSlow {
   0%, 100% {
@@ -632,150 +718,4 @@ input[type="range"]:focus::-webkit-slider-thumb {
 
 .animate-spin-slow {
   animation: spinSlow 60s linear infinite;
-}
-
-/* Snowfall animation */
-@keyframes snowfall {
-  0% {
-    transform: translateY(-10px) translateX(0) rotate(0deg);
-    opacity: 0;
-  }
-  10% {
-    opacity: 1;
-  }
-  90% {
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(100vh) translateX(20px) rotate(360deg);
-    opacity: 0;
-  }
-}
-
-.animate-snowfall {
-  animation: snowfall linear infinite;
-}
-
-/* Rainfall animation */
-@keyframes rainfall {
-  0% {
-    transform: translateY(-20px);
-    opacity: 0;
-  }
-  10% {
-    opacity: 0.7;
-  }
-  90% {
-    opacity: 0.7;
-  }
-  100% {
-    transform: translateY(100vh);
-    opacity: 0;
-  }
-}
-
-.animate-rainfall {
-  animation: rainfall linear infinite;
-}
-
-/* Cloud drift animations - different speeds */
-@keyframes cloudDrift1 {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(calc(100vw + 200px));
-  }
-}
-
-@keyframes cloudDrift2 {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(calc(100vw + 150px));
-  }
-}
-
-@keyframes cloudDrift3 {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(calc(100vw + 100px));
-  }
-}
-
-.animate-cloud-drift-1 {
-  animation: cloudDrift1 80s linear infinite;
-}
-
-.animate-cloud-drift-2 {
-  animation: cloudDrift2 60s linear infinite;
-  animation-delay: -20s;
-}
-
-.animate-cloud-drift-3 {
-  animation: cloudDrift3 45s linear infinite;
-  animation-delay: -10s;
-}
-
-.animate-cloud-drift-4 {
-  animation: cloudDrift1 90s linear infinite;
-  animation-delay: -40s;
-}
-
-.animate-cloud-drift-5 {
-  animation: cloudDrift2 70s linear infinite;
-  animation-delay: -30s;
-}
-
-/* Fog drift animations */
-@keyframes fogDrift1 {
-  0%, 100% {
-    transform: translateX(-5%) translateY(0);
-    opacity: 0.3;
-  }
-  50% {
-    transform: translateX(5%) translateY(-2%);
-    opacity: 0.5;
-  }
-}
-
-@keyframes fogDrift2 {
-  0%, 100% {
-    transform: translateX(3%) translateY(0);
-    opacity: 0.2;
-  }
-  50% {
-    transform: translateX(-3%) translateY(1%);
-    opacity: 0.4;
-  }
-}
-
-.animate-fog-drift-1 {
-  animation: fogDrift1 20s ease-in-out infinite;
-}
-
-.animate-fog-drift-2 {
-  animation: fogDrift2 25s ease-in-out infinite;
-  animation-delay: -10s;
-}
-
-/* Lightning flash */
-@keyframes lightningFlash {
-  0%, 89%, 91%, 93%, 95%, 100% {
-    opacity: 0;
-  }
-  90%, 92%, 94% {
-    opacity: 0.8;
-    background: white;
-  }
-}
-
-.animate-lightning-flash {
-  animation: lightningFlash 10s ease-in-out infinite;
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
 }
