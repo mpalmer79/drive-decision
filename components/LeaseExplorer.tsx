@@ -89,13 +89,13 @@ export function LeaseExplorer({ vehiclePrice, annualMiles, onLeadCapture }: Leas
       <div className="flex items-center justify-center gap-4 mb-6">
         <div className="relative">
           <div className="absolute inset-0 bg-amber-500 rounded-xl blur-lg opacity-40" />
-          <div className="relative w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500/20 to-orange-500/20 flex items-center justify-center border border-amber-500/30">
-            <IconSparkles className="w-6 h-6 text-amber-400" />
+          <div className="relative w-12 h-12 rounded-xl bg-gradient-to-br from-amber-100 to-orange-100 flex items-center justify-center border border-amber-300">
+            <IconSparkles className="w-6 h-6 text-amber-600" />
           </div>
         </div>
         <div>
-          <h3 className="font-bold text-white text-xl">Explore Leasing</h3>
-          <p className="text-sm text-slate-400">
+          <h3 className="font-bold text-slate-900 text-xl">Explore Leasing</h3>
+          <p className="text-sm text-slate-500">
             Leasing could be a great fit for your lifestyle
           </p>
         </div>
@@ -105,24 +105,24 @@ export function LeaseExplorer({ vehiclePrice, annualMiles, onLeadCapture }: Leas
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
         {benefits.map((benefit, index) => {
           const colorClasses = {
-            emerald: "bg-emerald-500/10 border-emerald-500/20 text-emerald-400",
-            cyan: "bg-cyan-500/10 border-cyan-500/20 text-cyan-400",
-            purple: "bg-purple-500/10 border-purple-500/20 text-purple-400",
-            amber: "bg-amber-500/10 border-amber-500/20 text-amber-400",
+            emerald: "bg-emerald-100 border-emerald-200 text-emerald-600",
+            cyan: "bg-cyan-100 border-cyan-200 text-cyan-600",
+            purple: "bg-purple-500/10 border-purple-500/20 text-purple-600",
+            amber: "bg-amber-100 border-amber-200 text-amber-600",
           }[benefit.color];
 
           return (
             <div
               key={index}
-              className="p-4 rounded-xl bg-slate-800/30 border border-slate-700/30 hover:border-slate-600/50 transition-all duration-300"
+              className="p-4 rounded-xl bg-slate-50 border border-slate-200 hover:border-slate-400/50 transition-all duration-300"
             >
               <div className="flex items-start gap-3">
                 <div className={cn("w-10 h-10 rounded-lg flex items-center justify-center", colorClasses)}>
                   <benefit.icon className="w-5 h-5" />
                 </div>
                 <div>
-                  <h4 className="font-semibold text-white mb-1">{benefit.title}</h4>
-                  <p className="text-xs text-slate-400 leading-relaxed">{benefit.description}</p>
+                  <h4 className="font-semibold text-slate-900 mb-1">{benefit.title}</h4>
+                  <p className="text-xs text-slate-500 leading-relaxed">{benefit.description}</p>
                 </div>
               </div>
             </div>
@@ -132,9 +132,9 @@ export function LeaseExplorer({ vehiclePrice, annualMiles, onLeadCapture }: Leas
 
       {/* Mileage Warning */}
       {mileageWarning && (
-        <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 mb-6">
+        <div className="p-4 rounded-xl bg-amber-100 border border-amber-200 mb-6">
           <div className="flex items-start gap-3">
-            <IconAlertTriangle className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
+            <IconAlertTriangle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
             <div>
               <h4 className="font-semibold text-amber-300 mb-1">High Mileage Consideration</h4>
               <p className="text-sm text-amber-200/80">
@@ -149,10 +149,10 @@ export function LeaseExplorer({ vehiclePrice, annualMiles, onLeadCapture }: Leas
 
       {/* Considerations */}
       <div className="mb-6">
-        <h4 className="text-sm font-medium text-slate-400 mb-3">Things to Know About Leasing</h4>
+        <h4 className="text-sm font-medium text-slate-500 mb-3">Things to Know About Leasing</h4>
         <ul className="space-y-2">
           {considerations.map((item, index) => (
-            <li key={index} className="flex items-start gap-2 text-sm text-slate-300">
+            <li key={index} className="flex items-start gap-2 text-sm text-slate-600">
               <span className="w-1.5 h-1.5 rounded-full bg-slate-500 mt-2 flex-shrink-0" />
               <span>{item}</span>
             </li>
@@ -161,9 +161,9 @@ export function LeaseExplorer({ vehiclePrice, annualMiles, onLeadCapture }: Leas
       </div>
 
       {/* Why We Can't Show Payment */}
-      <div className="p-4 rounded-xl bg-slate-800/50 border border-slate-700/30 mb-6">
-        <h4 className="font-semibold text-white mb-2 text-center">Why We Need a Specialist</h4>
-        <p className="text-sm text-slate-400 leading-relaxed">
+      <div className="p-4 rounded-xl bg-slate-100 border border-slate-200 mb-6">
+        <h4 className="font-semibold text-slate-900 mb-2 text-center">Why We Need a Specialist</h4>
+        <p className="text-sm text-slate-500 leading-relaxed">
           Lease payments are calculated using manufacturer-specific factors including the money
           factor (like an interest rate), residual value (predicted end-of-lease value), and
           current incentives. These vary by vehicle model, lease term, and change frequently.
@@ -193,12 +193,12 @@ export function LeaseExplorer({ vehiclePrice, annualMiles, onLeadCapture }: Leas
       {/* Lead Capture Form */}
       {showForm && !submitted && (
         <div className="space-y-4">
-          <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
-            <div className="flex items-center gap-2 text-emerald-400 mb-2">
+          <div className="p-4 rounded-xl bg-emerald-100 border border-emerald-200">
+            <div className="flex items-center gap-2 text-emerald-600 mb-2">
               <IconCheck className="w-5 h-5" />
               <span className="font-semibold">Great choice!</span>
             </div>
-            <p className="text-sm text-slate-300">
+            <p className="text-sm text-slate-600">
               Fill out the form below and a Quirk lease specialist will contact you with a
               personalized quote for a ${formatNumber(vehiclePrice)} vehicle.
             </p>
@@ -226,7 +226,7 @@ export function LeaseExplorer({ vehiclePrice, annualMiles, onLeadCapture }: Leas
               onChange={(e) => setFormData((prev) => ({ ...prev, phone: e.target.value }))}
             />
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">
+              <label className="block text-sm font-medium text-slate-600 mb-2">
                 Preferred Contact Method
               </label>
               <div className="flex gap-2">
@@ -237,8 +237,8 @@ export function LeaseExplorer({ vehiclePrice, annualMiles, onLeadCapture }: Leas
                     className={cn(
                       "px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 capitalize",
                       formData.preferredContact === method
-                        ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/50"
-                        : "bg-slate-800/50 text-slate-400 border border-slate-700/50 hover:border-slate-600"
+                        ? "bg-emerald-500/20 text-emerald-600 border border-emerald-500/50"
+                        : "bg-slate-100 text-slate-500 border border-slate-300 hover:border-slate-400"
                     )}
                   >
                     {method}
@@ -249,14 +249,14 @@ export function LeaseExplorer({ vehiclePrice, annualMiles, onLeadCapture }: Leas
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">
+            <label className="block text-sm font-medium text-slate-600 mb-2">
               Additional Notes (Optional)
             </label>
             <textarea
               placeholder="Specific vehicle you're interested in, preferred lease term, questions..."
               value={formData.notes}
               onChange={(e) => setFormData((prev) => ({ ...prev, notes: e.target.value }))}
-              className="w-full px-4 py-3 rounded-xl bg-slate-800/50 border border-slate-700/50 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 resize-none"
+              className="w-full px-4 py-3 rounded-xl bg-slate-100 border border-slate-300 text-slate-900 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 resize-none"
               rows={3}
             />
           </div>
@@ -282,10 +282,10 @@ export function LeaseExplorer({ vehiclePrice, annualMiles, onLeadCapture }: Leas
       {submitted && (
         <div className="text-center py-6">
           <div className="w-16 h-16 rounded-full bg-emerald-500/20 flex items-center justify-center mx-auto mb-4">
-            <IconCheck className="w-8 h-8 text-emerald-400" />
+            <IconCheck className="w-8 h-8 text-emerald-600" />
           </div>
-          <h4 className="text-xl font-bold text-white mb-2">Quote Request Submitted!</h4>
-          <p className="text-slate-400 max-w-md mx-auto">
+          <h4 className="text-xl font-bold text-slate-900 mb-2">Quote Request Submitted!</h4>
+          <p className="text-slate-500 max-w-md mx-auto">
             A Quirk lease specialist will contact you within 1 business day with a personalized
             quote. Check your {formData.preferredContact} for updates.
           </p>
