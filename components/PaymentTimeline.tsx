@@ -165,25 +165,25 @@ export function PaymentTimeline({
       emerald: {
         bg: "bg-emerald-500",
         border: "border-emerald-500",
-        text: "text-emerald-400",
+        text: "text-emerald-600",
         glow: "shadow-emerald-500/50",
       },
       amber: {
         bg: "bg-amber-500",
         border: "border-amber-500",
-        text: "text-amber-400",
+        text: "text-amber-600",
         glow: "shadow-amber-500/50",
       },
       cyan: {
         bg: "bg-cyan-500",
         border: "border-cyan-500",
-        text: "text-cyan-400",
+        text: "text-cyan-600",
         glow: "shadow-cyan-500/50",
       },
       purple: {
         bg: "bg-purple-500",
         border: "border-purple-500",
-        text: "text-purple-400",
+        text: "text-purple-600",
         glow: "shadow-purple-500/50",
       },
       orange: {
@@ -209,18 +209,18 @@ export function PaymentTimeline({
             <div className={cn(
               "relative w-12 h-12 rounded-xl flex items-center justify-center border",
               verdict === "buy" 
-                ? "bg-emerald-500/20 border-emerald-500/30" 
-                : "bg-amber-500/20 border-amber-500/30"
+                ? "bg-emerald-500/20 border-emerald-300" 
+                : "bg-amber-500/20 border-amber-300"
             )}>
               <IconCalendar className={cn(
                 "w-6 h-6",
-                verdict === "buy" ? "text-emerald-400" : "text-amber-400"
+                verdict === "buy" ? "text-emerald-600" : "text-amber-600"
               )} />
             </div>
           </div>
           <div>
-            <h3 className="font-bold text-white text-lg">Your Payment Journey</h3>
-            <p className="text-sm text-slate-400">
+            <h3 className="font-bold text-slate-900 text-lg">Your Payment Journey</h3>
+            <p className="text-sm text-slate-500">
               {verdict === "buy" ? "Finance" : "Lease"} timeline over {maxMonth} months
             </p>
           </div>
@@ -273,7 +273,7 @@ export function PaymentTimeline({
                 )}>
                   <milestone.icon className={cn(
                     "w-3.5 h-3.5 transition-all duration-300",
-                    milestone.type === "end" ? "text-white" : colors.text,
+                    milestone.type === "end" ? "text-slate-900" : colors.text,
                     isHovered && "scale-110"
                   )} />
                 </div>
@@ -281,8 +281,8 @@ export function PaymentTimeline({
                 {/* Content Card */}
                 <div className={cn(
                   "p-4 rounded-xl transition-all duration-300",
-                  "bg-slate-800/30 border border-slate-700/30",
-                  isHovered && "bg-slate-800/50 border-slate-600/50 transform scale-[1.02]"
+                  "bg-slate-50 border border-slate-200",
+                  isHovered && "bg-slate-100 border-slate-400/50 transform scale-[1.02]"
                 )}>
                   <div className="flex items-start justify-between gap-4">
                     <div>
@@ -291,13 +291,13 @@ export function PaymentTimeline({
                           Month {milestone.month}
                         </span>
                         {milestone.type === "end" && (
-                          <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400">
+                          <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-600">
                             Complete
                           </span>
                         )}
                       </div>
-                      <h4 className="font-semibold text-white mb-1">{milestone.label}</h4>
-                      <p className="text-sm text-slate-400">{milestone.description}</p>
+                      <h4 className="font-semibold text-slate-900 mb-1">{milestone.label}</h4>
+                      <p className="text-sm text-slate-500">{milestone.description}</p>
                     </div>
                     {milestone.amount && (
                       <div className="text-right">
@@ -311,7 +311,7 @@ export function PaymentTimeline({
 
                   {/* Progress bar for this milestone */}
                   {milestone.month > 0 && (
-                    <div className="mt-3 pt-3 border-t border-slate-700/50">
+                    <div className="mt-3 pt-3 border-t border-slate-300">
                       <div className="flex items-center justify-between text-xs text-slate-500 mb-1">
                         <span>Progress</span>
                         <span>{Math.round((milestone.month / maxMonth) * 100)}%</span>
@@ -338,20 +338,20 @@ export function PaymentTimeline({
       </div>
 
       {/* Summary Stats */}
-      <div className="mt-8 pt-6 border-t border-slate-700/50">
+      <div className="mt-8 pt-6 border-t border-slate-300">
         <div className="grid grid-cols-3 gap-4">
           <div className="text-center">
-            <div className="text-2xl font-bold text-white">{maxMonth}</div>
+            <div className="text-2xl font-bold text-slate-900">{maxMonth}</div>
             <div className="text-xs text-slate-500">Total Months</div>
           </div>
           <div className="text-center">
-            <div className={cn("text-2xl font-bold", verdict === "buy" ? "text-emerald-400" : "text-amber-400")}>
+            <div className={cn("text-2xl font-bold", verdict === "buy" ? "text-emerald-600" : "text-amber-600")}>
               ${formatNumber(Math.round(verdict === "buy" ? buyMonthly : leaseMonthly))}
             </div>
             <div className="text-xs text-slate-500">Monthly Payment</div>
           </div>
           <div className="text-center">
-            <div className="text-2xl font-bold text-white">
+            <div className="text-2xl font-bold text-slate-900">
               ${formatNumber(Math.round(verdict === "buy" ? buyTotal : leaseTotal))}
             </div>
             <div className="text-xs text-slate-500">Total Cost</div>
