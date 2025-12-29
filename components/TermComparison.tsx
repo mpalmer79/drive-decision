@@ -105,7 +105,7 @@ export function TermComparison({
               border: "border-amber-500/30",
               ring: "ring-amber-500",
             },
-          }[option.highlightColor];
+          }[option.highlightColor as "emerald" | "cyan" | "amber"]!;
 
           return (
             <button
