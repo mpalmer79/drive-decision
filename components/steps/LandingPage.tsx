@@ -213,18 +213,9 @@ export function LandingPage({ onStart }: LandingPageProps) {
                 
                 {/* Content */}
                 <div className="relative z-10 flex flex-col items-center text-center p-6 sm:p-8">
-                  {/* Icon */}
-                  <div className={cn(
-                    "w-14 h-14 rounded-2xl flex items-center justify-center mb-5",
-                    "transition-transform duration-300 group-hover:scale-110",
-                    feature.iconBg
-                  )}>
-                    <feature.icon className={cn("w-7 h-7", feature.iconColor)} />
-                  </div>
-                  
                   {/* Content */}
-                  <h3 className="font-bold text-slate-900 text-lg mb-2">{feature.title}</h3>
-                  <p className="text-sm text-slate-500 leading-relaxed">{feature.desc}</p>
+                  <h3 className="font-bold text-white text-lg mb-2">{feature.title}</h3>
+                  <p className="text-sm text-white/80 leading-relaxed">{feature.desc}</p>
                 </div>
               </div>
             </div>
@@ -234,43 +225,37 @@ export function LandingPage({ onStart }: LandingPageProps) {
         {/* Trust Indicators */}
         <div
           className={cn(
-            "mt-16 sm:mt-24 flex flex-col sm:flex-row flex-wrap items-center justify-center gap-6 sm:gap-12",
+            "mt-16 sm:mt-24 flex flex-col sm:flex-row flex-wrap items-center justify-center gap-8 sm:gap-16",
             "transition-all duration-1000 delay-[1100ms]",
             mounted ? "opacity-100" : "opacity-0"
           )}
         >
-          <div className="flex items-center gap-3 w-48 sm:w-auto">
-            <div className="w-12 h-12 rounded-xl bg-slate-100 border border-slate-300 flex items-center justify-center flex-shrink-0">
+          <div className="flex flex-col items-center text-center min-w-[140px]">
+            <div className="w-12 h-12 rounded-xl bg-slate-100 border border-slate-300 flex items-center justify-center mb-3">
               <IconCar className="w-6 h-6 text-slate-500" />
             </div>
-            <div className="text-left">
-              <div className="text-2xl font-bold text-slate-900">18</div>
-              <div className="text-xs text-slate-500 uppercase tracking-wider">Dealerships</div>
-            </div>
+            <div className="text-3xl font-bold text-slate-900">18</div>
+            <div className="text-xs text-slate-500 uppercase tracking-wider mt-1">Dealerships</div>
           </div>
           
-          <div className="h-12 w-px bg-slate-200 hidden sm:block" />
+          <div className="h-px w-16 bg-slate-300 sm:h-16 sm:w-px" />
           
-          <div className="flex items-center gap-3 w-48 sm:w-auto">
-            <div className="w-12 h-12 rounded-xl bg-slate-100 border border-slate-300 flex items-center justify-center flex-shrink-0">
+          <div className="flex flex-col items-center text-center min-w-[140px]">
+            <div className="w-12 h-12 rounded-xl bg-slate-100 border border-slate-300 flex items-center justify-center mb-3">
               <IconCheck className="w-6 h-6 text-emerald-600" />
             </div>
-            <div className="text-left">
-              <div className="text-2xl font-bold text-slate-900">40+</div>
-              <div className="text-xs text-slate-500 uppercase tracking-wider">Years Experience</div>
-            </div>
+            <div className="text-3xl font-bold text-slate-900">40+</div>
+            <div className="text-xs text-slate-500 uppercase tracking-wider mt-1">Years Experience</div>
           </div>
           
-          <div className="h-12 w-px bg-slate-200 hidden sm:block" />
+          <div className="h-px w-16 bg-slate-300 sm:h-16 sm:w-px" />
           
-          <div className="flex items-center gap-3 w-48 sm:w-auto">
-            <div className="w-12 h-12 rounded-xl bg-slate-100 border border-slate-300 flex items-center justify-center flex-shrink-0">
+          <div className="flex flex-col items-center text-center min-w-[140px]">
+            <div className="w-12 h-12 rounded-xl bg-slate-100 border border-slate-300 flex items-center justify-center mb-3">
               <IconSparkles className="w-6 h-6 text-amber-600" />
             </div>
-            <div className="text-left">
-              <div className="text-2xl font-bold text-slate-900">AI</div>
-              <div className="text-xs text-slate-500 uppercase tracking-wider">Powered Analysis</div>
-            </div>
+            <div className="text-3xl font-bold text-slate-900">AI</div>
+            <div className="text-xs text-slate-500 uppercase tracking-wider mt-1">Powered Analysis</div>
           </div>
         </div>
       </div>
