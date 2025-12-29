@@ -21,6 +21,9 @@ import { LeaseExplorer } from "@/components/LeaseExplorer";
 import { PaymentTimeline } from "@/components/PaymentTimeline";
 import { TermComparison } from "@/components/TermComparison";
 import { PaymentPlayground } from "@/components/PaymentPlayground";
+import { RotatingBadge3D } from "@/components/RotatingBadge3D";
+import { CostRaceVisualization } from "@/components/CostRaceVisualization";
+import { TypewriterText } from "@/components/TypewriterText";
 import { ProtectionPackages } from "@/components/steps/ProtectionPackages";
 import { LeadCapture } from "@/components/steps/LeadCapture";
 
@@ -104,41 +107,22 @@ export function ResultsPage({ result, onStartOver, onBack }: ResultsPageProps) {
           <ConfettiBurst active={revealStage >= 3} />
         </div>
 
-        {/* Trophy/Icon */}
+        {/* 3D Rotating Badge */}
         <div className={cn(
           "flex justify-center mb-6 transition-all duration-700",
           revealStage >= 1 ? "opacity-100 scale-100" : "opacity-0 scale-50"
         )}>
-          <div className="relative">
-            <div className={cn(
-              "absolute inset-0 rounded-3xl transition-all duration-1000",
-              revealStage >= 2 ? "animate-ping opacity-20" : "opacity-0",
-              isBuyRecommended ? "bg-emerald-500" : "bg-amber-500"
-            )} />
-            <div className={cn(
-              "absolute -inset-4 rounded-[2rem] blur-xl transition-all duration-700",
-              revealStage >= 2 ? "opacity-40" : "opacity-0",
-              isBuyRecommended ? "bg-emerald-500" : "bg-amber-500"
-            )} />
-            <div className={cn(
-              "relative w-24 h-24 rounded-3xl flex items-center justify-center bg-gradient-to-br border-2",
-              isBuyRecommended
-                ? "from-emerald-100 to-teal-100 border-emerald-500/50"
-                : "from-amber-100 to-orange-100 border-amber-500/50"
-            )}>
-              {isBuyRecommended ? (
-                <IconKey className={cn(
-                  "w-12 h-12 transition-all duration-500 text-emerald-600",
-                  revealStage >= 2 ? "scale-100" : "scale-0"
-                )} />
+          <RotatingBadge3D
+            icon={
+              isBuyRecommended ? (
+                <IconKey className="w-12 h-12 text-emerald-600" />
               ) : (
-                <IconSparkles className={cn(
-                  "w-12 h-12 transition-all duration-500 text-amber-600",
-                  revealStage >= 2 ? "scale-100" : "scale-0"
-                )} />
-              )}
-            </div>
-          </div>
+                <IconSparkles className="w-12 h-12 text-amber-600" />
+              )
+            }
+            color={isBuyRecommended ? "emerald" : "amber"}
+            isActive={revealStage >= 1}
+          />
         </div>
 
         {/* Confidence Ring */}
@@ -171,25 +155,24 @@ export function ResultsPage({ result, onStartOver, onBack }: ResultsPageProps) {
           </div>
         </div>
 
-        {/* Main Verdict */}
+        {/* Main Verdict with Typewriter Effect */}
         <h1 className={cn(
           "text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 mb-4 tracking-tight transition-all duration-700",
           revealStage >= 2 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
         )}>
-          {isBuyRecommended ? (
-            <>
-              <span className="bg-gradient-to-r from-emerald-500 via-emerald-400 to-teal-400 bg-clip-text text-transparent">
-                Buying
-              </span>{" "}
-              is the right choice
-            </>
-          ) : (
-            <>
-              <span className="bg-gradient-to-r from-amber-500 via-amber-400 to-orange-400 bg-clip-text text-transparent">
-                Leasing
-              </span>{" "}
-              is worth exploring
-            </>
+          {revealStage >= 2 && (
+            <TypewriterText
+              text={isBuyRecommended ? "Buying is the right choice" : "Leasing is worth exploring"}
+              highlightWord={isBuyRecommended ? "Buying" : "Leasing"}
+              highlightClass={
+                isBuyRecommended
+                  ? "bg-gradient-to-r from-emerald-500 via-emerald-400 to-teal-400 bg-clip-text text-transparent"
+                  : "bg-gradient-to-r from-amber-500 via-amber-400 to-orange-400 bg-clip-text text-transparent"
+              }
+              isActive={revealStage >= 2}
+              speed={50}
+              delay={300}
+            />
           )}
         </h1>
 
@@ -412,6 +395,23 @@ export function ResultsPage({ result, onStartOver, onBack }: ResultsPageProps) {
               downPayment={preferences.downPayment}
               vehiclePrice={preferences.vehiclePrice}
               verdict="buy"
+            />
+          </div>
+
+          {/* Cost Race Visualization - Buy vs Lease over time */}
+          <div className={cn(
+            "mb-10 transition-all duration-700",
+            revealStage >= 6 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+          )}>
+            <CostRaceVisualization
+              buyMonthlyPayment={financeCalculation.monthlyPayment}
+              leaseMonthlyPayment={Math.round(preferences.vehiclePrice * 0.012)} // Estimated lease ~1.2% of MSRP
+              buyDownPayment={preferences.downPayment}
+              leaseDownPayment={Math.round(preferences.vehiclePrice * 0.05)} // Estimated lease down ~5%
+              loanTermMonths={preferences.financeTerm === "explore" ? 72 : preferences.financeTerm}
+              leaseTermMonths={36}
+              vehicleValue={preferences.vehiclePrice}
+              isVisible={revealStage >= 6}
             />
           </div>
 
